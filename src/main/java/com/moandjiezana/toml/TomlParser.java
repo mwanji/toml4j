@@ -12,7 +12,7 @@ import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressNode;
 
 @BuildParseTree
-public class TomlParser extends BaseParser<Object> {
+class TomlParser extends BaseParser<Object> {
 
   static class Results {
     public Map<String, Object> values = new HashMap<String, Object>();

@@ -19,18 +19,26 @@ import org.parboiled.support.ParsingResult;
  */
 public class Toml {
 
-  private final Map<String, Object> values;
+  private Map<String, Object> values = new HashMap<String, Object>();
   private final Toml defaults;
 
-  public Toml(File file) throws FileNotFoundException {
-    this(new Scanner(file).useDelimiter("\\Z").next());
+  public Toml() {
+    this((Toml) null);
   }
 
-  public Toml(String tomlString) {
-    this(tomlString, null);
+  public Toml(Toml defaults) {
+    this.defaults = defaults;
   }
 
-  public Toml(String tomlString, Toml defaults) {
+  public Toml parse(File file) {
+    try {
+      return parse(new Scanner(file).useDelimiter("\\Z").next());
+    } catch (FileNotFoundException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public Toml parse(String tomlString) {
     TomlParser parser = Parboiled.createParser(TomlParser.class);
     ParsingResult<Object> result = new RecoveringParseRunner<Object>(parser.Toml()).run(tomlString);
 //    ParsingResult<Object> parsingResult = new ReportingParseRunner<Object>(parser.Toml()).run(tomlString);
@@ -42,7 +50,8 @@ public class Toml {
     }
 
     this.values = results.values;
-    this.defaults = defaults;
+
+    return this;
   }
 
   public String getString(String key) {
