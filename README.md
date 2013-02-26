@@ -2,6 +2,32 @@
 
 toml4j is a [TOML](https://github.com/mojombo/toml) parser that uses the [Parboiled](http://www.parboiled.org) PEG parser.
 
+## Installation
+
+toml4j is currently published in snapshot form. Add the following repository to your POM:
+
+````xml
+<repositories>
+  <repository>
+    <id>sonatype-nexus-snapshots</id>
+    <url>https://oss.sonatype.org/content/groups/public/</url>
+    <snapshots>
+      <enabled>true</enabled>
+    </snapshots>
+  </repository>
+</repositories>
+````
+
+Add the following dependency:
+
+````xml
+<dependency>
+  <groupId>com.moandjiezana.toml</groupId>
+  <artifactId>toml4j</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+</dependency>
+````
+
 ## Usage
 
 ````java
@@ -24,3 +50,9 @@ Long a = toml.getLong("a"); // returns 1, not 2
 Long b = toml.getLong("b"); // returns 3
 Long c = toml.getLong("c"); // returns null
 ````
+
+## License
+
+toml4j is copyright of Moandji Ezana
+toml4j is licensed under the [MIT License](http://www.opensource.org/licenses/mit-license.php)
+
