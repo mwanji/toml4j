@@ -30,7 +30,7 @@ Add the following dependency:
 
 ## Usage
 
-1. Create a com.moandjiezana.toml.Toml4J instance
+1. Create a `com.moandjiezana.toml.Toml` instance
 1. Call the `parse` method of your choice
 1. Use the getters to retrieve the data
 
