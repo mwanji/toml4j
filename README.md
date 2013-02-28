@@ -55,6 +55,41 @@ Long b = toml.getLong("b"); // returns 3
 Long c = toml.getLong("c"); // returns null
 ````
 
+### Custom classes
+
+A Toml object can be mapped to a custom class with the `Toml#to(Class<T>)` method.
+
+Any keys not found in both the TOML and the class are ignored.
+
+Key groups can be mapped to other custom classes or to `Map<String, Object>`.
+
+````
+name = "Mwanji Ezana"
+
+[address]
+  street = "123 A Street"
+  city = "AnyVille"
+````
+
+````java
+  public class Address {
+    private String street;
+    private String city;
+  }
+
+  public class User {
+    private String name;
+    private Address address;
+  }
+````
+
+````java
+Toml toml = new Toml().parse(tomlFile);
+User user = toml.to(User.class);
+````
+
+When defaults are present, a shallow merge is performed.
+
 ## TODO
 
 * Support all special characters

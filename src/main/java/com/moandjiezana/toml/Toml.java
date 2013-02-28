@@ -1,5 +1,7 @@
 package com.moandjiezana.toml;
 
+import com.google.gson.Gson;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Date;
@@ -115,5 +117,19 @@ public class Toml {
   private Toml(Map<String, Object> values) {
     this.values = values;
     this.defaults = null;
+  }
+
+  public <T> T to(Class<T> targetClass) {
+    HashMap<String, Object> valuesCopy = new HashMap<String, Object>(values);
+    if (defaults != null) {
+      for (Map.Entry<String, Object> entry : defaults.values.entrySet()) {
+        if (!valuesCopy.containsKey(entry.getKey())) {
+          valuesCopy.put(entry.getKey(), entry.getValue());
+        }
+      }
+    }
+    Gson gson = new Gson();
+    String json = gson.toJson(valuesCopy);
+    return gson.fromJson(json, targetClass);
   }
 }

@@ -1,0 +1,5 @@
+string = "string"
+number = 123
+decimal = 2.1
+bool = true
+date = 1979-05-27T07:32:00Z
