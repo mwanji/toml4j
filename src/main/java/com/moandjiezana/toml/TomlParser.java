@@ -84,7 +84,7 @@ class TomlParser extends BaseParser<Object> {
   }
 
   Rule SpecialCharacter() {
-    return Sequence(Sequence('\\', FirstOf('n', '"')), pushCharacter(match()));
+    return Sequence(Sequence('\\', ANY), pushCharacter(match()));
   }
 
   Rule AnyCharacter() {
@@ -132,7 +132,7 @@ class TomlParser extends BaseParser<Object> {
       }
       Object currentValue = newKeyGroup.get(splitKey);
       if (!(currentValue instanceof Map)) {
-        results().errors.append("Could not create key group ").append(name).append(": key already exists!");
+        results().errors.append("Could not create key group ").append(name).append(": key already exists!\n");
 
         return true;
       }
@@ -174,7 +174,7 @@ class TomlParser extends BaseParser<Object> {
       push(date);
       return true;
     } catch (Exception e) {
-      results().errors.append("Invalid date: ").append(dateString);
+      results().errors.append("Invalid date: ").append(dateString).append("\n");
       return false;
     }
   }
@@ -207,6 +207,14 @@ class TomlParser extends BaseParser<Object> {
       sb.append('\n');
     } else if (sc.equals("\\\"")) {
       sb.append('\"');
+    } else if (sc.equals("\\t")) {
+      sb.append('\t');
+    } else if (sc.equals("\\r")) {
+      sb.append('\r');
+    } else if (sc.equals("\\\\")) {
+      sb.append('\\');
+    } else if (sc.startsWith("\\")) {
+      results().errors.append(sc + " is a reserved special character and cannot be used!\n");
     } else {
       sb.append(sc);
     }
@@ -217,7 +225,7 @@ class TomlParser extends BaseParser<Object> {
   void putValue(String name, Object value) {
     Map<String, Object> values = (Map<String, Object>) peek();
     if (values.containsKey(name)) {
-      results().errors.append("Key ").append(name).append(" already exists!");
+      results().errors.append("Key ").append(name).append(" already exists!\n");
       return;
     }
     values.put(name, value);

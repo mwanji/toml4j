@@ -170,10 +170,22 @@ public class TomlTest {
   }
 
   @Test
-  public void should_support_double_quote_in_string() {
-    Toml toml = new Toml().parse("key=\"double \\\" quote\"");
+  public void should_support_special_characters_in_strings() {
+    Toml toml = new Toml().parse(new File(getClass().getResource("should_support_special_characters_in_strings.toml").getFile()));
 
-    assertEquals("double \" quote", toml.getString("key"));
+    assertEquals("\" \t \n \r \\", toml.getString("key"));
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_reserved_special_character_in_strings() throws Exception {
+    new Toml().parse("key=\"\\m\"");
+  }
+
+  @Test
+  public void should_ignore_comma_at_end_of_array() throws Exception {
+    Toml toml = new Toml().parse("key=[1,2,3,]");
+
+    assertEquals(asList(1L, 2L, 3L), toml.getList("key", Long.class));
   }
 
   @Test(expected = IllegalStateException.class)
