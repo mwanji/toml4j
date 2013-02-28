@@ -142,10 +142,38 @@ public class TomlTest {
   }
 
   @Test
+  public void should_support_question_marks_in_key_names() throws Exception {
+    Toml toml = new Toml().parse("key?=true");
+
+    assertTrue(toml.getBoolean("key?"));
+  }
+
+  @Test
   public void should_support_underscores_in_key_group_names() throws Exception {
     Toml toml = new Toml().parse("[group_a]\na = 1");
 
     assertEquals(1, toml.getLong("group_a.a").intValue());
+  }
+
+  @Test
+  public void should_support_sharp_sign_in_key_group_names() throws Exception {
+    Toml toml = new Toml().parse("[group#]\nkey=1");
+
+    assertEquals(1, toml.getLong("group#.key").intValue());
+  }
+
+  @Test
+  public void should_support_blank_lines() throws Exception {
+    Toml toml = new Toml().parse(new File(getClass().getResource("should_support_blank_line.toml").getFile()));
+
+    assertEquals(1, toml.getLong("group.key").intValue());
+  }
+
+  @Test
+  public void should_support_double_quote_in_string() {
+    Toml toml = new Toml().parse("key=\"double \\\" quote\"");
+
+    assertEquals("double \" quote", toml.getString("key"));
   }
 
   @Test(expected = IllegalStateException.class)

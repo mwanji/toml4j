@@ -62,6 +62,20 @@ public class RealWorldTest {
     assertEquals(asList("alpha", "omega"), clients.get("hosts"));
   }
 
+  @Test
+  public void should_parse_hard_example() throws Exception {
+    Toml toml = new Toml().parse(new File(getClass().getResource("hard_example.toml").getFile()));
+
+    assertEquals("You'll hate me after this - #", toml.getString("the.test_string"));
+    assertEquals(asList("] ", " # "), toml.getList("the.hard.test_array", String.class));
+    assertEquals(asList("Test #11 ]proved that", "Experiment #9 was a success"), toml.getList("the.hard.test_array2", String.class));
+    assertEquals(" Same thing, but with a string #", toml.getString("the.hard.another_test_string"));
+    assertEquals(" And when \"'s are in the string, along with # \"", toml.getString("the.hard.harder_test_string"));
+    Toml theHardBit = toml.getKeyGroup("the.hard.bit#");
+    assertEquals("You don't think some user won't do that?", theHardBit.getString("what?"));
+    assertEquals(asList("]"), theHardBit.getList("multi_line_array", String.class));
+  }
+
   @SuppressWarnings("unchecked")
   private void printMap(Map<String, Object> map) {
     for (Map.Entry<String, Object> entry : map.entrySet()) {

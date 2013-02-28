@@ -20,7 +20,7 @@ class TomlParser extends BaseParser<Object> {
   }
 
   public Rule Toml() {
-    return Sequence(push(new TomlParser.Results()), push(((TomlParser.Results) peek()).values), OneOrMore(FirstOf(KeyGroup(), Comment(), Key())));
+    return Sequence(push(new TomlParser.Results()), push(((TomlParser.Results) peek()).values), OneOrMore(FirstOf(KeyGroup(), '\n', Comment(), Key())));
   }
 
   Rule KeyGroup() {
@@ -32,11 +32,11 @@ class TomlParser extends BaseParser<Object> {
   }
 
   Rule KeyGroupName() {
-    return Sequence(OneOrMore(FirstOf(Letter(), Digit(), '.', '_')), push(match()));
+    return Sequence(OneOrMore(TestNot(KeyGroupDelimiter()), FirstOf(Letter(), Digit(), ANY)), push(match()));
   }
 
   Rule KeyName() {
-    return Sequence(OneOrMore(FirstOf(Letter(), Digit(), '_', '.')), push(match()));
+    return Sequence(OneOrMore(TestNot(EqualsSign()), ANY), push(match()));
   }
 
   Rule VariableValues() {
@@ -60,7 +60,7 @@ class TomlParser extends BaseParser<Object> {
   }
 
   Rule StringValue() {
-    return Sequence('"', OneOrMore(TestNot('"'), ANY), pushString(match()), '"');
+    return Sequence(push(new StringBuilder()), '"', OneOrMore(TestNot('"'), FirstOf(SpecialCharacter(), AnyCharacter())), pushString(((StringBuilder) pop()).toString()), '"');
   }
 
   Rule Year() {
@@ -81,6 +81,14 @@ class TomlParser extends BaseParser<Object> {
 
   Rule Letter() {
     return CharRange('a', 'z');
+  }
+
+  Rule SpecialCharacter() {
+    return Sequence(Sequence('\\', FirstOf('n', '"')), pushCharacter(match()));
+  }
+
+  Rule AnyCharacter() {
+    return Sequence(ANY, pushCharacter(match()));
   }
 
   @SuppressNode
@@ -190,6 +198,18 @@ class TomlParser extends BaseParser<Object> {
     builder.deleteCharAt(builder.length() - 1);
     push(builder.toString());
 
+    return true;
+  }
+
+  boolean pushCharacter(String sc) {
+    StringBuilder sb = (StringBuilder) peek();
+    if (sc.equals("\\n")) {
+      sb.append('\n');
+    } else if (sc.equals("\\\"")) {
+      sb.append('\"');
+    } else {
+      sb.append(sc);
+    }
     return true;
   }
 
