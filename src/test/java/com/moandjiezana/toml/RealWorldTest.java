@@ -23,7 +23,7 @@ public class RealWorldTest {
   public void should_parse_example() throws Exception {
     TomlParser parser = Parboiled.createParser(TomlParser.class);
 
-    String toml = new Scanner(new File(getClass().getResource("/example.toml").getFile())).useDelimiter("\\Z").next();
+    String toml = new Scanner(new File(getClass().getResource("example.toml").getFile())).useDelimiter("\\Z").next();
     ParsingResult<Object> result = new RecoveringParseRunner<Object>(parser.Toml()).run(toml);
 
     Map<String, Object> root = (Map<String, Object>) result.valueStack.peek(result.valueStack.size() - 2);
