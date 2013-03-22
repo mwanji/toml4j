@@ -77,7 +77,7 @@ class TomlParser extends BaseParser<Object> {
   }
 
   Rule NumberValue() {
-    return Sequence(OneOrMore(FirstOf(Digit(), '.')), pushNumber(match()));
+    return Sequence(Sequence(Optional('-'), OneOrMore(FirstOf(Digit(), '.'))), pushNumber(match()));
   }
 
   Rule StringValue() {

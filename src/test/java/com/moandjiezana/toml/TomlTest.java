@@ -30,6 +30,13 @@ public class TomlTest {
   }
 
   @Test
+  public void should_get_negative_number() throws Exception {
+    Toml toml = new Toml().parse("b = -1001");
+
+    assertEquals(-1001, toml.getLong("b").intValue());
+  }
+
+  @Test
   public void should_get_list() throws Exception {
     Toml toml = new Toml().parse("list = [\"a\", \"b\", \"c\"]");
 
@@ -61,6 +68,13 @@ public class TomlTest {
     Toml toml = new Toml().parse("double = 5.25");
 
     assertEquals(5.25D, toml.getDouble("double").doubleValue(), 0.0);
+  }
+
+  @Test
+  public void should_get_negative_double() throws Exception {
+    Toml toml = new Toml().parse("double = -5.25");
+
+    assertEquals(-5.25D, toml.getDouble("double").doubleValue(), 0.0);
   }
 
   @Test
