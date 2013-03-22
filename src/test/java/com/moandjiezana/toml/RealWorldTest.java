@@ -28,7 +28,7 @@ public class RealWorldTest {
 
     Map<String, Object> root = (Map<String, Object>) result.valueStack.peek(result.valueStack.size() - 2);
 
-    printMap(root);
+    // printMap(root);
 
     assertEquals("TOML Example", root.get("title"));
 
