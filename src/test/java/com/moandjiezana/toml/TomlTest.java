@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TomlTest {
@@ -100,6 +101,14 @@ public class TomlTest {
   }
 
   @Test
+  public void should_get_value_from_key_group_with_sub_key_group() throws Exception {
+    Toml toml = new Toml().parse("[a.b]\nc=1\n[a]\nd=2");
+
+    assertEquals(2, toml.getLong("a.d").intValue());
+    assertEquals(1, toml.getKeyGroup("a.b").getLong("c").intValue());
+  }
+
+  @Test
   public void should_return_null_if_no_value_for_key() throws Exception {
     Toml toml = new Toml().parse("");
 
@@ -173,7 +182,14 @@ public class TomlTest {
   public void should_support_special_characters_in_strings() {
     Toml toml = new Toml().parse(new File(getClass().getResource("should_support_special_characters_in_strings.toml").getFile()));
 
-    assertEquals("\" \t \n \r \\", toml.getString("key"));
+    assertEquals("\" \t \n \r \\ / \b \f", toml.getString("key"));
+  }
+
+  @Test
+  public void should_support_unicode_characters_in_strings() throws Exception {
+    Toml toml = new Toml().parse("key=\"\\u00B1\"");
+
+    assertEquals("±", toml.getString("key"));
   }
 
   @Test(expected = IllegalStateException.class)
@@ -200,11 +216,21 @@ public class TomlTest {
 
   @Test(expected = IllegalStateException.class)
   public void should_fail_when_key_is_overwritten_by_key_group() {
-    new Toml().parse("[fruit]\ntype=\"apple\"\n[fruit.type]\napple=\"yes\"");
+    new Toml().parse("[a]\nb=1\n[a.b]\nc=2");
   }
 
   @Test(expected = IllegalStateException.class)
   public void should_fail_when_key_is_overwritten_by_another_key() {
     new Toml().parse("[fruit]\ntype=\"apple\"\ntype=\"orange\"");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_when_key_group_defined_twice() throws Exception {
+    new Toml().parse("[a]\nb=1\n[a]\nc=2");
+  }
+
+  @Ignore @Test(expected = IllegalStateException.class)
+  public void should_fail_when_illegal_characters_after_key_group() throws Exception {
+    new Toml().parse("[error]   if you didn't catch this, your parser is broken");
   }
 }

@@ -61,7 +61,7 @@ A Toml object can be mapped to a custom class with the `Toml#to(Class<T>)` metho
 
 Any keys not found in both the TOML and the class are ignored.
 
-Key groups can be mapped to other custom classes or to `Map<String, Object>`.
+Key groups can be mapped to other custom classes.
 
 ````
 name = "Mwanji Ezana"
@@ -92,8 +92,8 @@ When defaults are present, a shallow merge is performed.
 
 ## TODO
 
-* Support all special characters
-* Convert Toml to custom class
+* Fail on invalid definitions
+* Support negative numbers
 
 ## License
 

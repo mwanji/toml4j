@@ -4,7 +4,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
@@ -16,6 +18,7 @@ class TomlParser extends BaseParser<Object> {
 
   static class Results {
     public Map<String, Object> values = new HashMap<String, Object>();
+    public Set<String> keyGroups = new HashSet<String>();
     public StringBuilder errors = new StringBuilder();
   }
 
@@ -24,7 +27,25 @@ class TomlParser extends BaseParser<Object> {
   }
 
   Rule KeyGroup() {
-    return Sequence(KeyGroupDelimiter(), KeyGroupName(), addKeyGroup((String) pop()), KeyGroupDelimiter(), Spacing());
+    return Sequence(Sequence(KeyGroupDelimiter(), KeyGroupName(), addKeyGroup((String) pop()), KeyGroupDelimiter(), Spacing()), checkKeyGroup(match()));
+  }
+
+  Rule IllegalCharacters() {
+    return ZeroOrMore(TestNot(NewLine()), ANY);
+  }
+
+  boolean checkKeyGroup(String definition) {
+    String afterBracket = definition.substring(definition.indexOf(']') + 1);
+    for (char character : afterBracket.toCharArray()) {
+      if (character == '#') {
+        return true;
+      }
+
+      if (!Character.isWhitespace(character)) {
+        results().errors.append("Invalid key group definition: ").append(definition).append(". You may have forgotten a #");
+      }
+    }
+    return true;
   }
 
   Rule Key() {
@@ -60,7 +81,7 @@ class TomlParser extends BaseParser<Object> {
   }
 
   Rule StringValue() {
-    return Sequence(push(new StringBuilder()), '"', OneOrMore(TestNot('"'), FirstOf(SpecialCharacter(), AnyCharacter())), pushString(((StringBuilder) pop()).toString()), '"');
+    return Sequence(push(new StringBuilder()), '"', OneOrMore(TestNot('"'), FirstOf(UnicodeCharacter(), SpecialCharacter(), AnyCharacter())), pushString(((StringBuilder) pop()).toString()), '"');
   }
 
   Rule Year() {
@@ -81,6 +102,10 @@ class TomlParser extends BaseParser<Object> {
 
   Rule Letter() {
     return CharRange('a', 'z');
+  }
+
+  Rule UnicodeCharacter() {
+    return Sequence(Sequence('\\', 'u', OneOrMore(FirstOf(CharRange('0', '9'), CharRange('A', 'F')))), pushCharacter(match()));
   }
 
   Rule SpecialCharacter() {
@@ -107,6 +132,11 @@ class TomlParser extends BaseParser<Object> {
   }
 
   @SuppressNode
+  Rule NewLine() {
+    return AnyOf("\r\n");
+  }
+
+  @SuppressNode
   Rule ArrayDelimiter() {
     return Sequence(Spacing(), ',', Spacing());
   }
@@ -126,13 +156,20 @@ class TomlParser extends BaseParser<Object> {
     }
 
     Map<String, Object> newKeyGroup = (Map<String, Object>) getContext().getValueStack().peek();
+
+    if (!results().keyGroups.add(name)) {
+      results().errors.append("Could not create key group ").append(name).append(": key group already exists!\n");
+
+      return true;
+    }
+
     for (String splitKey : split) {
       if (!newKeyGroup.containsKey(splitKey)) {
         newKeyGroup.put(splitKey, new HashMap<String, Object>());
       }
       Object currentValue = newKeyGroup.get(splitKey);
       if (!(currentValue instanceof Map)) {
-        results().errors.append("Could not create key group ").append(name).append(": key already exists!\n");
+        results().errors.append("Could not create key group ").append(name).append(": key already has a value!\n");
 
         return true;
       }
@@ -140,6 +177,7 @@ class TomlParser extends BaseParser<Object> {
     }
 
     push(newKeyGroup);
+
     return true;
   }
 
@@ -213,6 +251,14 @@ class TomlParser extends BaseParser<Object> {
       sb.append('\r');
     } else if (sc.equals("\\\\")) {
       sb.append('\\');
+    } else if (sc.equals("\\/")) {
+      sb.append('/');
+    } else if (sc.equals("\\b")) {
+      sb.append('\b');
+    } else if (sc.equals("\\f")) {
+      sb.append('\f');
+    } else if (sc.startsWith("\\u")) {
+      sb.append(Character.toChars(Integer.parseInt(sc.substring(2), 16)));
     } else if (sc.startsWith("\\")) {
       results().errors.append(sc + " is a reserved special character and cannot be used!\n");
     } else {
