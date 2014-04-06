@@ -10,7 +10,7 @@
   <version>1.0.0-SNAPSHOT</version>
   <name>toml4j</name>
   <description>A parser for TOML</description>
-  <url>http://moandjiezana.com/toml/</url>
+  <url>http://moandjiezana.com/toml/toml4j</url>
   <developers>
     <developer>
       <id>moandji.ezana</id>
