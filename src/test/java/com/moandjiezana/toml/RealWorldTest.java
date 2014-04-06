@@ -2,6 +2,7 @@ package com.moandjiezana.toml;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -65,6 +66,14 @@ public class RealWorldTest {
     Toml theHardBit = toml.getKeyGroup("the.hard.bit#");
     assertEquals("You don't think some user won't do that?", theHardBit.getString("what?"));
     assertEquals(asList("]"), theHardBit.getList("multi_line_array", String.class));
+  }
+
+  @Test
+  public void should_allow_keys_with_same_name_in_different_groups() throws Exception {
+    Toml toml = new Toml().parse(new File(getClass().getResource("should_allow_keys_with_same_name_in_different_groups.toml").getFile()));
+
+    assertTrue(toml.getKeyGroup("siteInfo.local.sh").getBoolean("enable"));
+    assertFalse(toml.getKeyGroup("siteInfo.localMobile.sh").getBoolean("enable"));
   }
 
   @SuppressWarnings("unchecked")

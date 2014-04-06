@@ -155,7 +155,6 @@ class TomlParser extends BaseParser<Object> {
   @SuppressWarnings("unchecked")
   boolean addKeyGroup(String name) {
     String[] split = name.split("\\.");
-    name = split[split.length - 1];
 
     while (getContext().getValueStack().size() > 2) {
       drop();

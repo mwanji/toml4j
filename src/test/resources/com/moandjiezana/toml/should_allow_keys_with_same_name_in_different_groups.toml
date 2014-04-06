@@ -1,0 +1,4 @@
+[siteInfo.local.sh]
+enable=true
+[siteInfo.localMobile.sh]
+enable=false
