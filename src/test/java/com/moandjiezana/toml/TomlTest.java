@@ -243,7 +243,8 @@ public class TomlTest {
     new Toml().parse("[a]\nb=1\n[a]\nc=2");
   }
 
-  @Ignore @Test(expected = IllegalStateException.class)
+  @Ignore
+  @Test(expected = IllegalStateException.class)
   public void should_fail_when_illegal_characters_after_key_group() throws Exception {
     new Toml().parse("[error]   if you didn't catch this, your parser is broken");
   }
