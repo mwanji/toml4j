@@ -78,7 +78,7 @@ public class TomlTest {
   }
 
   @Test
-  public void should_get_key_group() throws Exception {
+  public void should_get_table() throws Exception {
     Toml toml = new Toml().parse("[group]\nkey = \"value\"");
 
     Toml group = toml.getTable("group");
@@ -94,28 +94,28 @@ public class TomlTest {
   }
 
   @Test
-  public void should_get_value_for_multi_key_with_no_parent_key_group() throws Exception {
+  public void should_get_value_for_multi_key_with_no_parent_table() throws Exception {
     Toml toml = new Toml().parse("[group.sub]\nkey = \"value\"");
 
     assertEquals("value", toml.getString("group.sub.key"));
   }
 
   @Test
-  public void should_get_key_group_for_multi_key() throws Exception {
+  public void should_get_table_for_multi_key() throws Exception {
     Toml toml = new Toml().parse("[group]\nother=1\n[group.sub]\nkey = \"value\"");
 
     assertEquals("value", toml.getTable("group.sub").getString("key"));
   }
 
   @Test
-  public void should_get_key_group_for_multi_key_with_no_parent_key_group() throws Exception {
+  public void should_get_table_for_multi_key_with_no_parent_table() throws Exception {
     Toml toml = new Toml().parse("[group.sub]\nkey = \"value\"");
 
     assertEquals("value", toml.getTable("group.sub").getString("key"));
   }
 
   @Test
-  public void should_get_value_from_key_group_with_sub_key_group() throws Exception {
+  public void should_get_value_from_table_with_sub_table() throws Exception {
     Toml toml = new Toml().parse("[a.b]\nc=1\n[a]\nd=2");
 
     assertEquals(2, toml.getLong("a.d").intValue());
@@ -151,7 +151,7 @@ public class TomlTest {
   }
 
   @Test
-  public void should_support_numbers_in_key_group_names() throws Exception {
+  public void should_support_numbers_in_table_names() throws Exception {
     Toml toml = new Toml().parse("[group1]\na = 1");
 
     assertEquals(1, toml.getLong("group1.a").intValue());
@@ -172,14 +172,14 @@ public class TomlTest {
   }
 
   @Test
-  public void should_support_underscores_in_key_group_names() throws Exception {
+  public void should_support_underscores_in_table_names() throws Exception {
     Toml toml = new Toml().parse("[group_a]\na = 1");
 
     assertEquals(1, toml.getLong("group_a.a").intValue());
   }
 
   @Test
-  public void should_support_sharp_sign_in_key_group_names() throws Exception {
+  public void should_support_sharp_sign_in_table_names() throws Exception {
     Toml toml = new Toml().parse("[group#]\nkey=1");
 
     assertEquals(1, toml.getLong("group#.key").intValue());
@@ -229,7 +229,7 @@ public class TomlTest {
   }
 
   @Test(expected = IllegalStateException.class)
-  public void should_fail_when_key_is_overwritten_by_key_group() {
+  public void should_fail_when_key_is_overwritten_by_table() {
     new Toml().parse("[a]\nb=1\n[a.b]\nc=2");
   }
 
@@ -239,13 +239,13 @@ public class TomlTest {
   }
 
   @Test(expected = IllegalStateException.class)
-  public void should_fail_when_key_group_defined_twice() throws Exception {
+  public void should_fail_when_table_defined_twice() throws Exception {
     new Toml().parse("[a]\nb=1\n[a]\nc=2");
   }
 
   @Ignore
   @Test(expected = IllegalStateException.class)
-  public void should_fail_when_illegal_characters_after_key_group() throws Exception {
+  public void should_fail_when_illegal_characters_after_table() throws Exception {
     new Toml().parse("[error]   if you didn't catch this, your parser is broken");
   }
 }

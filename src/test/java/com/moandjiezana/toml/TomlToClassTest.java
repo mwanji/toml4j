@@ -3,15 +3,15 @@ package com.moandjiezana.toml;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.moandjiezana.toml.testutils.TableAsMap;
-import com.moandjiezana.toml.testutils.TomlTables;
-import com.moandjiezana.toml.testutils.TomlPrimitives;
-
 import java.io.File;
 import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.junit.Test;
+
+import com.moandjiezana.toml.testutils.TableAsMap;
+import com.moandjiezana.toml.testutils.TomlPrimitives;
+import com.moandjiezana.toml.testutils.TomlTables;
 
 public class TomlToClassTest {
 
@@ -34,8 +34,8 @@ public class TomlToClassTest {
   }
 
   @Test
-  public void should_convert_key_groups() throws Exception {
-    String fileName = "should_convert_key_groups.toml";
+  public void should_convert_tables() throws Exception {
+    String fileName = "should_convert_tables.toml";
     Toml toml = new Toml().parse(file(fileName));
 
     TomlTables tomlTables = toml.to(TomlTables.class);
@@ -46,7 +46,7 @@ public class TomlToClassTest {
 
   @Test
   public void should_use_defaults() throws Exception {
-    Toml defaults = new Toml().parse(file("should_convert_key_groups.toml"));
+    Toml defaults = new Toml().parse(file("should_convert_tables.toml"));
     Toml toml = new Toml(defaults).parse("");
 
     TomlTables tomlTables = toml.to(TomlTables.class);
@@ -63,7 +63,7 @@ public class TomlToClassTest {
   }
 
   @Test
-  public void should_convert_key_group_as_map() throws Exception {
+  public void should_convert_table_as_map() throws Exception {
     TableAsMap tableAsMap = new Toml().parse("[group]\nkey=\"value\"").to(TableAsMap.class);
 
     assertEquals("value", tableAsMap.group.get("key"));

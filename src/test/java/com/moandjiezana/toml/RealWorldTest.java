@@ -69,8 +69,8 @@ public class RealWorldTest {
   }
 
   @Test
-  public void should_allow_keys_with_same_name_in_different_groups() throws Exception {
-    Toml toml = new Toml().parse(new File(getClass().getResource("should_allow_keys_with_same_name_in_different_groups.toml").getFile()));
+  public void should_allow_keys_with_same_name_in_different_tables() throws Exception {
+    Toml toml = new Toml().parse(new File(getClass().getResource("should_allow_keys_with_same_name_in_different_tables.toml").getFile()));
 
     assertTrue(toml.getTable("siteInfo.local.sh").getBoolean("enable"));
     assertFalse(toml.getTable("siteInfo.localMobile.sh").getBoolean("enable"));
