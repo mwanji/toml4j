@@ -3,8 +3,8 @@ package com.moandjiezana.toml;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.moandjiezana.toml.testutils.KeyGroupAsMap;
-import com.moandjiezana.toml.testutils.TomlKeyGroups;
+import com.moandjiezana.toml.testutils.TableAsMap;
+import com.moandjiezana.toml.testutils.TomlTables;
 import com.moandjiezana.toml.testutils.TomlPrimitives;
 
 import java.io.File;
@@ -38,10 +38,10 @@ public class TomlToClassTest {
     String fileName = "should_convert_key_groups.toml";
     Toml toml = new Toml().parse(file(fileName));
 
-    TomlKeyGroups tomlKeyGroups = toml.to(TomlKeyGroups.class);
+    TomlTables tomlTables = toml.to(TomlTables.class);
 
-    assertEquals("value1", tomlKeyGroups.group1.string);
-    assertEquals("value2", tomlKeyGroups.group2.string);
+    assertEquals("value1", tomlTables.group1.string);
+    assertEquals("value2", tomlTables.group2.string);
   }
 
   @Test
@@ -49,10 +49,10 @@ public class TomlToClassTest {
     Toml defaults = new Toml().parse(file("should_convert_key_groups.toml"));
     Toml toml = new Toml(defaults).parse("");
 
-    TomlKeyGroups tomlKeyGroups = toml.to(TomlKeyGroups.class);
+    TomlTables tomlTables = toml.to(TomlTables.class);
 
-    assertEquals("value1", tomlKeyGroups.group1.string);
-    assertEquals("value2", tomlKeyGroups.group2.string);
+    assertEquals("value1", tomlTables.group1.string);
+    assertEquals("value2", tomlTables.group2.string);
   }
 
   @Test
@@ -64,9 +64,9 @@ public class TomlToClassTest {
 
   @Test
   public void should_convert_key_group_as_map() throws Exception {
-    KeyGroupAsMap keyGroupAsMap = new Toml().parse("[group]\nkey=\"value\"").to(KeyGroupAsMap.class);
+    TableAsMap tableAsMap = new Toml().parse("[group]\nkey=\"value\"").to(TableAsMap.class);
 
-    assertEquals("value", keyGroupAsMap.group.get("key"));
+    assertEquals("value", tableAsMap.group.get("key"));
   }
 
   private File file(String fileName) {

@@ -81,7 +81,7 @@ public class TomlTest {
   public void should_get_key_group() throws Exception {
     Toml toml = new Toml().parse("[group]\nkey = \"value\"");
 
-    Toml group = toml.getKeyGroup("group");
+    Toml group = toml.getTable("group");
 
     assertEquals("value", group.getString("key"));
   }
@@ -104,14 +104,14 @@ public class TomlTest {
   public void should_get_key_group_for_multi_key() throws Exception {
     Toml toml = new Toml().parse("[group]\nother=1\n[group.sub]\nkey = \"value\"");
 
-    assertEquals("value", toml.getKeyGroup("group.sub").getString("key"));
+    assertEquals("value", toml.getTable("group.sub").getString("key"));
   }
 
   @Test
   public void should_get_key_group_for_multi_key_with_no_parent_key_group() throws Exception {
     Toml toml = new Toml().parse("[group.sub]\nkey = \"value\"");
 
-    assertEquals("value", toml.getKeyGroup("group.sub").getString("key"));
+    assertEquals("value", toml.getTable("group.sub").getString("key"));
   }
 
   @Test
@@ -119,7 +119,7 @@ public class TomlTest {
     Toml toml = new Toml().parse("[a.b]\nc=1\n[a]\nd=2");
 
     assertEquals(2, toml.getLong("a.d").intValue());
-    assertEquals(1, toml.getKeyGroup("a.b").getLong("c").intValue());
+    assertEquals(1, toml.getTable("a.b").getLong("c").intValue());
   }
 
   @Test

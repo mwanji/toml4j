@@ -48,14 +48,14 @@ public class TomlDefaultsTest {
   public void should_fall_back_to_key_group() throws Exception {
     Toml toml = new Toml(defaultToml).parse("");
 
-    assertEquals("a", toml.getKeyGroup("group").getString("a"));
+    assertEquals("a", toml.getTable("group").getString("a"));
   }
 
   @Test
   public void should_fall_back_to_key_within_key_group() throws Exception {
     Toml toml = new Toml(defaultToml).parse("[group]\nb=1");
 
-    assertEquals(1, toml.getKeyGroup("group").getLong("b").intValue());
-    assertEquals("a", toml.getKeyGroup("group").getString("a"));
+    assertEquals(1, toml.getTable("group").getLong("b").intValue());
+    assertEquals("a", toml.getTable("group").getString("a"));
   }
 }

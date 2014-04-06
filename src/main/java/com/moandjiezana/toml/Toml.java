@@ -82,7 +82,7 @@ public class Toml {
   }
 
   @SuppressWarnings("unchecked")
-  public Toml getKeyGroup(String key) {
+  public Toml getTable(String key) {
     return new Toml((Map<String, Object>) get(key));
   }
 

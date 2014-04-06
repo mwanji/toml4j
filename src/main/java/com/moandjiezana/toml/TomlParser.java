@@ -18,19 +18,19 @@ class TomlParser extends BaseParser<Object> {
 
   static class Results {
     public Map<String, Object> values = new HashMap<String, Object>();
-    public Set<String> keyGroups = new HashSet<String>();
+    public Set<String> tables = new HashSet<String>();
     public StringBuilder errors = new StringBuilder();
   }
 
   public Rule Toml() {
-    return Sequence(push(new TomlParser.Results()), push(((TomlParser.Results) peek()).values), OneOrMore(FirstOf(KeyGroup(), '\n', Comment(), Key())));
+    return Sequence(push(new TomlParser.Results()), push(((TomlParser.Results) peek()).values), OneOrMore(FirstOf(Table(), '\n', Comment(), Key())));
   }
 
-  Rule KeyGroup() {
-    return Sequence(Sequence(KeyGroupDelimiter(), KeyGroupName(), addKeyGroup((String) pop()), KeyGroupDelimiter(), Spacing()), checkKeyGroup(match()));
+  Rule Table() {
+    return Sequence(Sequence(TableDelimiter(), TableName(), addTable((String) pop()), TableDelimiter(), Spacing()), checkTable(match()));
   }
 
-  boolean checkKeyGroup(String definition) {
+  boolean checkTable(String definition) {
     String afterBracket = definition.substring(definition.indexOf(']') + 1);
     for (char character : afterBracket.toCharArray()) {
       if (character == '#') {
@@ -48,8 +48,8 @@ class TomlParser extends BaseParser<Object> {
     return Sequence(Spacing(), KeyName(), EqualsSign(), VariableValues(), Spacing(), swap(), addKey((String) pop(), pop()));
   }
 
-  Rule KeyGroupName() {
-    return Sequence(OneOrMore(TestNot(KeyGroupDelimiter()), FirstOf(Letter(), Digit(), ANY)), push(match()));
+  Rule TableName() {
+    return Sequence(OneOrMore(TestNot(TableDelimiter()), FirstOf(Letter(), Digit(), ANY)), push(match()));
   }
 
   Rule KeyName() {
@@ -113,7 +113,7 @@ class TomlParser extends BaseParser<Object> {
   }
 
   @SuppressNode
-  Rule KeyGroupDelimiter() {
+  Rule TableDelimiter() {
     return AnyOf("[]");
   }
 
@@ -153,35 +153,35 @@ class TomlParser extends BaseParser<Object> {
   }
 
   @SuppressWarnings("unchecked")
-  boolean addKeyGroup(String name) {
+  boolean addTable(String name) {
     String[] split = name.split("\\.");
 
     while (getContext().getValueStack().size() > 2) {
       drop();
     }
 
-    Map<String, Object> newKeyGroup = (Map<String, Object>) getContext().getValueStack().peek();
+    Map<String, Object> newTable = (Map<String, Object>) getContext().getValueStack().peek();
 
-    if (!results().keyGroups.add(name)) {
+    if (!results().tables.add(name)) {
       results().errors.append("Could not create key group ").append(name).append(": key group already exists!\n");
 
       return true;
     }
 
     for (String splitKey : split) {
-      if (!newKeyGroup.containsKey(splitKey)) {
-        newKeyGroup.put(splitKey, new HashMap<String, Object>());
+      if (!newTable.containsKey(splitKey)) {
+        newTable.put(splitKey, new HashMap<String, Object>());
       }
-      Object currentValue = newKeyGroup.get(splitKey);
+      Object currentValue = newTable.get(splitKey);
       if (!(currentValue instanceof Map)) {
         results().errors.append("Could not create key group ").append(name).append(": key already has a value!\n");
 
         return true;
       }
-      newKeyGroup = (Map<String, Object>) currentValue;
+      newTable = (Map<String, Object>) currentValue;
     }
 
-    push(newKeyGroup);
+    push(newTable);
 
     return true;
   }
