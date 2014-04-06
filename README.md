@@ -93,7 +93,6 @@ When defaults are present, a shallow merge is performed.
 ## TODO
 
 * Fail on invalid definitions
-* Support negative numbers
 
 ## License
 
