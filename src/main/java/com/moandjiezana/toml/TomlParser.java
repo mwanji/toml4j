@@ -30,10 +30,6 @@ class TomlParser extends BaseParser<Object> {
     return Sequence(Sequence(KeyGroupDelimiter(), KeyGroupName(), addKeyGroup((String) pop()), KeyGroupDelimiter(), Spacing()), checkKeyGroup(match()));
   }
 
-  Rule IllegalCharacters() {
-    return ZeroOrMore(TestNot(NewLine()), ANY);
-  }
-
   boolean checkKeyGroup(String definition) {
     String afterBracket = definition.substring(definition.indexOf(']') + 1);
     for (char character : afterBracket.toCharArray()) {
@@ -128,7 +124,17 @@ class TomlParser extends BaseParser<Object> {
 
   @SuppressNode
   Rule Spacing() {
-    return ZeroOrMore(FirstOf(Comment(), AnyOf(" \t\r\n\f")));
+    return ZeroOrMore(FirstOf(Comment(), Whitespace(), NewLine(), AnyOf("\f")));
+  }
+
+  Rule IllegalCharacters() {
+    return Sequence(ZeroOrMore(Whitespace()), OneOrMore(TestNot('#', NewLine()), ANY));
+    //return Sequence(ZeroOrMore(Whitespace()), TestNot('#', NewLine()), OneOrMore(ANY));
+  }
+
+  @SuppressNode
+  Rule Whitespace() {
+    return AnyOf(" \t");
   }
 
   @SuppressNode
@@ -143,7 +149,7 @@ class TomlParser extends BaseParser<Object> {
 
   @SuppressNode
   Rule Comment() {
-    return Sequence('#', ZeroOrMore(TestNot(AnyOf("\r\n")), ANY), FirstOf("\r\n", '\r', '\n', EOI));
+    return Sequence('#', ZeroOrMore(TestNot(NewLine()), ANY), FirstOf(NewLine(), EOI));
   }
 
   @SuppressWarnings("unchecked")
