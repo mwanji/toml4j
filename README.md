@@ -1,38 +1,64 @@
 # toml4j
 
-toml4j is a [TOML](https://github.com/mojombo/toml) parser that uses the [Parboiled](http://www.parboiled.org) PEG parser.
+toml4j is a [TOML 0.1.0](https://github.com/mojombo/toml) parser for Java that uses the [Parboiled](http://www.parboiled.org) PEG parser.
 
 ## Installation
 
-toml4j is currently published in snapshot form. Add the following repository to your POM:
-
-````xml
-<repositories>
-  <repository>
-    <id>sonatype-nexus-snapshots</id>
-    <url>https://oss.sonatype.org/content/groups/public/</url>
-    <snapshots>
-      <enabled>true</enabled>
-    </snapshots>
-  </repository>
-</repositories>
-````
-
-Add the following dependency:
+Add the following dependency to your POM:
 
 ````xml
 <dependency>
   <groupId>com.moandjiezana.toml</groupId>
   <artifactId>toml4j</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>0.1.0</version>
 </dependency>
 ````
 
 ## Usage
 
+### Custom classes
+
+A Toml object can be mapped to a custom class with the `Toml#to(Class<T>)` method.
+
+Any keys not found in both the TOML and the class are ignored.
+
+Key groups can be mapped to other custom classes. Fields may be private.
+
+````
+name = "Mwanji Ezana"
+
+[address]
+  street = "123 A Street"
+  city = "AnyVille"
+````
+
+````java
+  class Address {
+    String street;
+    String city;
+  }
+
+  class User {
+    String name;
+    Address address;
+  }
+````
+
+````java
+Toml toml = new Toml().parse(tomlFile);
+User user = toml.to(User.class);
+
+assert user.name.equals("Mwanji Ezana");
+assert user.address.street.equals("123 A Street");
+````
+
+When defaults are present, a shallow merge is performed.
+
+### Key names
+
 1. Create a `com.moandjiezana.toml.Toml` instance
-1. Call the `parse` method of your choice
-1. Use the getters to retrieve the data
+2. Call the `parse` method of your choice
+3. Use the getters to retrieve the data
 
 ````java
 Toml toml = new Toml().parse(getTomlFile()); // throws an Exception if the TOML is incorrect
@@ -54,41 +80,6 @@ Long a = toml.getLong("a"); // returns 1, not 2
 Long b = toml.getLong("b"); // returns 3
 Long c = toml.getLong("c"); // returns null
 ````
-
-### Custom classes
-
-A Toml object can be mapped to a custom class with the `Toml#to(Class<T>)` method.
-
-Any keys not found in both the TOML and the class are ignored.
-
-Key groups can be mapped to other custom classes.
-
-````
-name = "Mwanji Ezana"
-
-[address]
-  street = "123 A Street"
-  city = "AnyVille"
-````
-
-````java
-  public class Address {
-    private String street;
-    private String city;
-  }
-
-  public class User {
-    private String name;
-    private Address address;
-  }
-````
-
-````java
-Toml toml = new Toml().parse(tomlFile);
-User user = toml.to(User.class);
-````
-
-When defaults are present, a shallow merge is performed.
 
 ## TODO
 
