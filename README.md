@@ -1,12 +1,14 @@
 # toml4j
 
-toml4j is a [TOML 0.1.0](https://github.com/mojombo/toml) parser for Java that uses the [Parboiled](http://www.parboiled.org) PEG parser.
+toml4j is a [TOML 0.1.0](https://github.com/mojombo/toml/tree/v0.1.0) parser for Java that uses the [Parboiled](http://www.parboiled.org) PEG parser.
+
+[TOML 0.2.0](https://github.com/mojombo/toml/tree/v0.2.0) support is under development on the master branch.
 
 [![Build Status](https://travis-ci.org/mwanji/toml4j.svg?branch=master)](https://travis-ci.org/mwanji/toml4j)
 
 ## Installation
 
-Add the following dependency to your POM:
+Add the following dependency to your POM (or equivalent for other dependency managers):
 
 ````xml
 <dependency>
@@ -16,11 +18,30 @@ Add the following dependency to your POM:
 </dependency>
 ````
 
+## Quick start
+
+````java
+Toml toml = new Toml().parse(getTomlFile());
+String someValue = toml.getString("someKey");
+Date someDate = toml.getDate("someKeyGroup.someDate");
+MyClass myClass = toml.to(MyClass.class);
+````
+
 ## Usage
+
+A `com.moandjiezana.toml.Toml` instance is populated by calling one of `parse(File)` or `parse(String)`.
+
+````java
+Toml toml = new Toml().parse("a=1");
+````
+
+An exception is thrown if the file is not valid TOML.
+
+The data can then be accessed either by converting the Toml instance to your own class or by accessing tables and keys by name.
 
 ### Custom classes
 
-A Toml object can be mapped to a custom class with the `Toml#to(Class<T>)` method.
+`Toml#to(Class<T>)` maps a Toml instance to the given class.
 
 Any keys not found in both the TOML and the class are ignored.
 
@@ -35,20 +56,19 @@ name = "Mwanji Ezana"
 ````
 
 ````java
-  class Address {
-    String street;
-    String city;
-  }
+class Address {
+  String street;
+  String city;
+}
 
-  class User {
-    String name;
-    Address address;
-  }
+class User {
+  String name;
+  Address address;
+}
 ````
 
 ````java
-Toml toml = new Toml().parse(tomlFile);
-User user = toml.to(User.class);
+User user = new Toml().parse(tomlFile).to(User.class);
 
 assert user.name.equals("Mwanji Ezana");
 assert user.address.street.equals("123 A Street");
@@ -58,21 +78,53 @@ When defaults are present, a shallow merge is performed.
 
 ### Key names
 
-1. Create a `com.moandjiezana.toml.Toml` instance
-2. Call the `parse` method of your choice
-3. Use the getters to retrieve the data
+Use the getters to retrieve the data:
+
+* `getString(String)`
+* `getDate(String)`
+* `getBoolean(String)`
+* `getLong(String)`
+* `getDouble(String)`
+* `getList(String, Class<T>)`
+
+Key groups can be accessed with `getKeyGroup(String)`, which returns a new Toml instance containing only the keys in that key group.
+
+You can directly access values within a key group with a compound key:
 
 ````java
-Toml toml = new Toml().parse(getTomlFile()); // throws an Exception if the TOML is incorrect
+String s = toml.getString("keygroup1.keygroup2.key");
+````
 
-String title = toml.getString("title"); // if a key doesn't exist, returns null
-Boolean enabled = toml.getBoolean("database.enabled"); // gets the value of enabled from the database key group
-Toml servers = toml.getKeyGroup("servers"); // returns a new Toml instance containing only the key group's values
+Non-existant keys return null.
+
+````
+title = "TOML Example"
+
+[database]
+  ports = [ 8001, 8001, 8002 ]
+  enabled = true
+
+[servers]
+  cluster = "hyades"
+  [servers.alpha]
+  ip = "10.0.0.1"
+````
+
+````java
+Toml toml = new Toml().parse(getTomlFile());
+
+String title = toml.getString("title");
+Boolean enabled = toml.getBoolean("database.enabled");
+List<Long> ports = toml.getList("database.ports", Long.class);
+Toml servers = toml.getKeyGroup("servers");
+String cluster = servers.getString("cluster");
+String ip = servers.getString("alpha.ip");
+
 ````
 
 ### Defaults
 
-The constructor can be given a set of default values that will be used if necessary.
+The constructor can be given a set of default values that will be used as fallbacks.
 
 ````java
 Toml defaults = new Toml().parse("a = 2\nb = 3");
@@ -91,7 +143,7 @@ Long c = toml.getLong("c"); // returns null
 
 ### Table arrays
 
-Table arrays are mapped to `List`s with `Toml#getTables(String)`. Custom classes and nested table arrays are supported.
+Table arrays are mapped to `List<Toml>`s with `Toml#getTables(String)`. Custom classes and nested table arrays are supported.
 
 ````
 [[products]]
