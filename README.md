@@ -2,6 +2,8 @@
 
 toml4j is a [TOML 0.1.0](https://github.com/mojombo/toml) parser for Java that uses the [Parboiled](http://www.parboiled.org) PEG parser.
 
+[![Build Status](https://travis-ci.org/mwanji/toml4j.svg?branch=master)](https://travis-ci.org/mwanji/toml4j)
+
 ## Installation
 
 Add the following dependency to your POM:
