@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,15 +24,19 @@ class TomlParser extends BaseParser<Object> {
   }
 
   public Rule Toml() {
-    return Sequence(push(new TomlParser.Results()), push(((TomlParser.Results) peek()).values), OneOrMore(FirstOf(Table(), '\n', Comment(), Key())));
+    return Sequence(push(new TomlParser.Results()), push(((TomlParser.Results) peek()).values), OneOrMore(FirstOf(TableArray(), Table(), '\n', Comment(), Key())));
   }
 
   Rule Table() {
     return Sequence(Sequence(TableDelimiter(), TableName(), addTable((String) pop()), TableDelimiter(), Spacing()), checkTable(match()));
   }
 
+  Rule TableArray() {
+    return Sequence(Sequence(TableDelimiter(), TableDelimiter(), TableName(), addTableArray((String) pop()), TableDelimiter(), TableDelimiter(), Spacing()), checkTable(match()));
+  }
+
   boolean checkTable(String definition) {
-    String afterBracket = definition.substring(definition.indexOf(']') + 1);
+    String afterBracket = definition.substring(definition.lastIndexOf(']') + 1);
     for (char character : afterBracket.toCharArray()) {
       if (character == '#') {
         return true;
@@ -129,7 +134,6 @@ class TomlParser extends BaseParser<Object> {
 
   Rule IllegalCharacters() {
     return Sequence(ZeroOrMore(Whitespace()), OneOrMore(TestNot('#', NewLine()), ANY));
-    //return Sequence(ZeroOrMore(Whitespace()), TestNot('#', NewLine()), OneOrMore(ANY));
   }
 
   @SuppressNode
@@ -152,38 +156,12 @@ class TomlParser extends BaseParser<Object> {
     return Sequence('#', ZeroOrMore(TestNot(NewLine()), ANY), FirstOf(NewLine(), EOI));
   }
 
-  @SuppressWarnings("unchecked")
+  boolean addTableArray(String name) {
+    return addTable(name, true);
+  }
+
   boolean addTable(String name) {
-    String[] split = name.split("\\.");
-
-    while (getContext().getValueStack().size() > 2) {
-      drop();
-    }
-
-    Map<String, Object> newTable = (Map<String, Object>) getContext().getValueStack().peek();
-
-    if (!results().tables.add(name)) {
-      results().errors.append("Could not create key group ").append(name).append(": key group already exists!\n");
-
-      return true;
-    }
-
-    for (String splitKey : split) {
-      if (!newTable.containsKey(splitKey)) {
-        newTable.put(splitKey, new HashMap<String, Object>());
-      }
-      Object currentValue = newTable.get(splitKey);
-      if (!(currentValue instanceof Map)) {
-        results().errors.append("Could not create key group ").append(name).append(": key already has a value!\n");
-
-        return true;
-      }
-      newTable = (Map<String, Object>) currentValue;
-    }
-
-    push(newTable);
-
-    return true;
+    return addTable(name, false);
   }
 
   boolean addKey(String key, Object value) {
@@ -273,8 +251,59 @@ class TomlParser extends BaseParser<Object> {
   }
 
   @SuppressWarnings("unchecked")
-  void putValue(String name, Object value) {
+  private boolean addTable(String name, boolean array) {
+    String[] split = name.split("\\.");
+
+    while (getContext().getValueStack().size() > 2) {
+      drop();
+    }
+
+    Map<String, Object> newTable = (Map<String, Object>) getContext().getValueStack().peek();
+
+    boolean addedToTables = results().tables.add(name);
+    if (!addedToTables && !array) {
+      results().errors.append("Could not create table ").append(name).append(": table already exists!\n");
+
+      return true;
+    }
+
+    for (String splitKey : split) {
+      if (!newTable.containsKey(splitKey)) {
+        if (array) {
+          ArrayList<Map<String, Object>> newTableList = new ArrayList<Map<String, Object>>();
+          newTable.put(splitKey, newTableList);
+        } else {
+          newTable.put(splitKey, new HashMap<String, Object>());
+        }
+      }
+      Object currentValue = newTable.get(splitKey);
+      if ((array && !(currentValue instanceof List)) || (!array && !(currentValue instanceof Map))) {
+        results().errors.append("Could not create table ").append(name).append(": key already has a value!\n");
+
+        return true;
+      }
+
+      if (currentValue instanceof List) {
+        Map<String, Object> newTableListItem = new HashMap<String,Object>();
+        currentValue = ((List<Map<String, Object>>) currentValue).add(newTableListItem);
+        currentValue = newTableListItem;
+      }
+
+      newTable = (Map<String, Object>) currentValue;
+    }
+
+    push(newTable);
+
+    return true;
+  }
+
+  @SuppressWarnings("unchecked")
+  private void putValue(String name, Object value) {
     Map<String, Object> values = (Map<String, Object>) peek();
+    Object top = peek();
+    if (top instanceof List) {
+      values = ((List<Map<String, Object>>) top).get(((List<Map<String, Object>>) top).size() - 1);
+    }
     if (values.containsKey(name)) {
       results().errors.append("Key ").append(name).append(" already exists!\n");
       return;
@@ -282,7 +311,7 @@ class TomlParser extends BaseParser<Object> {
     values.put(name, value);
   }
 
-  TomlParser.Results results() {
+  private TomlParser.Results results() {
     return (Results) peek(getContext().getValueStack().size() - 1);
   }
 }

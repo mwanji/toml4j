@@ -1,0 +1,10 @@
+name="My Name"
+
+[primitives]
+  number=12
+  
+[[groupers]]
+  string="grouper 1"
+  
+[[groupers]]
+  string="grouper 2"

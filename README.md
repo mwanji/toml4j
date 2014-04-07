@@ -85,6 +85,30 @@ Long c = toml.getLong("c"); // returns null
 
 * Fail on invalid definitions
 
+## Coming in 0.2.0
+
+### Table arrays
+
+Table arrays are mapped to `List`s with `Toml#getTables(String)`. Custom classes are also supported.
+
+````
+[[products]]
+  name = "Hammer"
+  sku = 738594937
+
+[[products]]
+  name = "Nail"
+  sku = 284758393
+  color = "gray"
+````
+
+````java
+Toml toml = new Toml().parse(getTomlFile());
+
+List<Toml> tables = toml.getTables("products");
+tables.get(1).getLong("sku"); // returns 284758393
+````
+
 ## License
 
 toml4j is copyright of Moandji Ezana and is licensed under the [MIT License](http://www.opensource.org/licenses/mit-license.php)

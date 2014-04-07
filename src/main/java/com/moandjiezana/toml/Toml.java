@@ -1,9 +1,8 @@
 package com.moandjiezana.toml;
 
-import com.google.gson.Gson;
-
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +12,8 @@ import java.util.Scanner;
 import org.parboiled.Parboiled;
 import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.support.ParsingResult;
+
+import com.google.gson.Gson;
 
 /**
  *
@@ -84,6 +85,16 @@ public class Toml {
   @SuppressWarnings("unchecked")
   public Toml getTable(String key) {
     return new Toml((Map<String, Object>) get(key));
+  }
+
+  @SuppressWarnings("unchecked")
+  public List<Toml> getTables(String key) {
+    ArrayList<Toml> tables = new ArrayList<Toml>();
+    for (Map<String, Object> table : (List<Map<String, Object>>) get(key)) {
+      tables.add(new Toml(table));
+    }
+
+    return tables;
   }
 
   @SuppressWarnings("unchecked")

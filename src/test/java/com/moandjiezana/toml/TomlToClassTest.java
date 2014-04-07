@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import com.moandjiezana.toml.testutils.TableAsMap;
 import com.moandjiezana.toml.testutils.TomlPrimitives;
+import com.moandjiezana.toml.testutils.TomlTableArrays;
 import com.moandjiezana.toml.testutils.TomlTables;
 
 public class TomlToClassTest {
@@ -67,6 +68,18 @@ public class TomlToClassTest {
     TableAsMap tableAsMap = new Toml().parse("[group]\nkey=\"value\"").to(TableAsMap.class);
 
     assertEquals("value", tableAsMap.group.get("key"));
+  }
+
+  @Test
+  public void should_convert_table_array() throws Exception {
+    TomlTableArrays toml = new Toml().parse(file("should_convert_table_array_to_class.toml")).to(TomlTableArrays.class);
+
+    assertEquals(2, toml.groupers.size());
+    assertEquals("grouper 1", toml.groupers.get(0).string);
+    assertEquals("grouper 2", toml.groupers.get(1).string);
+
+    assertEquals("My Name", toml.name);
+    assertEquals(12, toml.primitives.number.intValue());
   }
 
   private File file(String fileName) {
