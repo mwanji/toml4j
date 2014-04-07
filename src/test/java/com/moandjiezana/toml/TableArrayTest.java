@@ -29,4 +29,31 @@ public class TableArrayTest {
     assertEquals(284758393L, products.get(2).getLong("sku").longValue());
     assertEquals("gray", products.get(2).getString("color"));
   }
+
+  @Test
+  public void should_parse_nested_table_arrays() throws Exception {
+    Toml toml = new Toml().parse(new File(getClass().getResource("fruit_table_array.toml").getFile()));
+
+    List<Toml> fruits = toml.getTables("fruit");
+
+    assertEquals(2, fruits.size());
+
+    Toml apple = fruits.get(0);
+    assertEquals("apple", apple.getString("name"));
+    assertEquals("red", apple.getTable("physical").getString("color"));
+    assertEquals("round", apple.getTable("physical").getString("shape"));
+    assertEquals(2, apple.getTables("variety").size());
+
+    Toml banana = fruits.get(1);
+    assertEquals("banana", banana.getString("name"));
+    assertEquals(1, banana.getTables("variety").size());
+    assertEquals("plantain", banana.getTables("variety").get(0).getString("name"));
+  }
+
+  @Test
+  public void should_create_array_ancestors_as_tables() throws Exception {
+    Toml toml = new Toml().parse("[[a.b.c]]\n id=3");
+
+    assertEquals(3, toml.getTable("a").getTable("b").getTables("c").get(0).getLong("id").intValue());
+  }
 }

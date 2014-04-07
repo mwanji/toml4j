@@ -89,7 +89,7 @@ Long c = toml.getLong("c"); // returns null
 
 ### Table arrays
 
-Table arrays are mapped to `List`s with `Toml#getTables(String)`. Custom classes are also supported.
+Table arrays are mapped to `List`s with `Toml#getTables(String)`. Custom classes and nested table arrays are supported.
 
 ````
 [[products]]

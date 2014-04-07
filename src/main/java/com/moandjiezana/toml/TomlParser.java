@@ -267,9 +267,11 @@ class TomlParser extends BaseParser<Object> {
       return true;
     }
 
-    for (String splitKey : split) {
+    for (int i = 0; i < split.length; i++) {
+      String splitKey = split[i];
+
       if (!newTable.containsKey(splitKey)) {
-        if (array) {
+        if (array && isLast(split, i)) {
           ArrayList<Map<String, Object>> newTableList = new ArrayList<Map<String, Object>>();
           newTable.put(splitKey, newTableList);
         } else {
@@ -277,16 +279,21 @@ class TomlParser extends BaseParser<Object> {
         }
       }
       Object currentValue = newTable.get(splitKey);
-      if ((array && !(currentValue instanceof List)) || (!array && !(currentValue instanceof Map))) {
+      if (!(currentValue instanceof List) && !(currentValue instanceof Map)) {
         results().errors.append("Could not create table ").append(name).append(": key already has a value!\n");
 
         return true;
       }
 
       if (currentValue instanceof List) {
-        Map<String, Object> newTableListItem = new HashMap<String,Object>();
-        currentValue = ((List<Map<String, Object>>) currentValue).add(newTableListItem);
-        currentValue = newTableListItem;
+        List<Map<String, Object>> currentList = (List<Map<String, Object>>) currentValue;
+        if (array && isLast(split, i)) {
+          Map<String, Object> newTableListItem = new HashMap<String,Object>();
+          currentList.add(newTableListItem);
+          currentValue = newTableListItem;
+        } else {
+          currentValue = currentList.get(currentList.size() - 1);
+        }
       }
 
       newTable = (Map<String, Object>) currentValue;
@@ -309,6 +316,10 @@ class TomlParser extends BaseParser<Object> {
       return;
     }
     values.put(name, value);
+  }
+
+  private boolean isLast(String[] array, int index) {
+    return index == array.length - 1;
   }
 
   private TomlParser.Results results() {
