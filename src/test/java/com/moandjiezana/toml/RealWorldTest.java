@@ -48,6 +48,7 @@ public class RealWorldTest {
     Toml betaServers = servers.getTable("beta");
     assertEquals("10.0.0.2", betaServers.getString("ip"));
     assertEquals("eqdc10", betaServers.getString("dc"));
+    assertEquals("中国", betaServers.getString("country"));
 
     Toml clients = toml.getTable("clients");
     assertEquals(asList(asList("gamma", "delta"), asList(1L, 2L)), clients.getList("data", String.class));
