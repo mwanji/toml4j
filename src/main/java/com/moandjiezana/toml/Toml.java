@@ -1,14 +1,19 @@
 package com.moandjiezana.toml;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 import org.parboiled.Parboiled;
 import org.parboiled.parserunners.RecoveringParseRunner;
@@ -53,25 +58,58 @@ public class Toml {
   }
 
   /**
-   * Populates the current Toml instance with values from tomlString.
+   * Populates the current Toml instance with values from file.
    *
    * @param file
    * @return this instance
    * @throws IllegalStateException If file contains invalid TOML
    */
   public Toml parse(File file) {
-    Scanner scanner = null;
     try {
-      scanner = new Scanner(file);
-
-      return parse(scanner.useDelimiter("\\Z").next());
+      return parse(new FileReader(file));
     } catch (FileNotFoundException e) {
       throw new RuntimeException(e);
-    } finally {
-      if (scanner != null) {
-        scanner.close();
-      }
     }
+  }
+
+  /**
+   * Populates the current Toml instance with values from inputStream.
+   *
+   * @param inputStream
+   * @return this instance
+   * @throws IllegalStateException If file contains invalid TOML
+   */
+  public Toml parse(InputStream inputStream) {
+    return parse(new InputStreamReader(inputStream));
+  }
+
+  /**
+   * Populates the current Toml instance with values from reader.
+   *
+   * @param reader
+   * @return this instance
+   * @throws IllegalStateException If file contains invalid TOML
+   */
+  public Toml parse(Reader reader) {
+    BufferedReader bufferedReader = null;
+    try {
+      bufferedReader = new BufferedReader(reader);
+
+      StringBuilder w = new StringBuilder();
+      String line = bufferedReader.readLine();
+      while (line != null) {
+        w.append(line).append('\n');
+        line = bufferedReader.readLine();
+      }
+      parse(w.toString());
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    } finally {
+      try {
+        bufferedReader.close();
+      } catch (IOException e) {}
+    }
+    return this;
   }
 
   /**

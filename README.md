@@ -29,7 +29,7 @@ MyClass myClass = toml.to(MyClass.class);
 
 ## Usage
 
-A `com.moandjiezana.toml.Toml` instance is populated by calling one of `parse(File)` or `parse(String)`.
+A `com.moandjiezana.toml.Toml` instance is populated by calling one of `parse(File)`, `parse(InputStream)`, `parse(Reader)` or `parse(String)`.
 
 ````java
 Toml toml = new Toml().parse("a=1");
