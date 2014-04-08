@@ -8,8 +8,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
+import org.fest.reflect.core.Reflection;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -130,10 +133,32 @@ public class TomlTest {
   }
 
   @Test
+  public void should_return_empty_list_if_no_value_for_key() throws Exception {
+    Toml toml = new Toml().parse("");
+
+    assertTrue(toml.getList("a", String.class).isEmpty());
+  }
+
+  @Test
   public void should_return_null_when_no_value_for_multi_key() throws Exception {
     Toml toml = new Toml().parse("");
 
     assertNull(toml.getString("group.key"));
+  }
+
+  @Test
+  public void should_return_empty_toml_when_no_value_for_table() throws Exception {
+    Toml toml = new Toml().parse("[a]").getTable("b");
+
+    assertTrue(Reflection.field("values").ofType(Map.class).in(toml).get().isEmpty());
+    assertNull(toml.getString("x"));
+  }
+
+  @Test
+  public void should_return_empty_list_when_no_value_for_table_array() throws Exception {
+    List<Toml> tomls = new Toml().parse("[a]").getTables("b");
+
+    assertTrue(tomls.isEmpty());
   }
 
   @Test
