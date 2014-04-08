@@ -165,5 +165,5 @@ tables.get(1).getLong("sku"); // returns 284758393
 
 ## License
 
-toml4j is copyright of Moandji Ezana and is licensed under the [MIT License](http://www.opensource.org/licenses/mit-license.php)
+toml4j is copyright of Moandji Ezana and is licensed under the [MIT License](LICENSE)
 
