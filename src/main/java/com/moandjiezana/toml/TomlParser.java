@@ -43,7 +43,7 @@ class TomlParser extends BaseParser<Object> {
       }
 
       if (!Character.isWhitespace(character)) {
-        results().errors.append("Invalid key group definition: ").append(definition).append(". You may have forgotten a #");
+        results().errors.append("Invalid key group definition: ").append(definition).append(". You may have forgotten a #.\n");
       }
     }
     return true;
