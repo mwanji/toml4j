@@ -13,7 +13,7 @@ public class TableArrayTest {
 
   @Test
   public void should_parse_table_array() throws Exception {
-    Toml toml = new Toml().parse(new File(getClass().getResource("products_table_array.toml").getFile()));
+    Toml toml = new Toml().parse(file("products_table_array"));
 
     List<Toml> products = toml.getTables("products");
 
@@ -32,7 +32,7 @@ public class TableArrayTest {
 
   @Test
   public void should_parse_nested_table_arrays() throws Exception {
-    Toml toml = new Toml().parse(new File(getClass().getResource("fruit_table_array.toml").getFile()));
+    Toml toml = new Toml().parse(file("fruit_table_array"));
 
     List<Toml> fruits = toml.getTables("fruit");
 
@@ -56,4 +56,23 @@ public class TableArrayTest {
 
     assertEquals(3, toml.getTable("a").getTable("b").getTables("c").get(0).getLong("id").intValue());
   }
+
+  @Test
+  public void should_navigate_array_with_compound_key() throws Exception {
+    Toml toml = new Toml().parse(file("fruit_table_array"));
+
+    List<Toml> appleVarieties = toml.getTables("fruit[0].variety");
+    Toml appleVariety = toml.getTable("fruit[0].variety[1]");
+    String bananaVariety = toml.getString("fruit[1].variety[0].name");
+
+    assertEquals(2, appleVarieties.size());
+    assertEquals("red delicious", appleVarieties.get(0).getString("name"));
+    assertEquals("granny smith", appleVariety.getString("name"));
+    assertEquals("plantain", bananaVariety);
+  }
+
+  private File file(String fileName) {
+    return new File(getClass().getResource(fileName + ".toml").getFile());
+  }
+
 }

@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.parboiled.Parboiled;
 import org.parboiled.parserunners.RecoveringParseRunner;
@@ -44,21 +46,23 @@ import com.google.gson.Gson;
  */
 public class Toml {
 
+  private static Pattern ARRAY_INDEX_PATTERN = Pattern.compile("(.*)\\[(\\d+)\\]");
   private Map<String, Object> values = new HashMap<String, Object>();
   private final Toml defaults;
+  private final Gson gson = new Gson();
 
   /**
    * Creates Toml instance with no defaults.
    */
   public Toml() {
-    this((Toml) null);
+    this(null);
   }
 
   /**
    * @param defaults fallback values used when the requested key or table is not present.
    */
   public Toml(Toml defaults) {
-    this.defaults = defaults;
+    this(defaults, new HashMap<String, Object>());
   }
 
   /**
@@ -177,7 +181,7 @@ public class Toml {
    */
   @SuppressWarnings("unchecked")
   public Toml getTable(String key) {
-    return new Toml((Map<String, Object>) get(key));
+    return new Toml(null, (Map<String, Object>) get(key));
   }
 
   /**
@@ -193,8 +197,9 @@ public class Toml {
     }
 
     ArrayList<Toml> tables = new ArrayList<Toml>();
+
     for (Map<String, Object> table : tableArray) {
-      tables.add(new Toml(table));
+      tables.add(new Toml(null, table));
     }
 
     return tables;
@@ -219,6 +224,7 @@ public class Toml {
    */
   public <T> T to(Class<T> targetClass) {
     HashMap<String, Object> valuesCopy = new HashMap<String, Object>(values);
+
     if (defaults != null) {
       for (Map.Entry<String, Object> entry : defaults.values.entrySet()) {
         if (!valuesCopy.containsKey(entry.getKey())) {
@@ -226,7 +232,7 @@ public class Toml {
         }
       }
     }
-    Gson gson = new Gson();
+
     String json = gson.toJson(valuesCopy);
     return gson.fromJson(json, targetClass);
   }
@@ -235,32 +241,32 @@ public class Toml {
   private Object get(String key) {
     String[] split = key.split("\\.");
     Object current = new HashMap<String, Object>(values);
-    Object currentDefaults = defaults != null ? defaults.values : null;
+
     for (String splitKey : split) {
+      Matcher matcher = ARRAY_INDEX_PATTERN.matcher(splitKey);
+      int index = -1;
+
+      if (matcher.find()) {
+        splitKey = matcher.group(1);
+        index = Integer.parseInt(matcher.group(2), 10);
+      }
+
       current = ((Map<String, Object>) current).get(splitKey);
-      if (currentDefaults != null) {
-        currentDefaults = ((Map<String, Object>) currentDefaults).get(splitKey);
-        if (current instanceof Map && currentDefaults instanceof Map) {
-          for (Map.Entry<String, Object> entry : ((Map<String, Object>) currentDefaults).entrySet()) {
-            if (!((Map<String, Object>) current).containsKey(entry.getKey())) {
-              ((Map<String, Object>) current).put(entry.getKey(), entry.getValue());
-            }
-          }
-        }
+
+      if (index > -1 && current != null) {
+        current = ((List<?>) current).get(index);
       }
-      if (current == null && currentDefaults != null) {
-        current = currentDefaults;
-      }
+
       if (current == null) {
-        return null;
+        return defaults != null ? defaults.get(key) : null;
       }
     }
 
     return current;
   }
 
-  private Toml(Map<String, Object> values) {
+  private Toml(Toml defaults, Map<String, Object> values) {
     this.values = values != null ? values : Collections.<String, Object>emptyMap();
-    this.defaults = null;
+    this.defaults = defaults;
   }
 }

@@ -1,8 +1,11 @@
 package com.moandjiezana.toml;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,7 +16,7 @@ public class TomlDefaultsTest {
 
   @Before
   public void before() {
-    defaultToml = new Toml().parse("a = \"a\"\n[group]\na=\"a\"");
+    defaultToml = new Toml().parse("a = \"a\"\n [group]\n a=\"a\"\n [[array]]\n b=1 [[array]]\n b=2");
   }
 
   @Test
@@ -52,10 +55,22 @@ public class TomlDefaultsTest {
   }
 
   @Test
-  public void should_fall_back_to_key_within_table() throws Exception {
-    Toml toml = new Toml(defaultToml).parse("[group]\nb=1");
+  public void should_fall_back_to_table_array() throws Exception {
+    Toml toml = new Toml(defaultToml).parse("");
+
+    assertThat(toml.getTables("array"), hasSize(2));
+    assertThat(toml.getLong("array[1].b"), Matchers.equalTo(2L));
+  }
+
+  @Test
+  public void should_perform_shallow_merge() throws Exception {
+    Toml toml = new Toml(defaultToml).parse("[group]\nb=1\n [[array]]\n b=0");
+    Toml toml2 = new Toml(defaultToml).parse("[[array]]\n b=1 [[array]]\n b=2 [[array]]\n b=3");
 
     assertEquals(1, toml.getTable("group").getLong("b").intValue());
-    assertEquals("a", toml.getTable("group").getString("a"));
+    assertNull(toml.getTable("group").getString("a"));
+    assertThat(toml.getTables("array"), hasSize(1));
+    assertEquals(0, toml.getLong("array[0].b").intValue());
+    assertThat(toml2.getTables("array"), hasSize(3));
   }
 }
