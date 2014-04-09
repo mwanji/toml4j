@@ -8,12 +8,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.parboiled.Parboiled;
 import org.parboiled.parserunners.RecoveringParseRunner;
@@ -201,7 +205,15 @@ public class Toml {
    * The target's field names must match keys or tables.
    * Keys not present in targetClass will be ignored.</p>
    *
-   * <p>Tables are recursively converted to custom classes.</p>
+   * <p>Tables are recursively converted to custom classes or to {@link Map Map&lt;String, Object&gt;}.</p>
+   *
+   * <p>In addition to straight-forward conversion of TOML primitives, the following are also available:</p>
+   *
+   * <ul>
+   *  <li>TOML string to {@link Character}, {@link URL} or enum</li>
+   *  <li>TOML number to any primitive (or wrapper), {@link BigInteger} or {@link BigDecimal}</li>
+   *  <li>TOML array to {@link Set}</li>
+   * </ul>
    *
    * @param targetClass
    */

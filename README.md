@@ -47,6 +47,14 @@ Any keys not found in both the TOML and the class are ignored.
 
 Key groups can be mapped to other custom classes. Fields may be private.
 
+All TOML primitives can be mapped, as well as a number of Java-specific types:
+
+* A TOML Number can be converted to any primitive type (or the wrapper equivalent), `BigInteger` or `BigDecimal`
+* A single-letter TOML string can be converted to a `Character`
+* A TOML string can be converted to an enum or a `java.net.URL`
+* A TOML array can be converted to a `Set`
+* A TOML table can be converted to a `Map<String, Object>`
+
 ````
 name = "Mwanji Ezana"
 

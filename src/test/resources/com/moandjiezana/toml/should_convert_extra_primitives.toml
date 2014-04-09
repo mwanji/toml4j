@@ -1,0 +1,10 @@
+bigDecimal=1.2
+bigInteger=5
+aShort=3
+anInteger=7
+character="u"
+elementType="CONSTRUCTOR"
+url="http://www.example.com"
+set=["a", "b"]
+[group]
+  key="value"

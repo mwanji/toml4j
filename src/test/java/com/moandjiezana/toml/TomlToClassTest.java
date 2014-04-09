@@ -4,12 +4,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.lang.annotation.ElementType;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.TimeZone;
 
 import org.junit.Test;
 
-import com.moandjiezana.toml.testutils.TableAsMap;
+import com.moandjiezana.toml.testutils.ExtraPrimitives;
 import com.moandjiezana.toml.testutils.TomlPrimitives;
 import com.moandjiezana.toml.testutils.TomlTableArrays;
 import com.moandjiezana.toml.testutils.TomlTables;
@@ -17,7 +23,7 @@ import com.moandjiezana.toml.testutils.TomlTables;
 public class TomlToClassTest {
 
   @Test
-  public void should_convert_primitive_values() throws Exception {
+  public void should_convert_toml_primitives() throws Exception {
     Toml toml = new Toml().parse(file("should_convert_primitive_values.toml"));
 
     TomlPrimitives values = toml.to(TomlPrimitives.class);
@@ -32,6 +38,21 @@ public class TomlToClassTest {
     assertEquals(2.1, values.decimal, 0);
     assertTrue(values.bool);
     assertEquals(calendar.getTime(), values.date);
+  }
+
+  @Test
+  public void should_convert_to_non_toml_primitives() throws Exception {
+    ExtraPrimitives extraPrimitives = new Toml().parse(file("should_convert_extra_primitives.toml")).to(ExtraPrimitives.class);
+
+    assertEquals("Did not convert table to map", "value", extraPrimitives.group.get("key"));
+    assertEquals("Did not convert double to BigDecimal", BigDecimal.valueOf(1.2), extraPrimitives.bigDecimal);
+    assertEquals("Did not convert integer to BigInteger", BigInteger.valueOf(5), extraPrimitives.bigInteger);
+    assertEquals("Did not convert integer to short", Short.parseShort("3"), extraPrimitives.aShort);
+    assertEquals("Did not convert integer to Integer", Integer.valueOf(7), extraPrimitives.anInteger);
+    assertEquals("Did not convert string to Character", Character.valueOf('u'), extraPrimitives.character);
+    assertEquals("Did not convert string to URL", new URL("http://example.com"), extraPrimitives.url);
+    assertEquals("Did not convert list to Set", new HashSet<String>(Arrays.asList("a", "b")), extraPrimitives.set);
+    assertEquals("Did not convert string to enum", ElementType.CONSTRUCTOR, extraPrimitives.elementType);
   }
 
   @Test
@@ -61,13 +82,6 @@ public class TomlToClassTest {
     TomlPrimitives tomlPrimitives = new Toml().parse("a=1\nstring=\"s\"").to(TomlPrimitives.class);
 
     assertEquals("s", tomlPrimitives.string);
-  }
-
-  @Test
-  public void should_convert_table_as_map() throws Exception {
-    TableAsMap tableAsMap = new Toml().parse("[group]\nkey=\"value\"").to(TableAsMap.class);
-
-    assertEquals("value", tableAsMap.group.get("key"));
   }
 
   @Test
