@@ -7,6 +7,7 @@ import java.io.File;
 import java.lang.annotation.ElementType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -16,6 +17,8 @@ import java.util.TimeZone;
 import org.junit.Test;
 
 import com.moandjiezana.toml.testutils.ExtraPrimitives;
+import com.moandjiezana.toml.testutils.FruitArray;
+import com.moandjiezana.toml.testutils.FruitArray.Fruit;
 import com.moandjiezana.toml.testutils.TomlPrimitives;
 import com.moandjiezana.toml.testutils.TomlTableArrays;
 import com.moandjiezana.toml.testutils.TomlTables;
@@ -50,7 +53,8 @@ public class TomlToClassTest {
     assertEquals("Did not convert integer to short", Short.parseShort("3"), extraPrimitives.aShort);
     assertEquals("Did not convert integer to Integer", Integer.valueOf(7), extraPrimitives.anInteger);
     assertEquals("Did not convert string to Character", Character.valueOf('u'), extraPrimitives.character);
-    assertEquals("Did not convert string to URL", new URL("http://example.com"), extraPrimitives.url);
+    assertEquals("Did not convert string to URL", new URL("http://www.example.com").toString(), extraPrimitives.url.toString());
+    assertEquals("Did not convert string to URI", new URI("http://www.test.com").toString(), extraPrimitives.uri.toString());
     assertEquals("Did not convert list to Set", new HashSet<String>(Arrays.asList("a", "b")), extraPrimitives.set);
     assertEquals("Did not convert string to enum", ElementType.CONSTRUCTOR, extraPrimitives.elementType);
   }
@@ -94,6 +98,25 @@ public class TomlToClassTest {
 
     assertEquals("My Name", toml.name);
     assertEquals(12, toml.primitives.number.intValue());
+  }
+
+  @Test
+  public void should_convert_fruit_table_array() throws Exception {
+    FruitArray fruitArray = new Toml().parse(file("fruit_table_array.toml")).to(FruitArray.class);
+
+    assertEquals(2, fruitArray.fruit.size());
+    Fruit apple = fruitArray.fruit.get(0);
+    assertEquals("apple", apple.name);
+    assertEquals("red", apple.physical.color);
+    assertEquals("round", apple.physical.shape);
+    assertEquals(2, apple.variety.size());
+    assertEquals("red delicious", apple.variety.get(0).get("name"));
+    assertEquals("granny smith", apple.variety.get(1).get("name"));
+
+    Fruit banana = fruitArray.fruit.get(1);
+    assertEquals("banana", banana.name);
+    assertEquals(1, banana.variety.size());
+    assertEquals("plantain", banana.variety.get(0).get("name"));
   }
 
   private File file(String fileName) {
