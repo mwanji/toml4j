@@ -20,4 +20,5 @@ public class ExtraPrimitives {
   public URL url;
   public URI uri;
   public Set<String> set;
+  public String[] strings;
 }

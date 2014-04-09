@@ -7,5 +7,6 @@ elementType="CONSTRUCTOR"
 url="http://www.example.com"
 uri="http://www.test.com"
 set=["a", "b"]
+strings=["c", "d"]
 [group]
   key="value"

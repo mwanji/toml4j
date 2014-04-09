@@ -1,6 +1,9 @@
 package com.moandjiezana.toml;
 
+import static org.hamcrest.Matchers.arrayContaining;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -9,9 +12,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.TimeZone;
 
 import org.junit.Test;
@@ -55,7 +56,8 @@ public class TomlToClassTest {
     assertEquals("Did not convert string to Character", Character.valueOf('u'), extraPrimitives.character);
     assertEquals("Did not convert string to URL", new URL("http://www.example.com").toString(), extraPrimitives.url.toString());
     assertEquals("Did not convert string to URI", new URI("http://www.test.com").toString(), extraPrimitives.uri.toString());
-    assertEquals("Did not convert list to Set", new HashSet<String>(Arrays.asList("a", "b")), extraPrimitives.set);
+    assertThat(extraPrimitives.set, contains("a", "b"));
+    assertThat(extraPrimitives.strings, arrayContaining("c", "d"));
     assertEquals("Did not convert string to enum", ElementType.CONSTRUCTOR, extraPrimitives.elementType);
   }
 
