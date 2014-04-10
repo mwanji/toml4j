@@ -273,4 +273,10 @@ public class TomlTest {
   public void should_fail_when_illegal_characters_after_table() throws Exception {
     new Toml().parse("[error]   if you didn't catch this, your parser is broken");
   }
+
+  @Ignore
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_when_illegal_characters_after_key() throws Exception {
+    new Toml().parse("number = 3.14  pi");
+  }
 }

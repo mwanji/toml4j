@@ -3,6 +3,7 @@ package com.moandjiezana.toml;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -70,6 +71,19 @@ public class TomlToClassTest {
 
     assertEquals("value1", tomlTables.group1.string);
     assertEquals("value2", tomlTables.group2.string);
+  }
+
+  @Test
+  public void should_convert_tables_with_defaults() throws Exception {
+    Toml defaultToml = new Toml().parse("[group2]\n string=\"defaultValue2\"\n number=2\n [group3]\n string=\"defaultValue3\"");
+    Toml toml = new Toml(defaultToml).parse(file("should_convert_tables.toml"));
+
+    TomlTables tomlTables = toml.to(TomlTables.class);
+
+    assertEquals("value1", tomlTables.group1.string);
+    assertEquals("value2", tomlTables.group2.string);
+    assertNull(tomlTables.group2.number);
+    assertEquals("defaultValue3", tomlTables.group3.string);
   }
 
   @Test
