@@ -114,7 +114,7 @@ class TomlParser extends BaseParser<Object> {
   }
 
   Rule AnyCharacter() {
-    return Sequence(ANY, pushCharacter(match()));
+    return Sequence(TestNot(NewLine()), ANY, pushCharacter(match()));
   }
 
   @SuppressNode

@@ -26,6 +26,18 @@ public class TomlTest {
   }
 
   @Test
+  public void should_get_empty_string() {
+      Toml toml = new Toml().parse("a = \"\"");
+      assertEquals("", toml.getString("a"));
+  }
+
+  @Test
+  public void should_get_empty_string_with_trailing_new_line() {
+      Toml toml = new Toml().parse("a = \"\"\n");
+      assertEquals("", toml.getString("a"));
+  }
+
+  @Test
   public void should_get_number() throws Exception {
     Toml toml = new Toml().parse("b = 1001");
 
@@ -226,7 +238,7 @@ public class TomlTest {
 
   @Test
   public void should_support_unicode_characters_in_strings() throws Exception {
-    Toml toml = new Toml().parse("key=\"\\u00B1\"");
+    Toml toml = new Toml().parse("key=\"\\u00B1\"\n");
 
     assertEquals("±", toml.getString("key"));
   }
