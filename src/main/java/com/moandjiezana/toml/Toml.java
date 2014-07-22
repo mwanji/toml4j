@@ -26,6 +26,7 @@ import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.support.ParsingResult;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 
 /**
  * <p>Provides access to the keys and tables in a TOML data source.</p>
@@ -46,10 +47,11 @@ import com.google.gson.Gson;
  */
 public class Toml {
 
-  private static Pattern ARRAY_INDEX_PATTERN = Pattern.compile("(.*)\\[(\\d+)\\]");
+  private static final Gson DEFAULT_GSON = new Gson();
+  private static final Pattern ARRAY_INDEX_PATTERN = Pattern.compile("(.*)\\[(\\d+)\\]");
+
   private Map<String, Object> values = new HashMap<String, Object>();
   private final Toml defaults;
-  private final Gson gson = new Gson();
 
   /**
    * Creates Toml instance with no defaults.
@@ -223,6 +225,13 @@ public class Toml {
    * @param targetClass
    */
   public <T> T to(Class<T> targetClass) {
+    return to(targetClass, DEFAULT_GSON);
+  }
+
+  /*
+   * Should not be used directly, except for testing purposes
+   */
+  <T> T to(Class<T> targetClass, Gson gson) {
     HashMap<String, Object> valuesCopy = new HashMap<String, Object>(values);
 
     if (defaults != null) {
@@ -233,7 +242,12 @@ public class Toml {
       }
     }
 
-    String json = gson.toJson(valuesCopy);
+    JsonElement json = gson.toJsonTree(valuesCopy);
+
+    if (targetClass == JsonElement.class) {
+      return targetClass.cast(json);
+    }
+
     return gson.fromJson(json, targetClass);
   }
 
