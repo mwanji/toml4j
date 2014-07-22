@@ -153,7 +153,7 @@ class TomlParser extends BaseParser<Object> {
 
   @SuppressNode
   Rule Comment() {
-    return Sequence('#', ZeroOrMore(TestNot(NewLine()), ANY), FirstOf(NewLine(), EOI));
+    return Sequence(ZeroOrMore(Whitespace()), '#', ZeroOrMore(TestNot(NewLine()), ANY), FirstOf(NewLine(), EOI));
   }
 
   boolean addTableArray(String name) {
@@ -178,7 +178,12 @@ class TomlParser extends BaseParser<Object> {
   boolean pushList() {
     ArrayList<Object> list = new ArrayList<Object>();
     while (peek() != ArrayList.class) {
-      list.add(0, pop());
+      Object listItem = pop();
+      if (list.isEmpty() || list.get(0).getClass().isAssignableFrom(listItem.getClass()) || listItem.getClass().isAssignableFrom(list.get(0).getClass())) {
+        list.add(0, listItem);
+      } else {
+        results().errors.append("Attempt to create mixed array!");
+      }
     }
 
     poke(list);
