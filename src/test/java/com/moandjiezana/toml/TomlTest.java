@@ -261,7 +261,7 @@ public class TomlTest {
   }
 
   @Test(expected = IllegalStateException.class)
-  public void should_fail_on_invalid_date() throws Exception {
+  public void should_fail_on_non_existant_date() throws Exception {
     new Toml().parse("d = 2012-13-01T15:00:00Z");
   }
 
@@ -278,6 +278,11 @@ public class TomlTest {
   @Test(expected = IllegalStateException.class)
   public void should_fail_when_table_defined_twice() throws Exception {
     new Toml().parse("[a]\nb=1\n[a]\nc=2");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_invalid_number() throws Exception {
+    new Toml().parse("a = 200-");
   }
 
   @Ignore
