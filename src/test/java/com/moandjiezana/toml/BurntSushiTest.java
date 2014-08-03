@@ -109,6 +109,11 @@ public class BurntSushiTest {
     runInvalidTest("array-mixed-types-ints-and-floats");
   }
 
+  @Test
+  public void datetime_malformed_no_leads() throws Exception {
+    runInvalidTest("datetime-malformed-no-leads");
+  }
+
   @After
   public void after() throws IOException {
     inputToml.close();
