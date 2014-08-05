@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -13,7 +14,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.fest.reflect.core.Reflection;
-import org.junit.Ignore;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 public class TomlTest {
@@ -52,10 +53,24 @@ public class TomlTest {
   }
 
   @Test
-  public void should_get_list() throws Exception {
+  public void should_get_array() throws Exception {
     Toml toml = new Toml().parse("list = [\"a\", \"b\", \"c\"]");
 
     assertEquals(asList("a", "b", "c"), toml.getList("list", String.class));
+  }
+
+  @Test
+  public void should_allow_multiline_array() throws Exception {
+    Toml toml = new Toml().parse(file("should_allow_multiline_array"));
+
+    assertEquals(asList("a", "b", "c"), toml.getList("a", String.class));
+  }
+
+  @Test
+  public void should_get_nested_arrays() throws Exception {
+    Toml clients = new Toml().parse("data = [ [\"gamma\", \"delta\"], [1, 2] ] # just an update to make sure parsers support it");
+
+    assertEquals(asList(asList("gamma", "delta"), asList(1L, 2L)), clients.getList("data", String.class));
   }
 
   @Test
@@ -230,6 +245,22 @@ public class TomlTest {
   }
 
   @Test
+  public void should_allow_comment_after_values() throws Exception {
+    Toml toml = new Toml().parse(new File(getClass().getResource("should_allow_comment_after_values.toml").getFile()));
+
+    assertEquals(1, toml.getLong("a").intValue());
+    assertEquals(1.1, toml.getDouble("b").doubleValue(), 0);
+    assertEquals("abc", toml.getString("c"));
+    Calendar cal = Calendar.getInstance();
+    cal.set(2014, Calendar.AUGUST, 4, 13, 47, 0);
+    cal.set(Calendar.MILLISECOND, 0);
+    cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+    assertEquals(cal.getTime(), toml.getDate("d"));
+    assertThat(toml.getList("e", String.class), Matchers.contains("a", "b"));
+    assertTrue(toml.getBoolean("f"));
+  }
+
+  @Test
   public void should_support_special_characters_in_strings() {
     Toml toml = new Toml().parse(new File(getClass().getResource("should_support_special_characters_in_strings.toml").getFile()));
 
@@ -238,9 +269,9 @@ public class TomlTest {
 
   @Test
   public void should_support_unicode_characters_in_strings() throws Exception {
-    Toml toml = new Toml().parse("key=\"\\u00B1\"\n");
+    Toml toml = new Toml().parse(new File(getClass().getResource("should_support_special_characters_in_strings.toml").getFile()));
 
-    assertEquals("±", toml.getString("key"));
+    assertEquals("more or less ±", toml.getString("unicode_key"));
   }
 
   @Test(expected = IllegalStateException.class)
@@ -285,15 +316,17 @@ public class TomlTest {
     new Toml().parse("a = 200-");
   }
 
-  @Ignore
   @Test(expected = IllegalStateException.class)
   public void should_fail_when_illegal_characters_after_table() throws Exception {
     new Toml().parse("[error]   if you didn't catch this, your parser is broken");
   }
 
-  @Ignore
   @Test(expected = IllegalStateException.class)
   public void should_fail_when_illegal_characters_after_key() throws Exception {
     new Toml().parse("number = 3.14  pi");
+  }
+
+  private File file(String file) {
+    return new File(getClass().getResource(file + ".toml").getFile());
   }
 }

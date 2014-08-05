@@ -1,1 +1,2 @@
 key = "\" \t \n \r \\ \/ \b \f"
+unicode_key = "more or less \u00B1"

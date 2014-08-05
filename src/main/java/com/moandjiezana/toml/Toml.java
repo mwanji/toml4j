@@ -135,12 +135,13 @@ public class Toml {
 //    ParsingResult<Object> parsingResult = new ReportingParseRunner<Object>(parser.Toml()).run(tomlString);
 //    System.out.println(ParseTreeUtils.printNodeTree(parsingResult));
 
-    TomlParser.Results results = (TomlParser.Results) result.valueStack.peek(result.valueStack.size() - 1);
+//    TomlParser.Results results = (TomlParser.Results) result.valueStack.peek(result.valueStack.size() - 1);
+    Results results = new RegexParser().run(tomlString);
     if (results.errors.length() > 0) {
       throw new IllegalStateException(results.errors.toString());
     }
 
-    this.values = results.values;
+    this.values = results.consume();
 
     return this;
   }
