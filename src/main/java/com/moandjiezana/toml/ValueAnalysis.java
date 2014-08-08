@@ -16,12 +16,13 @@ class ValueAnalysis {
   private static final Pattern DATE_REGEX = Pattern.compile("(\\d{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]Z)(.*)");
   private static final Pattern LIST_REGEX = Pattern.compile("(\\[(.*)\\])(.*)");
   private static final Pattern UNICODE_REGEX = Pattern.compile("\\\\u(.*)");
+  private static final Pattern RESERVED_CHARACTER_REGEX = Pattern.compile("\\\\[^bfntr\"/\\\\]");
 
   private final String rawValue;
   private Matcher chosenMatcher;
 
   public ValueAnalysis(String value) {
-    this.rawValue = value;
+    this.rawValue = value.trim();
   }
 
   public Object getValue() {
@@ -30,7 +31,7 @@ class ValueAnalysis {
 
   private Object convert(String value) {
     if (isString(value)) {
-      return convertString(chosenMatcher.group(1));
+      return convertString(value);
     } else if (isInteger(value)) {
       return Long.valueOf(chosenMatcher.group(1));
     } else if (isFloat(value)) {
@@ -67,15 +68,7 @@ class ValueAnalysis {
   }
 
   private boolean isString(String value) {
-    Matcher matcher = STRING_REGEX.matcher(value);
-    if (matcher.matches()) {
-      if (isComment(matcher.group(2))) {
-        chosenMatcher = matcher;
-        return true;
-      }
-    }
-
-    return false;
+    return value.startsWith("\"");
   }
 
   private boolean isFloat(String value) {
@@ -203,13 +196,53 @@ class ValueAnalysis {
   }
 
   private Object convertString(String value) {
-    Matcher matcher = UNICODE_REGEX.matcher(value);
+    int stringTerminator = -1;
+    int startOfComment = -1;
+    char[] chars = value.toCharArray();
 
-    while (matcher.find()) {
-      value = value.replace(matcher.group(), new String(Character.toChars(Integer.parseInt(matcher.group().substring(2), 16))));
+    for (int i = 1; i < chars.length; i++) {
+      char ch = chars[i];
+      if (ch == '"' && chars[i - 1] != '\\') {
+        stringTerminator = i;
+        break;
+      }
     }
 
-    value = value.replace("\\n", "\n")
+    if (stringTerminator == -1) {
+      return INVALID;
+    }
+
+    value = value.substring(1, stringTerminator);
+    value = replaceUnicodeCharacters(value);
+
+    chars = value.toCharArray();
+    for (int i = 0; i < chars.length - 1; i++) {
+      char ch = chars[i];
+      char next = chars[i + 1];
+
+      if (ch == '\\' && next == '\\') {
+        i++;
+      } else if (ch == '\\' && !(next == 'b' || next == 'f' || next == 'n' || next == 't' || next == 'r' || next == '"' || next == '/' || next == '\\')) {
+        return INVALID;
+      }
+    }
+
+    value = replaceSpecialCharacters(value);
+
+    return value;
+  }
+
+  private String replaceUnicodeCharacters(String value) {
+    Matcher unicodeMatcher = UNICODE_REGEX.matcher(value);
+
+    while (unicodeMatcher.find()) {
+      value = value.replace(unicodeMatcher.group(), new String(Character.toChars(Integer.parseInt(unicodeMatcher.group(1), 16))));
+    }
+    return value;
+  }
+
+  private String replaceSpecialCharacters(String value) {
+    return value.replace("\\n", "\n")
       .replace("\\\"", "\"")
       .replace("\\t", "\t")
       .replace("\\r", "\r")
@@ -217,13 +250,5 @@ class ValueAnalysis {
       .replace("\\/", "/")
       .replace("\\b", "\b")
       .replace("\\f", "\f");
-
-    if (value.contains("\\")) {
-//      results.errors.append(sc + " is a reserved special character and cannot be used!\n");
-      return INVALID;
-    }
-
-    return value;
   }
-
 }

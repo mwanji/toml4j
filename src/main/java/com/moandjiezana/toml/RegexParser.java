@@ -72,14 +72,15 @@ public class RegexParser {
       if (!multiline && MULTILINE_ARRAY_REGEX.matcher(pair[1].trim()).matches()) {
         multiline = true;
         key = pair[0].trim();
-        multilineBuilder.append(pair[1].trim());
+        multilineBuilder.append(removeComment(pair[1]));
         continue;
       }
 
 
       if (multiline) {
-        multilineBuilder.append(line);
-        if (MULTILINE_ARRAY_REGEX_END.matcher(line).matches()) {
+        String lineWithoutComment = removeComment(line);
+        multilineBuilder.append(lineWithoutComment);
+        if (MULTILINE_ARRAY_REGEX_END.matcher(lineWithoutComment).matches()) {
           multiline = false;
           value = multilineBuilder.toString();
           multilineBuilder.delete(0, multilineBuilder.length() - 1);
@@ -96,7 +97,7 @@ public class RegexParser {
         continue;
       }
 
-      ValueAnalysis lineAnalysis = new ValueAnalysis(value.trim());
+      ValueAnalysis lineAnalysis = new ValueAnalysis(value);
 
       Object convertedValue = lineAnalysis.getValue();
 
@@ -143,4 +144,22 @@ public class RegexParser {
 
     return false;
   }
+
+  private String removeComment(String line) {
+    line = line.trim();
+    if (line.startsWith("\"")) {
+      int startOfComment = line.indexOf('#', line.lastIndexOf('"'));
+      if (startOfComment > -1) {
+        return line.substring(0, startOfComment - 1).trim();
+      }
+    } else {
+      int startOfComment = line.indexOf('#');
+      if (startOfComment > -1) {
+        return line.substring(0, startOfComment - 1).trim();
+      }
+    }
+
+    return line;
+  }
+
 }
