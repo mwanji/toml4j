@@ -4,6 +4,8 @@ toml4j is a [TOML 0.2.0](https://github.com/mojombo/toml/tree/v0.2.0) parser for
 
 [![Build Status](https://travis-ci.org/mwanji/toml4j.svg?branch=master)](https://travis-ci.org/mwanji/toml4j) [![Coverage Status](https://coveralls.io/repos/mwanji/toml4j/badge.png)](https://coveralls.io/r/mwanji/toml4j)
 
+For the bleeding-edge version integrating the latest specs, see the [work-in-progress branch](https://github.com/mwanji/toml4j/tree/wip).
+
 ## Installation
 
 Add the following dependency to your POM (or equivalent for other dependency managers):
