@@ -6,17 +6,19 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.parboiled.Parboiled;
+import org.parboiled.parserunners.ReportingParseRunner;
+import org.parboiled.support.ParsingResult;
+
 class ValueAnalysis {
   static final Object INVALID = new Object();
+  private static final List<Object> INVALID_ARRAY = new ArrayList<Object>();
 
-  private static final Pattern STRING_REGEX = Pattern.compile("\"(.*)\"(.*)");
   private static final Pattern BOOLEAN_REGEX = Pattern.compile("(true|false)(.*)");
   private static final Pattern FLOAT_REGEX = Pattern.compile("(-?[0-9\\.]*)(.*)");
   private static final Pattern INTEGER_REGEX = Pattern.compile("(-?[0-9]*)(.*)");
   private static final Pattern DATE_REGEX = Pattern.compile("(\\d{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]Z)(.*)");
-  private static final Pattern LIST_REGEX = Pattern.compile("(\\[(.*)\\])(.*)");
   private static final Pattern UNICODE_REGEX = Pattern.compile("\\\\u(.*)");
-  private static final Pattern RESERVED_CHARACTER_REGEX = Pattern.compile("\\\\[^bfntr\"/\\\\]");
 
   private final String rawValue;
   private Matcher chosenMatcher;
@@ -38,17 +40,14 @@ class ValueAnalysis {
       return Double.valueOf(chosenMatcher.group(1));
     } else if (isBoolean(value)) {
       return Boolean.valueOf(chosenMatcher.group(1));
-    } else if (isList(value)) {
-      ArrayList<Object> values = new ArrayList<Object>();
-      value = chosenMatcher.group(1);
-      String[] split = value.substring(1,  value.length() - 1).split(",");
-      for (String s : split) {
-        Object converted = convert(s.trim());
-        if (values.isEmpty() || values.get(0).getClass().isAssignableFrom(converted.getClass()) || converted.getClass().isAssignableFrom(values.get(0).getClass())) {
-          values.add(converted);
-        } else {
-          return INVALID;
-        }
+    } else if (isArray(value)) {
+      ParboiledParser parser = Parboiled.createParser(ParboiledParser.class);
+      ParsingResult<List<Object>> parsingResult = new ReportingParseRunner<List<Object>>(parser.Array()).run(value);
+      List<Object> tokens = parsingResult.resultValue;
+      List<Object> values = convertList(tokens);
+
+      if (values == INVALID_ARRAY) {
+        return INVALID;
       }
 
       return values;
@@ -80,18 +79,6 @@ class ValueAnalysis {
     }
 
     return false;
-//    char[] chars = value.toCharArray();
-//
-//    for (int i = 0; i < chars.length; i++) {
-//      char ch = chars[i];
-//      if (Character.isDigit(ch) || ch == '.' || (i == 0 && ch == '-')) {
-//        continue;
-//      }
-//
-//      return false;
-//    }
-//
-//    return true;
   }
 
   private boolean isDate(String value) {
@@ -114,56 +101,14 @@ class ValueAnalysis {
     }
 
     return false;
-//    char[] chars = s.toCharArray();
-//
-//    for (int i = 0; i < chars.length; i++) {
-//      if (Character.isDigit(chars[i]) || (i == 0 && chars[i] == '-')) {
-//        continue;
-//      }
-//
-//      return false;
-//    }
-//
-//    return true;
   }
 
-  private boolean isList(String s) {
-    Matcher matcher = LIST_REGEX.matcher(s);
-
-    if (matcher.matches()) {
-      chosenMatcher = matcher;
-
-      return true;
-    }
-
-    return false;
+  private boolean isArray(String s) {
+    return s.startsWith("[");
   }
 
-  private List<String> tokenizeList(String list) {
-    ArrayList<String> strings = new ArrayList<String>();
-    char[] chars = list.toCharArray();
-    int openIndex = -1;
-
-    for (int i = 0; i < chars.length && openIndex < 0; i++) {
-
-    }
-
-    StringBuilder token = new StringBuilder();
-    boolean ignore = false;
-    for (int i = 0; i < chars.length; i++) {
-      if (ignore) {
-        continue;
-      }
-      if (chars[i] == '[')
-      if (chars[i] != ',') {
-        token.append(chars[i]);
-      } else {
-        strings.add(token.toString().trim());
-        token = new StringBuilder();
-      }
-    }
-
-    return strings;
+  private boolean isHomogenousArray(Object o, List<?> values) {
+    return values.get(0).getClass().isAssignableFrom(o.getClass()) || o.getClass().isAssignableFrom(values.get(0).getClass());
   }
 
   private boolean isBoolean(String s) {
@@ -230,6 +175,30 @@ class ValueAnalysis {
     value = replaceSpecialCharacters(value);
 
     return value;
+  }
+
+  private List<Object> convertList(List<Object> tokens) {
+    ArrayList<Object> nestedList = new ArrayList<Object>();
+
+    for (Object token : tokens) {
+      if (token instanceof String) {
+        Object converted = convert(((String) token).trim());
+        if (nestedList.isEmpty() || isHomogenousArray(converted, nestedList)) {
+          nestedList.add(converted);
+        } else {
+          return INVALID_ARRAY;
+        }
+      } else if (token instanceof List) {
+        List<Object> convertedList = convertList((List<Object>) token);
+        if (convertedList != INVALID_ARRAY) {
+          nestedList.add(convertedList);
+        } else {
+          return INVALID_ARRAY;
+        }
+      }
+    }
+
+    return nestedList;
   }
 
   private String replaceUnicodeCharacters(String value) {

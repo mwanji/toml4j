@@ -11,10 +11,6 @@ public class RegexParser {
   private static final Pattern MULTILINE_ARRAY_REGEX = Pattern.compile("\\s*\\[([^\\]]*)");
   private static final Pattern MULTILINE_ARRAY_REGEX_END = Pattern.compile("\\s*\\]");
 
-  public static void main(String[] args) {
-    System.out.println(MULTILINE_ARRAY_REGEX.matcher("  [ ]").matches());
-  }
-
   private final Results results = new Results();
 
   public Results run(String tomlString) {
@@ -161,5 +157,4 @@ public class RegexParser {
 
     return line;
   }
-
 }
