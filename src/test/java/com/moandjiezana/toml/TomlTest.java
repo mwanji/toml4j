@@ -3,6 +3,7 @@ package com.moandjiezana.toml;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -67,8 +68,9 @@ public class TomlTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void should_get_nested_arrays() throws Exception {
-    Toml clients = new Toml().parse("data = [ [\"gamma\", \"delta\"], [1, 2] ] # just an update to make sure parsers support it");
+    Toml clients = new Toml().parse("data = [ [\"gamma\", \"delta\"], [1, 2]] # just an update to make sure parsers support it");
 
     assertEquals(asList(asList("gamma", "delta"), asList(1L, 2L)), clients.getList("data", String.class));
   }
@@ -235,6 +237,13 @@ public class TomlTest {
     Toml toml = new Toml().parse("[group#]\nkey=1");
 
     assertEquals(1, toml.getLong("group#.key").intValue());
+  }
+  
+  @Test
+  public void should_support_spaces_in_table_names() throws Exception {
+    Toml toml = new Toml().parse("[valid  key]");
+    
+    assertNotNull(toml.getTable("valid  key"));
   }
 
   @Test

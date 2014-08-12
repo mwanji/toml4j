@@ -4,16 +4,45 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.parboiled.BaseParser;
+import org.parboiled.Parboiled;
 import org.parboiled.Rule;
+import org.parboiled.annotations.BuildParseTree;
+import org.parboiled.annotations.SuppressNode;
+import org.parboiled.parserunners.RecoveringParseRunner;
+import org.parboiled.support.ParseTreeUtils;
+import org.parboiled.support.ParsingResult;
 
+@BuildParseTree
 public class ParboiledParser extends BaseParser<List<Object>> {
 
-  public Rule Array() {
-    return Sequence('[', startList(), ArrayDo(), ']', endList());
+  public static void main(String[] args) {
+    ParboiledParser parser = Parboiled.createParser(ParboiledParser.class);
+
+    ParsingResult<List<Object>> parsingResult = new RecoveringParseRunner<List<Object>>(parser.Array()).run("[[1], []]");
+    System.out.println(ParseTreeUtils.printNodeTree(parsingResult));
+    
+    System.out.println(parsingResult.resultValue);
+
   }
 
-  Rule ArrayDo() {
-    return OneOrMore(TestNot(']'), FirstOf(String(), Array(), ',', ' ', OtherValue()));
+  public Rule Array() {
+    return FirstOf(EmptyArray(), Sequence('[', startList(), NonEmptyArray(), ']', endList()));
+  }
+
+  public Rule Table() {
+    return Sequence('[', startList(), Sequence(OneOrMore(NoneOf("[]")), pushToken(match())), ']', endList(), FirstOf(EOI, Sequence(TestNot(']'), ANY)));
+  }
+  
+  public Rule TableArray() {
+    return Sequence('[', '[', startList(), Sequence(OneOrMore(NoneOf("[]")), pushToken(match())), ']', ']', endList(), FirstOf(EOI, Sequence(TestNot(']'), ANY)));
+  }
+
+  Rule NonEmptyArray() {
+    return FirstOf(Array(), OneOrMore(TestNot(']'), FirstOf(String(), Array(), ',', ' ', OtherValue())));
+  }
+  
+  Rule EmptyArray() {
+    return Sequence('[', ']', startList(), endList());
   }
 
   Rule String() {
@@ -24,9 +53,10 @@ public class ParboiledParser extends BaseParser<List<Object>> {
     return Sequence(ZeroOrMore(NoneOf("],")), pushToken(match()));
   }
 
-//  private Rule Comment() {
-//    return Sequence('#' , ZeroOrMore(TestNot(EOI), ANY));
-//  }
+  @SuppressNode
+  Rule Comment() {
+    return OneOrMore(FirstOf(AnyOf("\t"), EOI));
+  }
 
   boolean startList() {
     ArrayList<Object> newTokens = new ArrayList<Object>();

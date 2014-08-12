@@ -2,12 +2,14 @@ package com.moandjiezana.toml;
 
 import static com.moandjiezana.toml.ValueAnalysis.INVALID;
 
-import java.util.regex.Matcher;
+import java.util.List;
 import java.util.regex.Pattern;
 
+import org.parboiled.Parboiled;
+import org.parboiled.parserunners.BasicParseRunner;
+import org.parboiled.support.ParsingResult;
+
 public class RegexParser {
-  private static final Pattern TABLE_REGEX = Pattern.compile("\\s?\\[(.*)\\](.*)");
-  private static final Pattern TABLE_ARRAY_REGEX = Pattern.compile("\\s?\\[\\[(.*)\\]\\](.*)");
   private static final Pattern MULTILINE_ARRAY_REGEX = Pattern.compile("\\s*\\[([^\\]]*)");
   private static final Pattern MULTILINE_ARRAY_REGEX_END = Pattern.compile("\\s*\\]");
 
@@ -37,26 +39,32 @@ public class RegexParser {
       }
 
       if (isTableArray(line)) {
-        Matcher matcher = TABLE_ARRAY_REGEX.matcher(line);
-        matcher.matches();
-        String tableName = matcher.group(1);
-        results.startTableArray(tableName);
-
-        String afterTableName = matcher.group(2);
-        if (!isComment(afterTableName)) {
+        String tableName = getTableArrayName(line);
+        if (tableName != null) {
+          results.startTableArray(tableName);
+          String afterTableName = line.substring(tableName.length() + 4);
+          if (!isComment(afterTableName)) {
+            results.errors.append("Invalid table array definition: " + line + "\n\n");
+          }
+        } else {
           results.errors.append("Invalid table array definition: " + line + "\n\n");
         }
 
         continue;
       }
 
-      if (isTable(line)) {
-        Matcher matcher = TABLE_REGEX.matcher(line);
-        matcher.matches();
-        String tableName = matcher.group(1);
-        results.startTables(tableName);
-        String afterTableName = matcher.group(2);
-        if (!isComment(afterTableName)) {
+      if (!multiline && isTable(line)) {
+        String tableName = getTableName(line);
+        if (tableName != null) {
+//        Matcher matcher = TABLE_REGEX.matcher(line);
+//        matcher.matches();
+//        String tableName = matcher.group(1);
+          results.startTables(tableName);
+          String afterTableName = line.substring(tableName.length() + 2);
+          if (!isComment(afterTableName)) {
+            results.errors.append("Invalid table definition: " + line + "\n\n");
+          }
+        } else {
           results.errors.append("Invalid table definition: " + line + "\n\n");
         }
 
@@ -108,11 +116,33 @@ public class RegexParser {
   }
 
   private boolean isTableArray(String line) {
-    return TABLE_ARRAY_REGEX.matcher(line).matches();
+    return line.startsWith("[[");
+  }
+  
+  private String getTableArrayName(String line) {
+    ParboiledParser parser = Parboiled.createParser(ParboiledParser.class);
+    ParsingResult<List<Object>> parsingResult = new BasicParseRunner<List<Object>>(parser.TableArray()).run(line);
+
+    if (parsingResult.resultValue == null) {
+      return null;
+    }
+
+    return (String) parsingResult.resultValue.get(0);
   }
 
   private boolean isTable(String line) {
-    return TABLE_REGEX.matcher(line).matches();
+    return line.startsWith("[");
+  }
+
+  private String getTableName(String line) {
+    ParboiledParser parser = Parboiled.createParser(ParboiledParser.class);
+    ParsingResult<List<Object>> parsingResult = new BasicParseRunner<List<Object>>(parser.Table()).run(line);
+
+    if (parsingResult.resultValue == null) {
+      return null;
+    }
+
+    return (String) parsingResult.resultValue.get(0);
   }
 
   private boolean isKeyValid(String key) {

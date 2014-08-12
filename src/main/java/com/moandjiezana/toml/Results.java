@@ -44,7 +44,7 @@ class Results {
 
         stack.push(currentTableArray.getCurrent());
         currentContainer = stack.peek();
-      } else if (currentContainer.get(tablePart) instanceof Container.Table) {
+      } else if (currentContainer.get(tablePart) instanceof Container.Table && i < tableParts.length - 1) {
         Container nextTable = (Container) currentContainer.get(tablePart);
         stack.push(nextTable);
       } else if (currentContainer.accepts(tablePart)) {
@@ -75,7 +75,9 @@ class Results {
     for (int i = 0; i < tableParts.length; i++) {
       String tablePart = tableParts[i];
       Container currentContainer = stack.peek();
-      if (currentContainer.get(tablePart) instanceof Container) {
+      if (tablePart.isEmpty()) {
+        errors.append("Empty implicit table: " + tableName + "!\n");
+      } else if (currentContainer.get(tablePart) instanceof Container) {
         Container nextTable = (Container) currentContainer.get(tablePart);
         stack.push(nextTable);
         if (stack.peek() instanceof Container.TableArray) {

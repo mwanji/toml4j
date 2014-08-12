@@ -101,12 +101,49 @@ public class BurntSushiTest {
 
   @Test
   public void table_array_implicit() throws Exception {
+    runInvalidTest("table-array-implicit");
     runValidTest("table-array-implicit");
+  }
+
+  @Test
+  public void table_array_malformed_bracket() throws Exception {
+    runInvalidTest("table-array-malformed-bracket");
+  }
+  
+  @Test
+  public void table_array_malformed_empty() throws Exception {
+    runInvalidTest("table-array-malformed-empty");
+  }
+
+  @Test
+  public void empty_implicit_table() {
+    runInvalidTest("empty-implicit-table");
+  }
+
+  @Test
+  public void empty_table() throws Exception {
+    runInvalidTest("empty-table");
   }
 
   @Test
   public void array_mixed_types_ints_and_floats() throws Exception {
     runInvalidTest("array-mixed-types-ints-and-floats");
+  }
+
+  @Test
+  public void array_mixed_types_arrays_and_ints() throws Exception {
+    runInvalidTest("array-mixed-types-arrays-and-ints");
+  }
+  
+  @Test
+  public void array_empty() throws Exception {
+    runValidTest("array-empty");
+  }
+  
+  @Test
+  @Ignore
+  public void arrays_hetergeneous() throws Exception {
+    runValidTest("arrays-hetergeneous");
   }
 
   @Test

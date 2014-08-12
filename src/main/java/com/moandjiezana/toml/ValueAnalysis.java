@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.parboiled.Parboiled;
-import org.parboiled.parserunners.ReportingParseRunner;
+import org.parboiled.parserunners.BasicParseRunner;
 import org.parboiled.support.ParsingResult;
 
 class ValueAnalysis {
@@ -42,7 +42,7 @@ class ValueAnalysis {
       return Boolean.valueOf(chosenMatcher.group(1));
     } else if (isArray(value)) {
       ParboiledParser parser = Parboiled.createParser(ParboiledParser.class);
-      ParsingResult<List<Object>> parsingResult = new ReportingParseRunner<List<Object>>(parser.Array()).run(value);
+      ParsingResult<List<Object>> parsingResult = new BasicParseRunner<List<Object>>(parser.Array()).run(value);
       List<Object> tokens = parsingResult.resultValue;
       List<Object> values = convertList(tokens);
 
@@ -108,7 +108,7 @@ class ValueAnalysis {
   }
 
   private boolean isHomogenousArray(Object o, List<?> values) {
-    return values.get(0).getClass().isAssignableFrom(o.getClass()) || o.getClass().isAssignableFrom(values.get(0).getClass());
+    return values.isEmpty() || values.get(0).getClass().isAssignableFrom(o.getClass()) || o.getClass().isAssignableFrom(values.get(0).getClass());
   }
 
   private boolean isBoolean(String s) {
@@ -183,14 +183,14 @@ class ValueAnalysis {
     for (Object token : tokens) {
       if (token instanceof String) {
         Object converted = convert(((String) token).trim());
-        if (nestedList.isEmpty() || isHomogenousArray(converted, nestedList)) {
+        if (isHomogenousArray(converted, nestedList)) {
           nestedList.add(converted);
         } else {
           return INVALID_ARRAY;
         }
       } else if (token instanceof List) {
         List<Object> convertedList = convertList((List<Object>) token);
-        if (convertedList != INVALID_ARRAY) {
+        if (convertedList != INVALID_ARRAY && isHomogenousArray(convertedList, nestedList)) {
           nestedList.add(convertedList);
         } else {
           return INVALID_ARRAY;
