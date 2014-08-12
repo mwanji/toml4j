@@ -160,6 +160,26 @@ public class BurntSushiTest {
     runInvalidTest("float-no-trailing-digits");
   }
 
+  @Test
+  public void text_after_array_entries() throws Exception {
+    runInvalidTest("text-after-array-entries");
+  }
+
+  @Test
+  public void text_after_string() throws Exception {
+    runInvalidTest("text-after-string");
+  }
+
+  @Test
+  public void text_before_array_separator() throws Exception {
+    runInvalidTest("text-before-array-separator");
+  }
+
+  @Test
+  public void text_in_array() throws Exception {
+    runInvalidTest("text-in-array");
+  }
+  
   @After
   public void after() throws IOException {
     inputToml.close();

@@ -142,7 +142,6 @@ class ValueAnalysis {
 
   private Object convertString(String value) {
     int stringTerminator = -1;
-    int startOfComment = -1;
     char[] chars = value.toCharArray();
 
     for (int i = 1; i < chars.length; i++) {
@@ -153,10 +152,10 @@ class ValueAnalysis {
       }
     }
 
-    if (stringTerminator == -1) {
+    if (stringTerminator == -1 || !isComment(value.substring(stringTerminator + 1))) {
       return INVALID;
     }
-
+    
     value = value.substring(1, stringTerminator);
     value = replaceUnicodeCharacters(value);
 
@@ -183,12 +182,16 @@ class ValueAnalysis {
     for (Object token : tokens) {
       if (token instanceof String) {
         Object converted = convert(((String) token).trim());
+        if (converted == INVALID) {
+          return INVALID_ARRAY;
+        }
         if (isHomogenousArray(converted, nestedList)) {
           nestedList.add(converted);
         } else {
           return INVALID_ARRAY;
         }
       } else if (token instanceof List) {
+        @SuppressWarnings("unchecked")
         List<Object> convertedList = convertList((List<Object>) token);
         if (convertedList != INVALID_ARRAY && isHomogenousArray(convertedList, nestedList)) {
           nestedList.add(convertedList);

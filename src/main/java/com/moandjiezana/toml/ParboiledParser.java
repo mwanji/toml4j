@@ -4,26 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.parboiled.BaseParser;
-import org.parboiled.Parboiled;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressNode;
-import org.parboiled.parserunners.RecoveringParseRunner;
-import org.parboiled.support.ParseTreeUtils;
-import org.parboiled.support.ParsingResult;
 
 @BuildParseTree
 public class ParboiledParser extends BaseParser<List<Object>> {
-
-  public static void main(String[] args) {
-    ParboiledParser parser = Parboiled.createParser(ParboiledParser.class);
-
-    ParsingResult<List<Object>> parsingResult = new RecoveringParseRunner<List<Object>>(parser.Array()).run("[ [], []]");
-    System.out.println(ParseTreeUtils.printNodeTree(parsingResult));
-    
-    System.out.println(parsingResult.resultValue);
-
-  }
 
   public Rule Array() {
     return FirstOf(EmptyArray(), Sequence('[', startList(), OneOrMore(FirstOf(NonEmptyArray(), ' ', ',')), ']', endList()));
