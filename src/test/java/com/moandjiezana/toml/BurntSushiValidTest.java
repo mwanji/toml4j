@@ -31,30 +31,175 @@ public class BurntSushiValidTest {
   
   @Test
   public void array_empty() throws Exception {
-    runValidTest("array-empty");
+    run("array-empty");
+  }
+  
+  @Test
+  public void array_nospaces() throws Exception {
+    run("array-nospaces");
   }
   
   @Test
   public void arrays_hetergeneous() throws Exception {
-    runValidTest("arrays-hetergeneous");
+    run("arrays-hetergeneous");
+  }
+  
+  @Test
+  public void arrays_nested() throws Exception {
+    run("arrays-nested");
+  }
+  
+  @Test
+  public void arrays() throws Exception {
+    run("arrays");
+  }
+  
+  @Test
+  public void bool() throws Exception {
+    run("bool");
   }
 
   @Test
   public void comments_everywhere() throws Exception {
-    runValidTest("comments-everywhere");
+    run("comments-everywhere");
   }
-
+  
+  @Test
+  public void datetime() throws Exception {
+    run("datetime");
+  }
+  
+  @Test
+  public void empty() throws Exception {
+    run("empty");
+  }
+  
+  @Test
+  public void example() throws Exception {
+    run("example");
+  }
+  
+  @Test
+  public void float_() throws Exception {
+    run("float");
+  }
+  
+  @Test
+  public void implicit_and_explicit_after() throws Exception {
+    run("implicit-and-explicit-after");
+  }
+  
+  @Test
+  public void implicit_and_explicit_before() throws Exception {
+    run("implicit-and-explicit-before");
+  }
+  
+  @Test
+  public void implicit_groups() throws Exception {
+    run("implicit-groups");
+  }
+  
+  @Test
+  public void integer() throws Exception {
+    run("integer");
+  }
+  
+  @Test
+  public void key_equals_nospace() throws Exception {
+    run("key-equals-nospace");
+  }
+  
+  @Test
+  public void key_space() throws Exception {
+    run("key-space");
+  }
+  
   @Test
   @Ignore
   public void key_special_chars() throws Exception {
-    runValidTest("key-special-chars");
+    run("key-special-chars");
+  }
+  
+  @Test
+  public void long_float() throws Exception {
+    run("long-float");
+  }
+  
+  @Test
+  public void long_integer() throws Exception {
+    run("long-integer");
+  }
+  
+  @Test
+  public void string_empty() throws Exception {
+    run("string-empty");
+  }
+  
+  @Test
+  public void string_escapes() throws Exception {
+    run("string-escapes");
+  }
+  
+  @Test
+  public void string_simple() throws Exception {
+    run("string-simple");
+  }
+  
+  @Test
+  public void string_with_pound() throws Exception {
+    run("string-with-pound");
   }
 
   @Test
   public void table_array_implicit() throws Exception {
-    runValidTest("table-array-implicit");
+    run("table-array-implicit");
   }
-  
+
+  @Test
+  public void table_array_many() throws Exception {
+    run("table-array-many");
+  }
+
+  @Test
+  public void table_array_nest() throws Exception {
+    run("table-array-nest");
+  }
+
+  @Test
+  public void table_array_one() throws Exception {
+    run("table-array-one");
+  }
+
+  @Test
+  public void table_empty() throws Exception {
+    run("table-empty");
+  }
+
+  @Test
+  public void table_sub_empty() throws Exception {
+    run("table-sub-empty");
+  }
+
+  @Test
+  public void table_whitespace() throws Exception {
+    run("table-whitespace");
+  }
+
+  @Test
+  public void table_with_pound() throws Exception {
+    run("table-with-pound");
+  }
+
+  @Test
+  public void unicode_escape() throws Exception {
+    run("unicode-escape");
+  }
+
+  @Test
+  public void unicode_literal() throws Exception {
+    run("unicode-literal");
+  }
+
   @After
   public void after() throws IOException {
     inputToml.close();
@@ -63,7 +208,7 @@ public class BurntSushiValidTest {
     }
   }
 
-  private void runValidTest(String testName) {
+  private void run(String testName) {
     inputToml = getClass().getResourceAsStream("burntsushi/valid/" + testName + ".toml");
     expectedJsonReader = new InputStreamReader(getClass().getResourceAsStream("burntsushi/valid/" + testName + ".json"));
     JsonElement expectedJson = new Gson().fromJson(expectedJsonReader, JsonElement.class);
