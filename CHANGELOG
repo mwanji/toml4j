@@ -1,0 +1,5 @@
+0.2
+Support for TOML 0.2 spec, most notably table arrays.
+
+0.1
+Support for TOML 0.1 spec.
