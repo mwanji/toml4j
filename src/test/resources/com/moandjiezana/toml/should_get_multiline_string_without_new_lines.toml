@@ -1,0 +1,14 @@
+ref = "The quick brown fox jumps over the lazy dog."
+
+multi1 = """
+The quick brown \
+
+
+  fox jumps over \
+    the lazy dog."""
+
+multi2 = """\
+       The quick brown \
+       fox jumps over \
+       the lazy dog.\
+       """

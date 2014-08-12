@@ -1,0 +1,5 @@
+ref = "One\nTwo"
+one_line = """One\nTwo"""
+many_lines = """
+One
+Two"""

@@ -24,14 +24,15 @@ class TomlParser {
     String[] lines = tomlString.split("[\\n\\r]");
     StringBuilder multilineBuilder = new StringBuilder();
     boolean multiline = false;
-
+    boolean multilineString = false;
+    
     String key = null;
     String value = null;
 
     for (int i = 0; i < lines.length; i++) {
       String line = lines[i];
 
-      if (line != null) {
+      if (line != null && !multilineString) {
         line = line.trim();
       }
 
@@ -54,7 +55,7 @@ class TomlParser {
         continue;
       }
 
-      if (!multiline && isTable(line)) {
+      if (!multiline && !multilineString && isTable(line)) {
         String tableName = getTableName(line);
         if (tableName != null) {
           results.startTables(tableName);
@@ -69,20 +70,33 @@ class TomlParser {
         continue;
       }
       
-      if (!multiline && !line.contains("=")) {
+      if (!multiline && !multilineString && !line.contains("=")) {
         results.errors.append("Invalid key definition: " + line);
         continue;
       }
 
       String[] pair = line.split("=", 2);
 
-      if (!multiline && MULTILINE_ARRAY_REGEX.matcher(pair[1].trim()).matches()) {
+      if (!multiline && !multilineString && MULTILINE_ARRAY_REGEX.matcher(pair[1].trim()).matches()) {
         multiline = true;
         key = pair[0].trim();
         multilineBuilder.append(removeComment(pair[1]));
         continue;
       }
 
+      if (!multiline && !multilineString && pair[1].trim().startsWith("\"\"\"")) {
+        multilineString = true;
+        multilineBuilder.append(pair[1]);
+        key = pair[0].trim();
+
+        if (pair[1].trim().indexOf("\"\"\"", 3) > -1) {
+          multilineString = false;
+          pair[1] = multilineBuilder.toString().trim();
+          multilineBuilder.delete(0, multilineBuilder.length());
+        } else {
+          continue;
+        }
+      }
 
       if (multiline) {
         String lineWithoutComment = removeComment(line);
@@ -90,8 +104,18 @@ class TomlParser {
         if (MULTILINE_ARRAY_REGEX_END.matcher(lineWithoutComment).matches()) {
           multiline = false;
           value = multilineBuilder.toString();
-          multilineBuilder.delete(0, multilineBuilder.length() - 1);
+          multilineBuilder.delete(0, multilineBuilder.length());
         } else {
+          continue;
+        }
+      } else if (multilineString) {
+        multilineBuilder.append(line);
+        if (line.contains("\"\"\"")) {
+          multilineString = false;
+          value = multilineBuilder.toString().trim();
+          multilineBuilder.delete(0, multilineBuilder.length());
+        } else {
+          multilineBuilder.append('\n');
           continue;
         }
       } else {
@@ -109,7 +133,7 @@ class TomlParser {
       if (convertedValue != INVALID) {
         results.addValue(key, convertedValue);
       } else {
-        results.errors.append("Invalid key/value: " + key + " = " + value);
+        results.errors.append("Invalid key/value: " + key + " = " + value + "\n");
       }
     }
 

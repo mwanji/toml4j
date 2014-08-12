@@ -29,14 +29,31 @@ public class TomlTest {
 
   @Test
   public void should_get_empty_string() {
-      Toml toml = new Toml().parse("a = \"\"");
-      assertEquals("", toml.getString("a"));
+    Toml toml = new Toml().parse("a = \"\"");
+    assertEquals("", toml.getString("a"));
   }
 
   @Test
   public void should_get_empty_string_with_trailing_new_line() {
-      Toml toml = new Toml().parse("a = \"\"\n");
-      assertEquals("", toml.getString("a"));
+    Toml toml = new Toml().parse("a = \"\"\n");
+    assertEquals("", toml.getString("a"));
+  }
+  
+  @Test
+  public void should_get_basic_multiline_string() throws Exception {
+    Toml toml = new Toml().parse(file("should_get_basic_multiline_string"));
+    
+    assertEquals(toml.getString("ref"), toml.getString("one_line"));
+    assertEquals(toml.getString("ref"), toml.getString("many_lines"));
+  }
+  
+  @Test
+  public void should_get_multiline_string_without_new_lines() throws Exception {
+    Toml toml = new Toml().parse(file("should_get_multiline_string_without_new_lines"));
+    
+    assertEquals(toml.getString("ref"), toml.getString("multi1"));
+    assertEquals(toml.getString("ref"), toml.getString("multi2"));
+    
   }
 
   @Test
