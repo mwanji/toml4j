@@ -76,6 +76,14 @@ public class TomlTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
+  public void should_get_nested_arrays_with_no_space_between_outer_and_inner_array() throws Exception {
+    Toml clients = new Toml().parse("data = [[\"gamma\", \"delta\"], [1, 2]] # just an update to make sure parsers support it");
+
+    assertEquals(asList(asList("gamma", "delta"), asList(1L, 2L)), clients.getList("data", String.class));
+  }
+
+  @Test
   public void should_get_boolean() throws Exception {
     Toml toml = new Toml().parse("bool_false = false\nbool_true = true");
 

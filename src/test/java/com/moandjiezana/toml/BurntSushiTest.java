@@ -141,7 +141,6 @@ public class BurntSushiTest {
   }
   
   @Test
-  @Ignore
   public void arrays_hetergeneous() throws Exception {
     runValidTest("arrays-hetergeneous");
   }

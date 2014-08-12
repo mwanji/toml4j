@@ -18,7 +18,7 @@ public class ParboiledParser extends BaseParser<List<Object>> {
   public static void main(String[] args) {
     ParboiledParser parser = Parboiled.createParser(ParboiledParser.class);
 
-    ParsingResult<List<Object>> parsingResult = new RecoveringParseRunner<List<Object>>(parser.Array()).run("[[1], []]");
+    ParsingResult<List<Object>> parsingResult = new RecoveringParseRunner<List<Object>>(parser.Array()).run("[ [], []]");
     System.out.println(ParseTreeUtils.printNodeTree(parsingResult));
     
     System.out.println(parsingResult.resultValue);
@@ -26,7 +26,7 @@ public class ParboiledParser extends BaseParser<List<Object>> {
   }
 
   public Rule Array() {
-    return FirstOf(EmptyArray(), Sequence('[', startList(), NonEmptyArray(), ']', endList()));
+    return FirstOf(EmptyArray(), Sequence('[', startList(), OneOrMore(FirstOf(NonEmptyArray(), ' ', ',')), ']', endList()));
   }
 
   public Rule Table() {
