@@ -244,6 +244,8 @@ public class TomlTest {
     assertEquals(5, toml.getLong("d.e.a").intValue());
     assertEquals(6, toml.getLong("d.e.a.b.c").intValue());
     assertEquals(6, toml.getTable("d.e").getLong("a.b.c").intValue());
+    assertEquals(7, toml.getTables("f").get(0).getLong("a.b").intValue());
+    assertEquals(8, toml.getLong("f[1].a.b").intValue());
   }
 
   @Test
