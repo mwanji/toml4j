@@ -1,4 +1,6 @@
-package com.moandjiezana.toml;
+package com.moandjiezana.toml.values;
+
+import static com.moandjiezana.toml.values.BooleanParser.BOOLEAN_PARSER;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,8 +12,10 @@ import org.parboiled.Parboiled;
 import org.parboiled.parserunners.BasicParseRunner;
 import org.parboiled.support.ParsingResult;
 
-class ValueAnalysis {
-  static final Object INVALID = new Object();
+import com.moandjiezana.toml.StatementParser;
+
+public class ValueAnalysis {
+  public static final Object INVALID = new Object();
   private static final List<Object> INVALID_ARRAY = new ArrayList<Object>();
 
   private static final Pattern BOOLEAN_REGEX = Pattern.compile("(true|false)(.*)");
@@ -38,8 +42,8 @@ class ValueAnalysis {
       return Long.valueOf(chosenMatcher.group(1));
     } else if (isFloat(value)) {
       return Double.valueOf(chosenMatcher.group(1));
-    } else if (isBoolean(value)) {
-      return Boolean.valueOf(chosenMatcher.group(1));
+    } else if (BOOLEAN_PARSER.canParse(value)) {
+      return BOOLEAN_PARSER.parse(value);
     } else if (isArray(value)) {
       StatementParser parser = Parboiled.createParser(StatementParser.class);
       ParsingResult<List<Object>> parsingResult = new BasicParseRunner<List<Object>>(parser.Array()).run(value);
@@ -122,7 +126,7 @@ class ValueAnalysis {
     return false;
   }
 
-  private boolean isComment(String line) {
+  public static boolean isComment(String line) {
     if (line == null || line.isEmpty()) {
       return true;
     }

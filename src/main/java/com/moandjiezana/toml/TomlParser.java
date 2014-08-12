@@ -1,6 +1,6 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueAnalysis.INVALID;
+import static com.moandjiezana.toml.values.ValueAnalysis.INVALID;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 import org.parboiled.Parboiled;
 import org.parboiled.parserunners.BasicParseRunner;
 import org.parboiled.support.ParsingResult;
+
+import com.moandjiezana.toml.values.ValueAnalysis;
 
 public class TomlParser {
   private static final Pattern MULTILINE_ARRAY_REGEX = Pattern.compile("\\s*\\[([^\\]]*)");

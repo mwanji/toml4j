@@ -373,6 +373,16 @@ public class TomlTest {
     new Toml().parse("answer = -1.");
   }
 
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_invalid_boolean_true() {
+    new Toml().parse("answer = true abc");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_invalid_boolean_false() {
+    new Toml().parse("answer = false abc");
+  }
+  
   private File file(String file) {
     return new File(getClass().getResource(file + ".toml").getFile());
   }
