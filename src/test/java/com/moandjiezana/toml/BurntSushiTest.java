@@ -149,6 +149,16 @@ public class BurntSushiTest {
   public void datetime_malformed_no_leads() throws Exception {
     runInvalidTest("datetime-malformed-no-leads");
   }
+  
+  @Test
+  public void float_no_leading_zero() throws Exception {
+    runInvalidTest("float-no-leading-zero");
+  }
+  
+  @Test
+  public void float_no_trailing_digits() throws Exception {
+    runInvalidTest("float-no-trailing-digits");
+  }
 
   @After
   public void after() throws IOException {

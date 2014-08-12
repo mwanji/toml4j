@@ -15,7 +15,7 @@ class ValueAnalysis {
   private static final List<Object> INVALID_ARRAY = new ArrayList<Object>();
 
   private static final Pattern BOOLEAN_REGEX = Pattern.compile("(true|false)(.*)");
-  private static final Pattern FLOAT_REGEX = Pattern.compile("(-?[0-9\\.]*)(.*)");
+  private static final Pattern FLOAT_REGEX = Pattern.compile("(-?\\d+\\.\\d+)(.*)");
   private static final Pattern INTEGER_REGEX = Pattern.compile("(-?[0-9]*)(.*)");
   private static final Pattern DATE_REGEX = Pattern.compile("(\\d{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]Z)(.*)");
   private static final Pattern UNICODE_REGEX = Pattern.compile("\\\\u(.*)");

@@ -347,10 +347,30 @@ public class TomlTest {
   public void should_fail_when_illegal_characters_after_table() throws Exception {
     new Toml().parse("[error]   if you didn't catch this, your parser is broken");
   }
-
+  
   @Test(expected = IllegalStateException.class)
   public void should_fail_when_illegal_characters_after_key() throws Exception {
     new Toml().parse("number = 3.14  pi");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_float_without_leading_0() {
+    new Toml().parse("answer = .12345");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_negative_float_without_leading_0() {
+    new Toml().parse("answer = -.12345");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_float_without_digits_after_dot() {
+    new Toml().parse("answer = 1.");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_negative_float_without_digits_after_dot() {
+    new Toml().parse("answer = -1.");
   }
 
   private File file(String file) {
