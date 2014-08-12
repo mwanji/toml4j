@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Map;
 import java.util.TimeZone;
 
 import org.junit.Test;
@@ -75,18 +74,5 @@ public class RealWorldTest {
 
     assertTrue(toml.getTable("siteInfo.local.sh").getBoolean("enable"));
     assertFalse(toml.getTable("siteInfo.localMobile.sh").getBoolean("enable"));
-  }
-
-  @SuppressWarnings("unchecked")
-  private void printMap(Map<String, Object> map) {
-    for (Map.Entry<String, Object> entry : map.entrySet()) {
-      if (entry.getValue() instanceof Map) {
-        System.out.println("[" + entry.getKey() + "]");
-        printMap((Map<String, Object>) entry.getValue());
-        System.out.println("[/" + entry.getKey() + "]");
-      } else {
-        System.out.println(entry.getKey() + " = " + entry.getValue());
-      }
-    }
   }
 }

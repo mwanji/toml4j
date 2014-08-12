@@ -21,10 +21,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.parboiled.Parboiled;
-import org.parboiled.parserunners.RecoveringParseRunner;
-import org.parboiled.support.ParsingResult;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
@@ -130,17 +126,12 @@ public class Toml {
    * @throws IllegalStateException If tomlString is not valid TOML
    */
   public Toml parse(String tomlString) throws IllegalStateException {
-    TomlParser parser = Parboiled.createParser(TomlParser.class);
-    ParsingResult<Object> result = new RecoveringParseRunner<Object>(parser.Toml()).run(tomlString);
-//    ParsingResult<Object> parsingResult = new ReportingParseRunner<Object>(parser.Toml()).run(tomlString);
-//    System.out.println(ParseTreeUtils.printNodeTree(parsingResult));
-
-    TomlParser.Results results = (TomlParser.Results) result.valueStack.peek(result.valueStack.size() - 1);
+    Results results = new RegexParser().run(tomlString);
     if (results.errors.length() > 0) {
       throw new IllegalStateException(results.errors.toString());
     }
 
-    this.values = results.values;
+    this.values = results.consume();
 
     return this;
   }

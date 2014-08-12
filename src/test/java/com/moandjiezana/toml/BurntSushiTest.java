@@ -101,7 +101,28 @@ public class BurntSushiTest {
 
   @Test
   public void table_array_implicit() throws Exception {
+    runInvalidTest("table-array-implicit");
     runValidTest("table-array-implicit");
+  }
+
+  @Test
+  public void table_array_malformed_bracket() throws Exception {
+    runInvalidTest("table-array-malformed-bracket");
+  }
+  
+  @Test
+  public void table_array_malformed_empty() throws Exception {
+    runInvalidTest("table-array-malformed-empty");
+  }
+
+  @Test
+  public void empty_implicit_table() {
+    runInvalidTest("empty-implicit-table");
+  }
+
+  @Test
+  public void empty_table() throws Exception {
+    runInvalidTest("empty-table");
   }
 
   @Test
@@ -110,10 +131,55 @@ public class BurntSushiTest {
   }
 
   @Test
+  public void array_mixed_types_arrays_and_ints() throws Exception {
+    runInvalidTest("array-mixed-types-arrays-and-ints");
+  }
+  
+  @Test
+  public void array_empty() throws Exception {
+    runValidTest("array-empty");
+  }
+  
+  @Test
+  public void arrays_hetergeneous() throws Exception {
+    runValidTest("arrays-hetergeneous");
+  }
+
+  @Test
   public void datetime_malformed_no_leads() throws Exception {
     runInvalidTest("datetime-malformed-no-leads");
   }
+  
+  @Test
+  public void float_no_leading_zero() throws Exception {
+    runInvalidTest("float-no-leading-zero");
+  }
+  
+  @Test
+  public void float_no_trailing_digits() throws Exception {
+    runInvalidTest("float-no-trailing-digits");
+  }
 
+  @Test
+  public void text_after_array_entries() throws Exception {
+    runInvalidTest("text-after-array-entries");
+  }
+
+  @Test
+  public void text_after_string() throws Exception {
+    runInvalidTest("text-after-string");
+  }
+
+  @Test
+  public void text_before_array_separator() throws Exception {
+    runInvalidTest("text-before-array-separator");
+  }
+
+  @Test
+  public void text_in_array() throws Exception {
+    runInvalidTest("text-in-array");
+  }
+  
   @After
   public void after() throws IOException {
     inputToml.close();

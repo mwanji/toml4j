@@ -16,7 +16,7 @@ public class TomlDefaultsTest {
 
   @Before
   public void before() {
-    defaultToml = new Toml().parse("a = \"a\"\n [group]\n a=\"a\"\n [[array]]\n b=1 [[array]]\n b=2");
+    defaultToml = new Toml().parse("a = \"a\"\n [group]\n a=\"a\"\n [[array]]\n b=1\n [[array]]\n b=2");
   }
 
   @Test
@@ -65,7 +65,7 @@ public class TomlDefaultsTest {
   @Test
   public void should_perform_shallow_merge() throws Exception {
     Toml toml = new Toml(defaultToml).parse("[group]\nb=1\n [[array]]\n b=0");
-    Toml toml2 = new Toml(defaultToml).parse("[[array]]\n b=1 [[array]]\n b=2 [[array]]\n b=3");
+    Toml toml2 = new Toml(defaultToml).parse("[[array]]\n b=1\n [[array]]\n b=2\n [[array]]\n b=3");
 
     assertEquals(1, toml.getTable("group").getLong("b").intValue());
     assertNull(toml.getTable("group").getString("a"));
