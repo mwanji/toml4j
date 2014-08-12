@@ -92,11 +92,66 @@ public class BurntSushiTest {
 
     Assert.assertEquals(expectedJson, actual);
   }
+  
+  @Test
+  public void key_empty() throws Exception {
+    runInvalidTest("key-empty");
+  }
+  
+  @Test
+  public void key_hash() throws Exception {
+    runInvalidTest("key-hash");
+  }
+  
+  @Test
+  public void key_newline() throws Exception {
+    runInvalidTest("key-newline");
+  }
+  
+  @Test
+  public void key_open_bracket() throws Exception {
+    runInvalidTest("key-open-bracket");
+  }
+  
+  @Test
+  public void key_single_open_bracket() throws Exception {
+    runInvalidTest("key-single-open-bracket");
+  }
+  
+  @Test
+  public void key_start_bracket() throws Exception {
+    runInvalidTest("key-start-bracket");
+  }
+  
+  @Test
+  public void key_two_equals() throws Exception {
+    runInvalidTest("key-two-equals");
+  }
 
   @Test
   @Ignore
   public void key_special_chars() throws Exception {
     runValidTest("key-special-chars");
+  }
+  
+  @Test
+  public void string_bad_byte_escape() throws Exception {
+    runInvalidTest("string-bad-byte-escape");
+  }
+  
+  @Test
+  public void string_bad_escape() throws Exception {
+    runInvalidTest("string-bad-escape");
+  }
+  
+  @Test
+  public void string_byte_escapes() throws Exception {
+    runInvalidTest("string-byte-escapes");
+  }
+  
+  @Test
+  public void string_no_close() throws Exception {
+    runInvalidTest("string-no-close");
   }
 
   @Test
@@ -113,6 +168,21 @@ public class BurntSushiTest {
   @Test
   public void table_array_malformed_empty() throws Exception {
     runInvalidTest("table-array-malformed-empty");
+  }
+  
+  @Test
+  public void table_empty() throws Exception {
+    runInvalidTest("table-empty");
+  }
+  
+  @Test
+  public void table_nested_brackets_close() throws Exception {
+    runInvalidTest("table-nested-brackets-close");
+  }
+  
+  @Test
+  public void table_nested_brackets_open() throws Exception {
+    runInvalidTest("table-nested-brackets-open");
   }
 
   @Test
@@ -136,6 +206,11 @@ public class BurntSushiTest {
   }
   
   @Test
+  public void array_mixed_types_strings_and_ints() throws Exception {
+    runInvalidTest("array-mixed-types-strings-and-ints");
+  }
+  
+  @Test
   public void array_empty() throws Exception {
     runValidTest("array-empty");
   }
@@ -149,7 +224,42 @@ public class BurntSushiTest {
   public void datetime_malformed_no_leads() throws Exception {
     runInvalidTest("datetime-malformed-no-leads");
   }
+
+  @Test
+  public void datetime_malformed_no_secs() throws Exception {
+    runInvalidTest("datetime-malformed-no-secs");
+  }
+
+  @Test
+  public void datetime_malformed_no_t() throws Exception {
+    runInvalidTest("datetime-malformed-no-t");
+  }
+
+  @Test
+  public void datetime_malformed_no_z() throws Exception {
+    runInvalidTest("datetime-malformed-no-z");
+  }
+
+  @Test
+  public void datetime_malformed_with_milli() throws Exception {
+    runInvalidTest("datetime-malformed-with-milli");
+  }
   
+  @Test
+  public void duplicate_key_table() throws Exception {
+    runInvalidTest("duplicate-key-table");
+  }
+  
+  @Test
+  public void duplicate_keys() throws Exception {
+    runInvalidTest("duplicate-keys");
+  }
+  
+  @Test
+  public void duplicate_tables() throws Exception {
+    runInvalidTest("duplicate-tables");
+  }
+
   @Test
   public void float_no_leading_zero() throws Exception {
     runInvalidTest("float-no-leading-zero");
@@ -166,8 +276,18 @@ public class BurntSushiTest {
   }
 
   @Test
+  public void text_after_integer() throws Exception {
+    runInvalidTest("text-after-integer");
+  }
+
+  @Test
   public void text_after_string() throws Exception {
     runInvalidTest("text-after-string");
+  }
+
+  @Test
+  public void text_after_table() throws Exception {
+    runInvalidTest("text-after-table");
   }
 
   @Test

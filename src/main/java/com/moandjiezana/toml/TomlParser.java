@@ -57,9 +57,6 @@ class TomlParser {
       if (!multiline && isTable(line)) {
         String tableName = getTableName(line);
         if (tableName != null) {
-//        Matcher matcher = TABLE_REGEX.matcher(line);
-//        matcher.matches();
-//        String tableName = matcher.group(1);
           results.startTables(tableName);
           String afterTableName = line.substring(tableName.length() + 2);
           if (!isComment(afterTableName)) {
@@ -71,8 +68,13 @@ class TomlParser {
 
         continue;
       }
+      
+      if (!multiline && !line.contains("=")) {
+        results.errors.append("Invalid key definition: " + line);
+        continue;
+      }
 
-      String[] pair = line.split("=");
+      String[] pair = line.split("=", 2);
 
       if (!multiline && MULTILINE_ARRAY_REGEX.matcher(pair[1].trim()).matches()) {
         multiline = true;
