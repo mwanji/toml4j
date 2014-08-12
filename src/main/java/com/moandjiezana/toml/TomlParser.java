@@ -100,7 +100,7 @@ class TomlParser {
       }
 
       if (!isKeyValid(key)) {
-        results.errors.append("Invalid key name: " + key);
+        results.errors.append("Invalid key name: " + key + "\n");
         continue;
       }
 
@@ -147,7 +147,7 @@ class TomlParser {
   }
 
   private boolean isKeyValid(String key) {
-    if (key.contains(".") || key.contains("#") || key.trim().isEmpty()) {
+    if (key.contains("#") || key.trim().isEmpty()) {
       return false;
     }
 
