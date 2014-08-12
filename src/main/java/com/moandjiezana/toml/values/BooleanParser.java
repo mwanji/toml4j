@@ -13,7 +13,7 @@ class BooleanParser implements ValueParser {
   public Object parse(String s) {
     if (s.startsWith("true") && !ValueParserUtils.isComment(s.substring(4)) ||
         s.startsWith("false") && !ValueParserUtils.isComment(s.substring(5))) {
-      return ValueAnalysis.INVALID;
+      return ValueConverter.INVALID;
     }
     
     return s.startsWith("true") ? Boolean.TRUE : Boolean.FALSE;

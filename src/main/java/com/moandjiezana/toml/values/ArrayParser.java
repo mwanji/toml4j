@@ -1,6 +1,6 @@
 package com.moandjiezana.toml.values;
 
-import static com.moandjiezana.toml.values.ValueAnalysis.INVALID;
+import static com.moandjiezana.toml.values.ValueConverter.INVALID;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ class ArrayParser implements ValueParser {
   static final ArrayParser ARRAY_PARSER = new ArrayParser();
 
   private static final List<Object> INVALID_ARRAY = new ArrayList<Object>();
-  private static final ValueAnalysis VALUE_ANALYSIS = new ValueAnalysis();
+  private static final ValueConverter VALUE_ANALYSIS = new ValueConverter();
 
   @Override
   public boolean canParse(String s) {

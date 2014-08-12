@@ -1,6 +1,6 @@
 package com.moandjiezana.toml.values;
 
-import static com.moandjiezana.toml.values.ValueAnalysis.INVALID;
+import static com.moandjiezana.toml.values.ValueConverter.INVALID;
 
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;

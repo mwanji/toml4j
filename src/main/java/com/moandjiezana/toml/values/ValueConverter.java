@@ -7,7 +7,7 @@ import static com.moandjiezana.toml.values.FloatParser.FLOAT_PARSER;
 import static com.moandjiezana.toml.values.IntegerParser.INTEGER_PARSER;
 import static com.moandjiezana.toml.values.StringParser.STRING_PARSER;
 
-public class ValueAnalysis {
+public class ValueConverter {
   public static final Object INVALID = new Object();
 
   public Object convert(String value) {

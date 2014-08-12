@@ -1,6 +1,6 @@
 package com.moandjiezana.toml.values;
 
-import static com.moandjiezana.toml.values.ValueAnalysis.INVALID;
+import static com.moandjiezana.toml.values.ValueConverter.INVALID;
 import static com.moandjiezana.toml.values.ValueParserUtils.isComment;
 
 import java.util.regex.Matcher;
