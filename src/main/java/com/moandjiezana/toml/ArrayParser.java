@@ -1,6 +1,6 @@
-package com.moandjiezana.toml.values;
+package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.values.ValueConverter.INVALID;
+import static com.moandjiezana.toml.ValueParserUtils.INVALID;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,8 +8,6 @@ import java.util.List;
 import org.parboiled.Parboiled;
 import org.parboiled.parserunners.BasicParseRunner;
 import org.parboiled.support.ParsingResult;
-
-import com.moandjiezana.toml.StatementParser;
 
 class ArrayParser implements ValueParser {
 

@@ -1,12 +1,12 @@
-package com.moandjiezana.toml.values;
+package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.values.ValueConverter.INVALID;
+import static com.moandjiezana.toml.ValueParserUtils.INVALID;
 
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DateParser implements ValueParser {
+class DateParser implements ValueParser {
 
   static final DateParser DATE_PARSER = new DateParser();
   private static final Pattern DATE_REGEX = Pattern.compile("(\\d{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]Z)(.*)");

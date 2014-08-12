@@ -1,7 +1,7 @@
-package com.moandjiezana.toml.values;
+package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.values.ValueConverter.INVALID;
-import static com.moandjiezana.toml.values.ValueParserUtils.isComment;
+import static com.moandjiezana.toml.ValueParserUtils.INVALID;
+import static com.moandjiezana.toml.ValueParserUtils.isComment;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

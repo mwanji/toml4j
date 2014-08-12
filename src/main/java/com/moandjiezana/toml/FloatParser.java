@@ -1,9 +1,9 @@
-package com.moandjiezana.toml.values;
+package com.moandjiezana.toml;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FloatParser implements ValueParser {
+class FloatParser implements ValueParser {
 
   public static final FloatParser FLOAT_PARSER = new FloatParser();
   private static final Pattern FLOAT_REGEX = Pattern.compile("(-?\\d+\\.\\d+)(.*)");

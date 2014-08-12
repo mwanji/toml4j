@@ -1,6 +1,7 @@
-package com.moandjiezana.toml.values;
+package com.moandjiezana.toml;
 
 class ValueParserUtils {
+  static final Object INVALID = new Object();
 
   static boolean isComment(String line) {
     if (line == null || line.isEmpty()) {

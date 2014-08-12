@@ -1,4 +1,6 @@
-package com.moandjiezana.toml.values;
+package com.moandjiezana.toml;
+
+import static com.moandjiezana.toml.ValueParserUtils.INVALID;
 
 class BooleanParser implements ValueParser {
   
@@ -13,7 +15,7 @@ class BooleanParser implements ValueParser {
   public Object parse(String s) {
     if (s.startsWith("true") && !ValueParserUtils.isComment(s.substring(4)) ||
         s.startsWith("false") && !ValueParserUtils.isComment(s.substring(5))) {
-      return ValueConverter.INVALID;
+      return INVALID;
     }
     
     return s.startsWith("true") ? Boolean.TRUE : Boolean.FALSE;

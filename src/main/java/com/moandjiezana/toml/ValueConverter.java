@@ -1,14 +1,14 @@
-package com.moandjiezana.toml.values;
+package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.values.ArrayParser.ARRAY_PARSER;
-import static com.moandjiezana.toml.values.BooleanParser.BOOLEAN_PARSER;
-import static com.moandjiezana.toml.values.DateParser.DATE_PARSER;
-import static com.moandjiezana.toml.values.FloatParser.FLOAT_PARSER;
-import static com.moandjiezana.toml.values.IntegerParser.INTEGER_PARSER;
-import static com.moandjiezana.toml.values.StringParser.STRING_PARSER;
+import static com.moandjiezana.toml.ArrayParser.ARRAY_PARSER;
+import static com.moandjiezana.toml.BooleanParser.BOOLEAN_PARSER;
+import static com.moandjiezana.toml.DateParser.DATE_PARSER;
+import static com.moandjiezana.toml.FloatParser.FLOAT_PARSER;
+import static com.moandjiezana.toml.IntegerParser.INTEGER_PARSER;
+import static com.moandjiezana.toml.StringParser.STRING_PARSER;
+import static com.moandjiezana.toml.ValueParserUtils.INVALID;
 
-public class ValueConverter {
-  public static final Object INVALID = new Object();
+class ValueConverter {
 
   public Object convert(String value) {
     if (STRING_PARSER.canParse(value)) {

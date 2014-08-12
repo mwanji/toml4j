@@ -7,15 +7,15 @@ import java.util.Map;
 import java.util.Set;
 
 class Results {
-  public Set<String> tables = new HashSet<String>();
-  public StringBuilder errors = new StringBuilder();
+  Set<String> tables = new HashSet<String>();
+  StringBuilder errors = new StringBuilder();
   private Deque<Container> stack = new ArrayDeque<Container>();
 
-  public Results() {
+  Results() {
     stack.push(new Container.Table());
   }
 
-  public void addValue(String key, Object value) {
+  void addValue(String key, Object value) {
     Container currentTable = stack.peek();
     if (currentTable.accepts(key)) {
       currentTable.put(key, value);
@@ -24,7 +24,7 @@ class Results {
     }
   }
 
-  public void startTableArray(String tableName) {
+  void startTableArray(String tableName) {
     while (stack.size() > 1) {
       stack.pop();
     }
@@ -62,7 +62,7 @@ class Results {
     }
   }
 
-  public void startTables(String tableName) {
+  void startTables(String tableName) {
     if (!tables.add(tableName)) {
       errors.append("Table " + tableName + " defined twice!\n");
     }
@@ -95,7 +95,7 @@ class Results {
   /**
    * Warning: After this method has been called, this instance is no longer usable.
    */
-  public Map<String, Object> consume() {
+  Map<String, Object> consume() {
     Container values = stack.getLast();
     stack.clear();
 

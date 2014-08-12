@@ -1,6 +1,6 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.values.ValueConverter.INVALID;
+import static com.moandjiezana.toml.ValueParserUtils.INVALID;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -9,16 +9,14 @@ import org.parboiled.Parboiled;
 import org.parboiled.parserunners.BasicParseRunner;
 import org.parboiled.support.ParsingResult;
 
-import com.moandjiezana.toml.values.ValueConverter;
-
-public class TomlParser {
+class TomlParser {
   private static final Pattern MULTILINE_ARRAY_REGEX = Pattern.compile("\\s*\\[([^\\]]*)");
   private static final Pattern MULTILINE_ARRAY_REGEX_END = Pattern.compile("\\s*\\]");
   private static final ValueConverter VALUE_ANALYSIS = new ValueConverter();
 
   private final Results results = new Results();
 
-  public Results run(String tomlString) {
+  Results run(String tomlString) {
     if (tomlString.isEmpty()) {
       return results;
     }
