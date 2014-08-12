@@ -352,6 +352,11 @@ public class TomlTest {
   public void should_fail_when_illegal_characters_after_key() throws Exception {
     new Toml().parse("number = 3.14  pi");
   }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_when_illegal_characters_after_integer() throws Exception {
+    new Toml().parse("number = 314  pi");
+  }
 
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_float_without_leading_0() {

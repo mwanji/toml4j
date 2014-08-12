@@ -14,6 +14,7 @@ import com.moandjiezana.toml.values.ValueAnalysis;
 public class TomlParser {
   private static final Pattern MULTILINE_ARRAY_REGEX = Pattern.compile("\\s*\\[([^\\]]*)");
   private static final Pattern MULTILINE_ARRAY_REGEX_END = Pattern.compile("\\s*\\]");
+  private static final ValueAnalysis VALUE_ANALYSIS = new ValueAnalysis();
 
   private final Results results = new Results();
 
@@ -103,9 +104,7 @@ public class TomlParser {
         continue;
       }
 
-      ValueAnalysis lineAnalysis = new ValueAnalysis(value);
-
-      Object convertedValue = lineAnalysis.getValue();
+      Object convertedValue = VALUE_ANALYSIS.convert(value);
 
       if (convertedValue != INVALID) {
         results.addValue(key, convertedValue);
