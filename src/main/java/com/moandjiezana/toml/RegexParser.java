@@ -146,7 +146,7 @@ public class RegexParser {
   }
 
   private boolean isKeyValid(String key) {
-    if (key.contains(".")) {
+    if (key.contains(".") || key.contains("#") || key.trim().isEmpty()) {
       return false;
     }
 

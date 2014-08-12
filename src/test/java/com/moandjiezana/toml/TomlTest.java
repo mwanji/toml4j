@@ -307,7 +307,17 @@ public class TomlTest {
   public void should_fail_when_dot_in_key_name() throws Exception {
     new Toml().parse("a.a = 1");
   }
-
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_empty_key_name() throws Exception {
+    new Toml().parse(" = 1");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_key_name_with_hash() throws Exception {
+    new Toml().parse("a# = 1");
+  }
+  
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_non_existant_date() throws Exception {
     new Toml().parse("d = 2012-13-01T15:00:00Z");
