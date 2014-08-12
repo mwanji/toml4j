@@ -5,11 +5,9 @@ import java.util.List;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
-import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressNode;
 
-@BuildParseTree
-public class ParboiledParser extends BaseParser<List<Object>> {
+public class StatementParser extends BaseParser<List<Object>> {
 
   public Rule Array() {
     return FirstOf(EmptyArray(), Sequence('[', startList(), OneOrMore(FirstOf(NonEmptyArray(), ' ', ',')), ']', endList()));

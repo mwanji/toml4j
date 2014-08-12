@@ -126,7 +126,7 @@ public class Toml {
    * @throws IllegalStateException If tomlString is not valid TOML
    */
   public Toml parse(String tomlString) throws IllegalStateException {
-    Results results = new RegexParser().run(tomlString);
+    Results results = new TomlParser().run(tomlString);
     if (results.errors.length() > 0) {
       throw new IllegalStateException(results.errors.toString());
     }

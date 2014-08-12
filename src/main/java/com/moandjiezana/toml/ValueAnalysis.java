@@ -41,7 +41,7 @@ class ValueAnalysis {
     } else if (isBoolean(value)) {
       return Boolean.valueOf(chosenMatcher.group(1));
     } else if (isArray(value)) {
-      ParboiledParser parser = Parboiled.createParser(ParboiledParser.class);
+      StatementParser parser = Parboiled.createParser(StatementParser.class);
       ParsingResult<List<Object>> parsingResult = new BasicParseRunner<List<Object>>(parser.Array()).run(value);
       List<Object> tokens = parsingResult.resultValue;
       List<Object> values = convertList(tokens);
