@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -246,8 +247,18 @@ public class Toml {
   private Object get(String key) {
     String[] split = key.split("\\.");
     Object current = new HashMap<String, Object>(values);
-
-    for (String splitKey : split) {
+    
+    for (int i = 0; i < split.length; i++) {
+      if (i == 0 && values.containsKey(key)) {
+        return values.get(key);
+      }
+      
+      String keyWithDot = join(Arrays.copyOfRange(split, i, split.length));
+      if (current instanceof Map && ((Map<String, Object>) current).containsKey(keyWithDot)) {
+        return ((Map<String, Object>) current).get(keyWithDot);
+      }
+      
+      String splitKey = split[i];
       Matcher matcher = ARRAY_INDEX_PATTERN.matcher(splitKey);
       int index = -1;
 
@@ -268,6 +279,20 @@ public class Toml {
     }
 
     return current;
+  }
+  
+  private String join(String[] strings) {
+    StringBuilder sb = new StringBuilder();
+    
+    for (String string : strings) {
+      sb.append(string).append('.');
+    }
+    
+    if (sb.length() > 0) {
+      sb.deleteCharAt(sb.length() - 1);
+    }
+    
+    return sb.toString();
   }
 
   private Toml(Toml defaults, Map<String, Object> values) {

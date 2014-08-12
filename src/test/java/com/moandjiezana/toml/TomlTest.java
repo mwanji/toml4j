@@ -232,6 +232,19 @@ public class TomlTest {
 
     assertTrue(toml.getBoolean("key?"));
   }
+  
+  @Test
+  public void should_support_dots_in_key_names() throws Exception {
+    Toml toml = new Toml().parse(file("should_support_dots_in_key_names"));
+    
+    assertEquals(1, toml.getLong("a").intValue());
+    assertEquals(2, toml.getLong("b.c").intValue());
+    assertEquals(3, toml.getTable("b").getLong("c").intValue());
+    assertEquals(4, toml.getLong("b.a.b").intValue());
+    assertEquals(5, toml.getLong("d.e.a").intValue());
+    assertEquals(6, toml.getLong("d.e.a.b.c").intValue());
+    assertEquals(6, toml.getTable("d.e").getLong("a.b.c").intValue());
+  }
 
   @Test
   public void should_support_underscores_in_table_names() throws Exception {
@@ -301,11 +314,6 @@ public class TomlTest {
     Toml toml = new Toml().parse("key=[1,2,3,]");
 
     assertEquals(asList(1L, 2L, 3L), toml.getList("key", Long.class));
-  }
-
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_when_dot_in_key_name() throws Exception {
-    new Toml().parse("a.a = 1");
   }
   
   @Test(expected = IllegalStateException.class)

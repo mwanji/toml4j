@@ -14,7 +14,6 @@ import java.util.TimeZone;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.gson.Gson;
@@ -115,9 +114,13 @@ public class BurntSushiValidTest {
   }
   
   @Test
-  @Ignore
   public void key_special_chars() throws Exception {
     run("key-special-chars");
+  }
+  
+  @Test
+  public void keys_with_dots() throws Exception {
+    run("keys-with-dots");
   }
   
   @Test
