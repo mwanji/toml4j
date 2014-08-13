@@ -21,8 +21,7 @@ class TomlParser {
 
     String[] lines = tomlString.split("[\\n\\r]");
     StringBuilder multilineBuilder = new StringBuilder();
-    boolean multiline = false;
-    boolean multilineString = false;
+    Multiline multiline = Multiline.NONE;
     
     String key = null;
     String value = null;
@@ -30,7 +29,7 @@ class TomlParser {
     for (int i = 0; i < lines.length; i++) {
       String line = lines[i];
 
-      if (line != null && !multilineString) {
+      if (line != null && multiline != Multiline.STRING) {
         line = line.trim();
       }
 
@@ -53,7 +52,7 @@ class TomlParser {
         continue;
       }
 
-      if (!multiline && !multilineString && isTable(line)) {
+      if (multiline.isNotMultiline() && isTable(line)) {
         String tableName = getTableName(line);
         if (tableName != null) {
           results.startTables(tableName);
@@ -64,27 +63,27 @@ class TomlParser {
         continue;
       }
       
-      if (!multiline && !multilineString && !line.contains("=")) {
+      if (multiline.isNotMultiline() && !line.contains("=")) {
         results.errors.append("Invalid key definition: " + line);
         continue;
       }
 
       String[] pair = line.split("=", 2);
 
-      if (!multiline && !multilineString && MULTILINE_ARRAY_REGEX.matcher(pair[1].trim()).matches()) {
-        multiline = true;
+      if (multiline.isNotMultiline() && MULTILINE_ARRAY_REGEX.matcher(pair[1].trim()).matches()) {
+        multiline = Multiline.ARRAY;
         key = pair[0].trim();
         multilineBuilder.append(removeComment(pair[1]));
         continue;
       }
 
-      if (!multiline && !multilineString && pair[1].trim().startsWith("\"\"\"")) {
-        multilineString = true;
+      if (multiline.isNotMultiline() && pair[1].trim().startsWith("\"\"\"")) {
+        multiline = Multiline.STRING;
         multilineBuilder.append(pair[1]);
         key = pair[0].trim();
 
         if (pair[1].trim().indexOf("\"\"\"", 3) > -1) {
-          multilineString = false;
+          multiline = Multiline.NONE;
           pair[1] = multilineBuilder.toString().trim();
           multilineBuilder.delete(0, multilineBuilder.length());
         } else {
@@ -92,20 +91,20 @@ class TomlParser {
         }
       }
 
-      if (multiline) {
+      if (multiline == Multiline.ARRAY) {
         String lineWithoutComment = removeComment(line);
         multilineBuilder.append(lineWithoutComment);
         if (MULTILINE_ARRAY_REGEX_END.matcher(lineWithoutComment).matches()) {
-          multiline = false;
+          multiline = Multiline.NONE;
           value = multilineBuilder.toString();
           multilineBuilder.delete(0, multilineBuilder.length());
         } else {
           continue;
         }
-      } else if (multilineString) {
+      } else if (multiline == Multiline.STRING) {
         multilineBuilder.append(line);
         if (line.contains("\"\"\"")) {
-          multilineString = false;
+          multiline = Multiline.NONE;
           value = multilineBuilder.toString().trim();
           multilineBuilder.delete(0, multilineBuilder.length());
         } else {
@@ -201,5 +200,13 @@ class TomlParser {
     }
 
     return line;
+  }
+  
+  private static enum Multiline {
+    NONE, ARRAY, STRING;
+    
+    public boolean isNotMultiline() {
+      return this == NONE;
+    }
   }
 }
