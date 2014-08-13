@@ -53,7 +53,16 @@ public class TomlTest {
     
     assertEquals(toml.getString("ref"), toml.getString("multi1"));
     assertEquals(toml.getString("ref"), toml.getString("multi2"));
+  }
+  
+  @Test
+  public void should_get_literal_string() throws Exception {
+    Toml toml = new Toml().parse(file("should_get_literal_string"));
     
+    assertEquals("C:\\Users\\nodejs\\templates", toml.getString("winpath"));
+    assertEquals("\\\\ServerX\\admin$\\system32\\", toml.getString("winpath2"));
+    assertEquals("Tom \"Dubs\" Preston-Werner", toml.getString("quoted"));
+    assertEquals("<\\i\\c*\\s*>", toml.getString("regex"));
   }
 
   @Test
@@ -413,6 +422,11 @@ public class TomlTest {
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_invalid_boolean_false() {
     new Toml().parse("answer = false abc");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_invalid_literal_string() {
+    new Toml().parse("a = ' ' jdkf");
   }
   
   private File file(String file) {

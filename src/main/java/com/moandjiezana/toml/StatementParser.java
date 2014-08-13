@@ -21,6 +21,10 @@ class StatementParser extends BaseParser<List<Object>> {
     return Sequence('[', '[', startList(), Sequence(OneOrMore(NoneOf("[]")), pushToken(match())), ']', ']', endList(), FirstOf(EOI, Sequence(TestNot(']'), ANY)));
   }
 
+  public Rule LiteralString() {
+    return FirstOf(Sequence('\'', '\'', startList(), pushToken(""), endList()), Sequence('\'', OneOrMore(TestNot("'"), ANY), startList(), pushToken(match()) , '\'', endList(), FirstOf(EOI, OneOrMore(' ', Sequence('#', ZeroOrMore(ANY))))));
+  }
+
   Rule NonEmptyArray() {
     return FirstOf(Array(), OneOrMore(TestNot(']'), FirstOf(String(), Array(), ',', ' ', OtherValue())));
   }
