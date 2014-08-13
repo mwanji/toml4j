@@ -11,26 +11,18 @@ import static com.moandjiezana.toml.StringParser.STRING_PARSER;
 import static com.moandjiezana.toml.ValueParserUtils.INVALID;
 
 class ValueConverter {
+  
+  private static final ValueParser[] PARSERS = { 
+    MULTILINE_STRING_PARSER, LITERAL_STRING_PARSER, STRING_PARSER, DATE_PARSER, INTEGER_PARSER, FLOAT_PARSER, BOOLEAN_PARSER, ARRAY_PARSER
+  };
 
   public Object convert(String value) {
-    if (MULTILINE_STRING_PARSER.canParse(value)) {
-      return MULTILINE_STRING_PARSER.parse(value);
-    } else if (LITERAL_STRING_PARSER.canParse(value)) {
-      return LITERAL_STRING_PARSER.parse(value);
-    } else if (STRING_PARSER.canParse(value)) {
-      return STRING_PARSER.parse(value);
-    } else if (INTEGER_PARSER.canParse(value)) {
-      return INTEGER_PARSER.parse(value);
-    } else if (FLOAT_PARSER.canParse(value)) {
-      return FLOAT_PARSER.parse(value);
-    } else if (BOOLEAN_PARSER.canParse(value)) {
-      return BOOLEAN_PARSER.parse(value);
-    } else if (ARRAY_PARSER.canParse(value)) {
-      return ARRAY_PARSER.parse(value);
-    } else if (DATE_PARSER.canParse(value)) {
-      return DATE_PARSER.parse(value);
-    } else {
-      return INVALID;
+    for (ValueParser valueParser : PARSERS) {
+      if (valueParser.canParse(value)) {
+        return valueParser.parse(value);
+      }
     }
+    
+    return INVALID;
   }
 }
