@@ -18,7 +18,7 @@ class BooleanConverter implements ValueConverter {
 
   @Override
   public Object convert(String s) {
-    StatementParser parser = Parboiled.createParser(StatementParser.class);
+    ValueParser parser = Parboiled.createParser(ValueParser.class);
     
     List<String> resultValue = new BasicParseRunner<List<String>>(parser.Boolean()).run(s).resultValue;
     

@@ -16,7 +16,7 @@ class LiteralStringConverter implements ValueConverter {
 
   @Override
   public Object convert(String s) {
-    StatementParser parser = Parboiled.createParser(StatementParser.class);
+    ValueParser parser = Parboiled.createParser(ValueParser.class);
     List<Object> resultValue = new BasicParseRunner<List<Object>>(parser.LiteralString()).run(s).resultValue;
     
     if (resultValue == null) {

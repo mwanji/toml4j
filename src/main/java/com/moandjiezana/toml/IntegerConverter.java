@@ -10,13 +10,13 @@ class IntegerConverter implements ValueConverter {
 
   @Override
   public boolean canConvert(String s) {
-    StatementParser parser = Parboiled.createParser(StatementParser.class);
+    ValueParser parser = Parboiled.createParser(ValueParser.class);
     return new BasicParseRunner<Object>(parser.Integer()).run(s).resultValue != null;
   }
 
   @Override
   public Object convert(String s) {
-    StatementParser parser = Parboiled.createParser(StatementParser.class);
+    ValueParser parser = Parboiled.createParser(ValueParser.class);
     List<String> resultValue = new BasicParseRunner<List<String>>(parser.Integer()).run(s).resultValue;
     
     if (resultValue == null) {

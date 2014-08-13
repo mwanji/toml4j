@@ -23,7 +23,7 @@ class ArrayConverter implements ValueConverter {
 
   @Override
   public Object convert(String s) {
-    StatementParser parser = Parboiled.createParser(StatementParser.class);
+    ValueParser parser = Parboiled.createParser(ValueParser.class);
     ParsingResult<List<Object>> parsingResult = new BasicParseRunner<List<Object>>(parser.Array()).run(s);
     List<Object> tokens = parsingResult.resultValue;
     List<Object> values = convertList(tokens);

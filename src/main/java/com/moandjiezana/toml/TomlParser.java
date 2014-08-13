@@ -141,7 +141,7 @@ class TomlParser {
   }
   
   private String getTableArrayName(String line) {
-    StatementParser parser = Parboiled.createParser(StatementParser.class);
+    ValueParser parser = Parboiled.createParser(ValueParser.class);
     ParsingResult<List<Object>> parsingResult = new BasicParseRunner<List<Object>>(parser.TableArray()).run(line);
 
     if (parsingResult.resultValue == null) {
@@ -156,7 +156,7 @@ class TomlParser {
   }
 
   private String getTableName(String line) {
-    StatementParser parser = Parboiled.createParser(StatementParser.class);
+    ValueParser parser = Parboiled.createParser(ValueParser.class);
     ParsingResult<List<Object>> parsingResult = new BasicParseRunner<List<Object>>(parser.Table()).run(line);
 
     if (parsingResult.resultValue == null) {
