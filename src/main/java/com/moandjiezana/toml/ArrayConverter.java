@@ -1,6 +1,6 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueParserUtils.INVALID;
+import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,20 +9,20 @@ import org.parboiled.Parboiled;
 import org.parboiled.parserunners.BasicParseRunner;
 import org.parboiled.support.ParsingResult;
 
-class ArrayParser implements ValueParser {
+class ArrayConverter implements ValueConverter {
 
-  static final ArrayParser ARRAY_PARSER = new ArrayParser();
+  static final ArrayConverter ARRAY_PARSER = new ArrayConverter();
 
   private static final List<Object> INVALID_ARRAY = new ArrayList<Object>();
-  private static final ValueConverter VALUE_ANALYSIS = new ValueConverter();
+  private static final ValueConverters VALUE_ANALYSIS = new ValueConverters();
 
   @Override
-  public boolean canParse(String s) {
+  public boolean canConvert(String s) {
     return s.startsWith("[");
   }
 
   @Override
-  public Object parse(String s) {
+  public Object convert(String s) {
     StatementParser parser = Parboiled.createParser(StatementParser.class);
     ParsingResult<List<Object>> parsingResult = new BasicParseRunner<List<Object>>(parser.Array()).run(s);
     List<Object> tokens = parsingResult.resultValue;
@@ -67,5 +67,5 @@ class ArrayParser implements ValueParser {
     return values.isEmpty() || values.get(0).getClass().isAssignableFrom(o.getClass()) || o.getClass().isAssignableFrom(values.get(0).getClass());
   }
 
-  private ArrayParser() {}
+  private ArrayConverter() {}
 }

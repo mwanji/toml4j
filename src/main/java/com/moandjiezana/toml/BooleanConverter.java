@@ -1,23 +1,23 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueParserUtils.INVALID;
+import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
 
 import java.util.List;
 
 import org.parboiled.Parboiled;
 import org.parboiled.parserunners.BasicParseRunner;
 
-class BooleanParser implements ValueParser {
+class BooleanConverter implements ValueConverter {
   
-  static final BooleanParser BOOLEAN_PARSER = new BooleanParser(); 
+  static final BooleanConverter BOOLEAN_PARSER = new BooleanConverter(); 
 
   @Override
-  public boolean canParse(String s) {
+  public boolean canConvert(String s) {
     return s.startsWith("true") || s.startsWith("false");
   }
 
   @Override
-  public Object parse(String s) {
+  public Object convert(String s) {
     StatementParser parser = Parboiled.createParser(StatementParser.class);
     
     List<String> resultValue = new BasicParseRunner<List<String>>(parser.Boolean()).run(s).resultValue;
@@ -29,5 +29,5 @@ class BooleanParser implements ValueParser {
     return Boolean.valueOf(resultValue.get(0));
   }
 
-  private BooleanParser() {}
+  private BooleanConverter() {}
 }

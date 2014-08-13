@@ -1,23 +1,23 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueParserUtils.INVALID;
-import static com.moandjiezana.toml.ValueParserUtils.isComment;
+import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
+import static com.moandjiezana.toml.ValueConverterUtils.isComment;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class StringParser implements ValueParser {
+class StringConverter implements ValueConverter {
   
-  static final StringParser STRING_PARSER = new StringParser();
+  static final StringConverter STRING_PARSER = new StringConverter();
   private static final Pattern UNICODE_REGEX = Pattern.compile("\\\\u(.*)");
 
   @Override
-  public boolean canParse(String s) {
+  public boolean canConvert(String s) {
     return s.startsWith("\"");
   }
 
   @Override
-  public Object parse(String value) {
+  public Object convert(String value) {
     int stringTerminator = -1;
     char[] chars = value.toCharArray();
 
@@ -73,5 +73,5 @@ class StringParser implements ValueParser {
       .replace("\\f", "\f");
   }
   
-  private StringParser() {}
+  private StringConverter() {}
 }

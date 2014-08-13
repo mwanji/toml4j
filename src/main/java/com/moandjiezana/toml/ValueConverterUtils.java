@@ -1,6 +1,6 @@
 package com.moandjiezana.toml;
 
-class ValueParserUtils {
+class ValueConverterUtils {
   static final Object INVALID = new Object();
 
   static boolean isComment(String line) {
@@ -21,5 +21,5 @@ class ValueParserUtils {
     return false;
   }
 
-  private ValueParserUtils() {}
+  private ValueConverterUtils() {}
 }

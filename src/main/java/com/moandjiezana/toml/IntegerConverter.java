@@ -5,26 +5,26 @@ import java.util.List;
 import org.parboiled.Parboiled;
 import org.parboiled.parserunners.BasicParseRunner;
 
-class IntegerParser implements ValueParser {
-  static final IntegerParser INTEGER_PARSER = new IntegerParser();
+class IntegerConverter implements ValueConverter {
+  static final IntegerConverter INTEGER_PARSER = new IntegerConverter();
 
   @Override
-  public boolean canParse(String s) {
+  public boolean canConvert(String s) {
     StatementParser parser = Parboiled.createParser(StatementParser.class);
     return new BasicParseRunner<Object>(parser.Integer()).run(s).resultValue != null;
   }
 
   @Override
-  public Object parse(String s) {
+  public Object convert(String s) {
     StatementParser parser = Parboiled.createParser(StatementParser.class);
     List<String> resultValue = new BasicParseRunner<List<String>>(parser.Integer()).run(s).resultValue;
     
     if (resultValue == null) {
-      return ValueParserUtils.INVALID;
+      return ValueConverterUtils.INVALID;
     }
 
     return Long.valueOf(resultValue.get(0));
   }
 
-  private IntegerParser() {}
+  private IntegerConverter() {}
 }

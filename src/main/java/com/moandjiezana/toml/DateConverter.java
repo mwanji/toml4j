@@ -1,25 +1,25 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueParserUtils.INVALID;
+import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
 
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class DateParser implements ValueParser {
+class DateConverter implements ValueConverter {
 
-  static final DateParser DATE_PARSER = new DateParser();
+  static final DateConverter DATE_PARSER = new DateConverter();
   private static final Pattern DATE_REGEX = Pattern.compile("(\\d{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]Z)(.*)");
 
   @Override
-  public boolean canParse(String s) {
+  public boolean canConvert(String s) {
     Matcher matcher = DATE_REGEX.matcher(s);
 
-    return matcher.matches() && ValueParserUtils.isComment(matcher.group(2));
+    return matcher.matches() && ValueConverterUtils.isComment(matcher.group(2));
   }
 
   @Override
-  public Object parse(String s) {
+  public Object convert(String s) {
     Matcher matcher = DATE_REGEX.matcher(s);
     matcher.matches();
     s = matcher.group(1).replace("Z", "+00:00");
@@ -33,5 +33,5 @@ class DateParser implements ValueParser {
     }
   }
   
-  private DateParser() {}
+  private DateConverter() {}
 }
