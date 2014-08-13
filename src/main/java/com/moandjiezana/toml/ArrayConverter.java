@@ -1,13 +1,11 @@
 package com.moandjiezana.toml;
 
 import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
+import static com.moandjiezana.toml.ValueConverterUtils.parse;
+import static com.moandjiezana.toml.ValueConverterUtils.parser;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.parboiled.Parboiled;
-import org.parboiled.parserunners.BasicParseRunner;
-import org.parboiled.support.ParsingResult;
 
 class ArrayConverter implements ValueConverter {
 
@@ -23,9 +21,7 @@ class ArrayConverter implements ValueConverter {
 
   @Override
   public Object convert(String s) {
-    ValueParser parser = Parboiled.createParser(ValueParser.class);
-    ParsingResult<List<Object>> parsingResult = new BasicParseRunner<List<Object>>(parser.Array()).run(s);
-    List<Object> tokens = parsingResult.resultValue;
+    List<Object> tokens = parse(parser().Array(), s);
     List<Object> values = convertList(tokens);
 
     if (values == INVALID_ARRAY) {

@@ -1,23 +1,21 @@
 package com.moandjiezana.toml;
 
-import java.util.List;
+import static com.moandjiezana.toml.ValueConverterUtils.parse;
+import static com.moandjiezana.toml.ValueConverterUtils.parser;
 
-import org.parboiled.Parboiled;
-import org.parboiled.parserunners.BasicParseRunner;
+import java.util.List;
 
 class IntegerConverter implements ValueConverter {
   static final IntegerConverter INTEGER_PARSER = new IntegerConverter();
 
   @Override
   public boolean canConvert(String s) {
-    ValueParser parser = Parboiled.createParser(ValueParser.class);
-    return new BasicParseRunner<Object>(parser.Integer()).run(s).resultValue != null;
+    return parse(parser().Integer(), s) != null;
   }
 
   @Override
   public Object convert(String s) {
-    ValueParser parser = Parboiled.createParser(ValueParser.class);
-    List<String> resultValue = new BasicParseRunner<List<String>>(parser.Integer()).run(s).resultValue;
+    List<String> resultValue = parse(parser().Integer(), s);
     
     if (resultValue == null) {
       return ValueConverterUtils.INVALID;

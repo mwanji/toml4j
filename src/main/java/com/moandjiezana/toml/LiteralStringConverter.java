@@ -3,7 +3,6 @@ package com.moandjiezana.toml;
 import java.util.List;
 
 import org.parboiled.Parboiled;
-import org.parboiled.parserunners.BasicParseRunner;
 
 class LiteralStringConverter implements ValueConverter {
 
@@ -17,7 +16,7 @@ class LiteralStringConverter implements ValueConverter {
   @Override
   public Object convert(String s) {
     ValueParser parser = Parboiled.createParser(ValueParser.class);
-    List<Object> resultValue = new BasicParseRunner<List<Object>>(parser.LiteralString()).run(s).resultValue;
+    List<String> resultValue = ValueConverterUtils.parse(ValueConverterUtils.parser().LiteralString(), s);
     
     if (resultValue == null) {
       return ValueConverterUtils.INVALID;

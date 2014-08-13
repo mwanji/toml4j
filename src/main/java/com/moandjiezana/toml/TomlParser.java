@@ -1,13 +1,11 @@
 package com.moandjiezana.toml;
 
 import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
+import static com.moandjiezana.toml.ValueConverterUtils.parse;
+import static com.moandjiezana.toml.ValueConverterUtils.parser;
 
 import java.util.List;
 import java.util.regex.Pattern;
-
-import org.parboiled.Parboiled;
-import org.parboiled.parserunners.BasicParseRunner;
-import org.parboiled.support.ParsingResult;
 
 class TomlParser {
   private static final Pattern MULTILINE_ARRAY_REGEX = Pattern.compile("\\s*\\[([^\\]]*)");
@@ -141,14 +139,12 @@ class TomlParser {
   }
   
   private String getTableArrayName(String line) {
-    ValueParser parser = Parboiled.createParser(ValueParser.class);
-    ParsingResult<List<Object>> parsingResult = new BasicParseRunner<List<Object>>(parser.TableArray()).run(line);
-
-    if (parsingResult.resultValue == null) {
+    List<Object> resultValue = parse(parser().TableArray(), line);
+    if (resultValue == null) {
       return null;
     }
 
-    return (String) parsingResult.resultValue.get(0);
+    return (String) resultValue.get(0);
   }
 
   private boolean isTable(String line) {
@@ -156,14 +152,12 @@ class TomlParser {
   }
 
   private String getTableName(String line) {
-    ValueParser parser = Parboiled.createParser(ValueParser.class);
-    ParsingResult<List<Object>> parsingResult = new BasicParseRunner<List<Object>>(parser.Table()).run(line);
-
-    if (parsingResult.resultValue == null) {
+    List<Object> resultValue = parse(parser().Table(), line);
+    if (resultValue == null) {
       return null;
     }
 
-    return (String) parsingResult.resultValue.get(0);
+    return (String) resultValue.get(0);
   }
 
   private boolean isKeyValid(String key) {

@@ -1,11 +1,10 @@
 package com.moandjiezana.toml;
 
 import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
+import static com.moandjiezana.toml.ValueConverterUtils.parse;
+import static com.moandjiezana.toml.ValueConverterUtils.parser;
 
 import java.util.List;
-
-import org.parboiled.Parboiled;
-import org.parboiled.parserunners.BasicParseRunner;
 
 class BooleanConverter implements ValueConverter {
   
@@ -18,9 +17,7 @@ class BooleanConverter implements ValueConverter {
 
   @Override
   public Object convert(String s) {
-    ValueParser parser = Parboiled.createParser(ValueParser.class);
-    
-    List<String> resultValue = new BasicParseRunner<List<String>>(parser.Boolean()).run(s).resultValue;
+    List<String> resultValue = parse(parser().Boolean(), s);
     
     if (resultValue == null) {
       return INVALID;
