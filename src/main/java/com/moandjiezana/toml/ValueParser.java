@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
+import org.parboiled.annotations.BuildParseTree;
 
+@BuildParseTree
 class ValueParser extends BaseParser<List<Object>> {
 
   public Rule Array() {
@@ -33,15 +35,15 @@ class ValueParser extends BaseParser<List<Object>> {
   }
 
   Rule NonEmptyArray() {
-    return FirstOf(Array(), OneOrMore(TestNot(']'), FirstOf(String(), Array(), ',', ' ', OtherValue())));
+    return FirstOf(Array(), OneOrMore(TestNot(']'), FirstOf(StringToken(), Array(), ',', ' ', OtherValue())));
+  }
+  
+  Rule StringToken() {
+    return Sequence(Sequence('"', ZeroOrMore(Sequence(TestNot('"'), ANY)), '"'), pushToken(match()));
   }
   
   Rule EmptyArray() {
     return Sequence('[', ']', startList(), endList());
-  }
-
-  Rule String() {
-    return Sequence(Sequence('"', ZeroOrMore(TestNot('"'), ANY), '"'), pushToken(match()));
   }
 
   Rule OtherValue() {
