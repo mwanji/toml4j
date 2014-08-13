@@ -59,10 +59,6 @@ class TomlParser {
         String tableName = getTableName(line);
         if (tableName != null) {
           results.startTables(tableName);
-          String afterTableName = line.substring(tableName.length() + 2);
-          if (!isComment(afterTableName)) {
-            results.errors.append("Invalid table definition: " + line + "\n\n");
-          }
         } else {
           results.errors.append("Invalid table definition: " + line + "\n\n");
         }

@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
-import org.parboiled.annotations.SuppressNode;
 
 class StatementParser extends BaseParser<List<Object>> {
 
@@ -14,7 +13,7 @@ class StatementParser extends BaseParser<List<Object>> {
   }
 
   public Rule Table() {
-    return Sequence('[', startList(), Sequence(OneOrMore(NoneOf("[]")), pushToken(match())), ']', endList(), FirstOf(EOI, Sequence(TestNot(']'), ANY)));
+    return Sequence('[', startList(), Sequence(OneOrMore(NoneOf("[]")), pushToken(match())), ']', endList(), Comment());
   }
   
   public Rule TableArray() {
@@ -22,7 +21,15 @@ class StatementParser extends BaseParser<List<Object>> {
   }
 
   public Rule LiteralString() {
-    return FirstOf(Sequence('\'', '\'', startList(), pushToken(""), endList()), Sequence('\'', OneOrMore(TestNot("'"), ANY), startList(), pushToken(match()) , '\'', endList(), FirstOf(EOI, OneOrMore(' ', Sequence('#', ZeroOrMore(ANY))))));
+    return FirstOf(Sequence('\'', '\'', startList(), pushToken(""), endList()), Sequence('\'', OneOrMore(TestNot("'"), ANY), startList(), pushToken(match()) , '\'', endList(), Comment()));
+  }
+  
+  public Rule Boolean() {
+    return Sequence(startList(), FirstOf("true", "false"), pushToken(match()), endList(), Comment());
+  }
+  
+  public Rule Integer() {
+    return Sequence(startList(), Sequence(Sequence(Optional('-'), OneOrMore(CharRange('0', '9'))), pushToken(match())), endList(), Comment());
   }
 
   Rule NonEmptyArray() {
@@ -40,10 +47,9 @@ class StatementParser extends BaseParser<List<Object>> {
   Rule OtherValue() {
     return Sequence(ZeroOrMore(NoneOf("],")), pushToken(match()));
   }
-
-  @SuppressNode
+  
   Rule Comment() {
-    return OneOrMore(FirstOf(AnyOf("\t"), EOI));
+    return FirstOf(EOI, OneOrMore(' ', Sequence('#', ZeroOrMore(ANY))));
   }
 
   boolean startList() {

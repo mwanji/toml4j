@@ -1,28 +1,29 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueParserUtils.isComment;
+import java.util.List;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.parboiled.Parboiled;
+import org.parboiled.parserunners.BasicParseRunner;
 
 class IntegerParser implements ValueParser {
-
-  private static final Pattern INTEGER_REGEX = Pattern.compile("(-?[0-9]*)(.*)");
   static final IntegerParser INTEGER_PARSER = new IntegerParser();
 
   @Override
   public boolean canParse(String s) {
-    Matcher matcher = INTEGER_REGEX.matcher(s);
-
-    return matcher.matches() && isComment(matcher.group(2));
+    StatementParser parser = Parboiled.createParser(StatementParser.class);
+    return new BasicParseRunner<Object>(parser.Integer()).run(s).resultValue != null;
   }
 
   @Override
   public Object parse(String s) {
-    Matcher matcher = INTEGER_REGEX.matcher(s);
-    matcher.matches();
+    StatementParser parser = Parboiled.createParser(StatementParser.class);
+    List<String> resultValue = new BasicParseRunner<List<String>>(parser.Integer()).run(s).resultValue;
     
-    return Long.valueOf(matcher.group(1));
+    if (resultValue == null) {
+      return ValueParserUtils.INVALID;
+    }
+
+    return Long.valueOf(resultValue.get(0));
   }
 
   private IntegerParser() {}
