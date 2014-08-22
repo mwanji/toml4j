@@ -1,8 +1,9 @@
 package com.moandjiezana.toml;
 
-import java.util.List;
+import static com.moandjiezana.toml.ValueConverterUtils.parse;
+import static com.moandjiezana.toml.ValueConverterUtils.parser;
 
-import org.parboiled.Parboiled;
+import java.util.List;
 
 class LiteralStringConverter implements ValueConverter {
 
@@ -15,8 +16,7 @@ class LiteralStringConverter implements ValueConverter {
 
   @Override
   public Object convert(String s) {
-    ValueParser parser = Parboiled.createParser(ValueParser.class);
-    List<String> resultValue = ValueConverterUtils.parse(ValueConverterUtils.parser().LiteralString(), s);
+    List<String> resultValue = parse(parser().LiteralString(), s);
     
     if (resultValue == null) {
       return ValueConverterUtils.INVALID;
