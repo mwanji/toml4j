@@ -1,5 +1,5 @@
 ref = "One\nTwo"
-one_line = """One\nTwo"""
+one_line = """One\nTwo""" # comment
 many_lines = """
 One
-Two"""
+Two""" # comment

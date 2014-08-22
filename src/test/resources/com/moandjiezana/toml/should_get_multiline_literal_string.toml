@@ -1,0 +1,12 @@
+regex2_ref = "I [dw]on't need \\d{2} apples"
+regex2 = '''I [dw]on't need \d{2} apples'''
+
+lines_ref = "The first newline is\ntrimmed in raw strings.\n   All other whitespace\n   is preserved.\n"
+lines  = '''
+The first newline is
+trimmed in raw strings.
+   All other whitespace
+   is preserved.
+'''
+
+empty_line = ''''''

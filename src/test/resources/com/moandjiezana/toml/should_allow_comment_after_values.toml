@@ -4,3 +4,9 @@ c = "abc" # comment
 d = 2014-08-04T13:47:00Z # comment
 e = ["a", "b"] # comment
 f = true # comment
+g = """abc""" # comment
+h = '''abc''' # comment
+i = """abc
+abc""" # comment
+j = '''abc
+abc''' # comment

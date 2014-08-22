@@ -1,5 +1,5 @@
 NEXT
-Multiline strings.
+Multiline and literal strings.
 Pass TOML validator (https://github.com/BurntSushi/toml-test), which uncovered many bugs.
 Key names can contain dots.
 Reduced visibility of internal classes, so that only Toml class is visible to users.

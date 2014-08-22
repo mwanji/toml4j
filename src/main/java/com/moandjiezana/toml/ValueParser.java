@@ -6,9 +6,22 @@ import java.util.List;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
+import org.parboiled.parserunners.RecoveringParseRunner;
+import org.parboiled.support.ParseTreeUtils;
+import org.parboiled.support.ParsingResult;
 
 @BuildParseTree
 class ValueParser extends BaseParser<List<Object>> {
+  
+  public static void main(String[] args) {
+    ParsingResult<Object> parsingResult = new RecoveringParseRunner<Object>(ValueConverterUtils.parser().T()).run("'''abc''' # comment");
+    
+    System.out.println(ParseTreeUtils.printNodeTree(parsingResult));
+  }
+  
+  public Rule T() {
+    return Sequence("'''", OneOrMore(TestNot("'''"), ANY), "'''", Comment());
+  }
 
   public Rule Array() {
     return FirstOf(EmptyArray(), Sequence('[', startList(), OneOrMore(FirstOf(NonEmptyArray(), ' ', ',')), ']', endList()));
@@ -23,7 +36,11 @@ class ValueParser extends BaseParser<List<Object>> {
   }
 
   public Rule LiteralString() {
-    return FirstOf(Sequence('\'', '\'', startList(), pushToken(""), endList()), Sequence('\'', OneOrMore(TestNot("'"), ANY), startList(), pushToken(match()) , '\'', endList(), Comment()));
+    return FirstOf(EmptyLiteralString(), Sequence('\'', OneOrMore(TestNot("'"), ANY), startList(), pushToken(match()) , '\'', endList(), Comment()));
+  }
+  
+  public Rule MultilineLiteralString() {
+    return FirstOf(EmptyMultilineLiteralString(), Sequence("'''", startList(), Sequence(OneOrMore(TestNot("'''"), ANY), pushToken(match())), "'''", endList(), Comment()));
   }
   
   public Rule Boolean() {
@@ -40,6 +57,14 @@ class ValueParser extends BaseParser<List<Object>> {
   
   Rule StringToken() {
     return Sequence(Sequence('"', ZeroOrMore(Sequence(TestNot('"'), ANY)), '"'), pushToken(match()));
+  }
+  
+  Rule EmptyLiteralString() {
+    return Sequence('\'', '\'', startList(), pushToken(""), endList());
+  }
+  
+  Rule EmptyMultilineLiteralString() {
+    return Sequence("'''", "'''", startList(), pushToken(""), endList(), Comment());
   }
   
   Rule EmptyArray() {

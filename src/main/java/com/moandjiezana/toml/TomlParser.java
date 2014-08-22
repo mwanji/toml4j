@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 class TomlParser {
+  private static final String STRING_LITERAL_DELIMITER = "'''";
   private static final Pattern MULTILINE_ARRAY_REGEX = Pattern.compile("\\s*\\[([^\\]]*)");
   private static final Pattern MULTILINE_ARRAY_REGEX_END = Pattern.compile("\\s*\\]");
   private static final ValueConverters VALUE_ANALYSIS = new ValueConverters();
@@ -29,7 +30,7 @@ class TomlParser {
     for (int i = 0; i < lines.length; i++) {
       String line = lines[i];
 
-      if (line != null && multiline != Multiline.STRING) {
+      if (line != null && multiline.isTrimmable()) {
         line = line.trim();
       }
 
@@ -87,10 +88,30 @@ class TomlParser {
           pair[1] = multilineBuilder.toString().trim();
           multilineBuilder.delete(0, multilineBuilder.length());
         } else {
+          if (multilineBuilder.toString().trim().length() > 3) {
+            multilineBuilder.append('\n');
+          }
           continue;
         }
       }
+      
+      if (multiline.isNotMultiline() && pair[1].trim().startsWith(STRING_LITERAL_DELIMITER)) {
+        multiline = Multiline.STRING_LITERAL;
+        multilineBuilder.append(pair[1]);
+        key = pair[0].trim();
 
+        if (pair[1].trim().indexOf(STRING_LITERAL_DELIMITER, 3) > -1) {
+          multiline = Multiline.NONE;
+          pair[1] = multilineBuilder.toString().trim();
+          multilineBuilder.delete(0, multilineBuilder.length());
+        } else {
+          if (multilineBuilder.toString().trim().length() > 3) {
+            multilineBuilder.append('\n');
+          }
+          continue;
+        }
+      }
+      
       if (multiline == Multiline.ARRAY) {
         String lineWithoutComment = removeComment(line);
         multilineBuilder.append(lineWithoutComment);
@@ -104,6 +125,16 @@ class TomlParser {
       } else if (multiline == Multiline.STRING) {
         multilineBuilder.append(line);
         if (line.contains("\"\"\"")) {
+          multiline = Multiline.NONE;
+          value = multilineBuilder.toString().trim();
+          multilineBuilder.delete(0, multilineBuilder.length());
+        } else {
+          multilineBuilder.append('\n');
+          continue;
+        }
+      } else if (multiline == Multiline.STRING_LITERAL) {
+        multilineBuilder.append(line);
+        if (line.contains(STRING_LITERAL_DELIMITER)) {
           multiline = Multiline.NONE;
           value = multilineBuilder.toString().trim();
           multilineBuilder.delete(0, multilineBuilder.length());
@@ -203,10 +234,14 @@ class TomlParser {
   }
   
   private static enum Multiline {
-    NONE, ARRAY, STRING;
+    NONE, ARRAY, STRING, STRING_LITERAL;
     
     public boolean isNotMultiline() {
       return this == NONE;
+    }
+    
+    public boolean isTrimmable() {
+      return this == NONE || this == ARRAY;
     }
   }
 }

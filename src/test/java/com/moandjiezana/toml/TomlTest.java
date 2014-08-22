@@ -64,7 +64,16 @@ public class TomlTest {
     assertEquals("Tom \"Dubs\" Preston-Werner", toml.getString("quoted"));
     assertEquals("<\\i\\c*\\s*>", toml.getString("regex"));
   }
-
+  
+  @Test
+  public void should_get_multiline_literal_string() throws Exception {
+    Toml toml = new Toml().parse(file("should_get_multiline_literal_string"));
+    
+    assertTrue(toml.getString("empty_line").isEmpty());
+    assertEquals(toml.getString("regex2_ref"), toml.getString("regex2"));
+    assertEquals(toml.getString("lines_ref"), toml.getString("lines"));
+  }
+  
   @Test
   public void should_get_number() throws Exception {
     Toml toml = new Toml().parse("b = 1001");
@@ -316,6 +325,10 @@ public class TomlTest {
     assertEquals(cal.getTime(), toml.getDate("d"));
     assertThat(toml.getList("e", String.class), Matchers.contains("a", "b"));
     assertTrue(toml.getBoolean("f"));
+    assertEquals("abc", toml.getString("g"));
+    assertEquals("abc", toml.getString("h"));
+    assertEquals("abc\nabc", toml.getString("i"));
+    assertEquals("abc\nabc", toml.getString("j"));
   }
 
   @Test
@@ -428,7 +441,12 @@ public class TomlTest {
   public void should_fail_on_invalid_literal_string() {
     new Toml().parse("a = ' ' jdkf");
   }
-  
+
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_invalid_multiline_string() {
+    new Toml().parse("a = \"\"\" \"\"\" jdkf");
+  }
+
   private File file(String file) {
     return new File(getClass().getResource(file + ".toml").getFile());
   }
