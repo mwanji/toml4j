@@ -1,7 +1,10 @@
 package com.moandjiezana.toml;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.util.List;
@@ -28,6 +31,20 @@ public class TableArrayTest {
     assertEquals("Nail", products.get(2).getString("name"));
     assertEquals(284758393L, products.get(2).getLong("sku").longValue());
     assertEquals("gray", products.get(2).getString("color"));
+  }
+  
+  @Test
+  public void should_parse_table_array_out_of_order() throws Exception {
+    Toml toml = new Toml().parse(file("should_parse_table_array_out_of_order"));
+    
+    List<Toml> tables = toml.getTables("product");
+    List<Toml> employees = toml.getTables("employee");
+    
+    assertThat(tables, hasSize(2));
+    assertThat(tables.get(0).getDouble("price"), equalTo(9.99));
+    assertThat(tables.get(1).getString("type"), equalTo("ZX80"));
+    assertThat(employees, hasSize(1));
+    assertThat(employees.get(0).getString("name"), equalTo("Marinus van der Lubbe"));
   }
 
   @Test
