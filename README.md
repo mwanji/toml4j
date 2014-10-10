@@ -2,7 +2,7 @@
 
 toml4j is a [TOML 0.2.0](https://github.com/mojombo/toml/tree/v0.2.0) parser for Java that uses the [Parboiled](http://www.parboiled.org) PEG parser.
 
-[![Build Status](https://travis-ci.org/mwanji/toml4j.svg?branch=master)](https://travis-ci.org/mwanji/toml4j) [![Coverage Status](https://coveralls.io/repos/mwanji/toml4j/badge.png)](https://coveralls.io/r/mwanji/toml4j)
+[![Build Status](https://travis-ci.org/mwanji/toml4j.svg?branch=wip)](https://travis-ci.org/mwanji/toml4j) [![Coverage Status](https://img.shields.io/coveralls/mwanji/toml4j.svg)](https://coveralls.io/r/mwanji/toml4j?branch=wip)
 
 For the bleeding-edge version integrating the latest specs, see the [work-in-progress branch](https://github.com/mwanji/toml4j/tree/wip).
 
@@ -182,10 +182,6 @@ Long tableC = toml.getLong("table.c"); // returns 2, not 4
 Long tableD = toml.getLong("table.d"); // returns null, not 5
 Long arrayD = toml.getLong("array[0].d"); // returns 3
 ````
-
-## TODO
-
-* Fail on invalid definitions
 
 ## License
 
