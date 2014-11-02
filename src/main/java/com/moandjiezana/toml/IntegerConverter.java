@@ -17,10 +17,6 @@ class IntegerConverter implements ValueConverter {
   public Object convert(String s) {
     List<String> resultValue = parse(parser().Integer(), s);
     
-    if (resultValue == null) {
-      return ValueConverterUtils.INVALID;
-    }
-
     return Long.valueOf(resultValue.get(0));
   }
 
