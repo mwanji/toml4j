@@ -160,6 +160,10 @@ class TomlParser {
         results.errors.append("Invalid key/value: " + key + " = " + value + "\n");
       }
     }
+    
+    if (multiline != Multiline.NONE) {
+      results.errors.append("Unterminated multiline " + multiline.toString().toLowerCase().replace('_', ' ') + "\n");
+    }
 
     return results;
   }

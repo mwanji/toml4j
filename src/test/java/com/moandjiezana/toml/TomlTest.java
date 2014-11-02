@@ -438,13 +438,33 @@ public class TomlTest {
   }
 
   @Test(expected = IllegalStateException.class)
-  public void should_fail_on_invalid_literal_string() {
+  public void should_fail_on_text_after_literal_string() {
     new Toml().parse("a = ' ' jdkf");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_unterminated_literal_string() throws Exception {
+    new Toml().parse("a = 'some text");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_unterminated_multiline_literal_string() throws Exception {
+    new Toml().parse("a = '''some\n text\n''\nb = '''1'''");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_unterminated_multiline_literal_string_on_single_line() throws Exception {
+    new Toml().parse("a = '''some text''");
   }
 
   @Test(expected = IllegalStateException.class)
-  public void should_fail_on_invalid_multiline_string() {
+  public void should_fail_on_text_outside_multiline_string() {
     new Toml().parse("a = \"\"\" \"\"\" jdkf");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_unterminated_multiline_string() throws Exception {
+    new Toml().parse("a = \"\"\"some text\"\"");
   }
 
   private File file(String file) {
