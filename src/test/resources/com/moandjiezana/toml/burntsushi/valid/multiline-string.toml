@@ -1,0 +1,23 @@
+multiline empty one = """"""
+multiline empty two = """
+"""
+multiline empty three = """\
+    """
+multiline empty four = """\
+   \
+   \
+   """
+
+equivalent one = "The quick brown fox jumps over the lazy dog."
+equivalent two = """
+The quick brown \
+
+
+  fox jumps over \
+    the lazy dog."""
+
+equivalent three = """\
+       The quick brown \
+       fox jumps over \
+       the lazy dog.\
+       """

@@ -1,0 +1,30 @@
+{
+    "multiline empty one": {
+        "type": "string",
+        "value": ""
+    },
+    "multiline empty two": {
+        "type": "string",
+        "value": ""
+    },
+    "multiline empty three": {
+        "type": "string",
+        "value": ""
+    },
+    "multiline empty four": {
+        "type": "string",
+        "value": ""
+    },
+    "equivalent one": {
+        "type": "string",
+        "value": "The quick brown fox jumps over the lazy dog."
+    },
+    "equivalent two": {
+        "type": "string",
+        "value": "The quick brown fox jumps over the lazy dog."
+    },
+    "equivalent three": {
+        "type": "string",
+        "value": "The quick brown fox jumps over the lazy dog."
+    }
+}

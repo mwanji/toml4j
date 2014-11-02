@@ -134,6 +134,21 @@ public class BurntSushiValidTest {
   }
   
   @Test
+  public void multiline_string() throws Exception {
+    run("multiline-string");
+  }
+  
+  @Test
+  public void raw_multiline_string() throws Exception {
+    run("raw-multiline-string");
+  }
+  
+  @Test
+  public void raw_string() throws Exception {
+    run("raw-string");
+  }
+  
+  @Test
   public void string_empty() throws Exception {
     run("string-empty");
   }
