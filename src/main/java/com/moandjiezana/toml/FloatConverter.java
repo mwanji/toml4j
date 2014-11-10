@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 class FloatConverter implements ValueConverter {
 
   public static final FloatConverter FLOAT_PARSER = new FloatConverter();
-  private static final Pattern FLOAT_REGEX = Pattern.compile("(-?\\d+\\.\\d+)(.*)");
+  private static final Pattern FLOAT_REGEX = Pattern.compile("([+-]?\\d+\\.\\d+)(.*)");
   
   @Override
   public boolean canConvert(String s) {

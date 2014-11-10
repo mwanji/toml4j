@@ -48,7 +48,11 @@ class ValueParser extends BaseParser<List<Object>> {
   }
   
   public Rule Integer() {
-    return Sequence(startList(), Sequence(Sequence(Optional(AnyOf("+-")), OneOrMore(CharRange('0', '9'))), pushToken(match())), endList(), Comment());
+    return Sequence(startList(), Sequence(SignedNumber(), pushToken(match())), endList(), Comment());
+  }
+  
+  public Rule Exponent() {
+    return Sequence(startList(), Sequence(Sequence(SignedNumber(), Optional(Sequence('.', Number())), FirstOf('e', 'E'), SignedNumber()), pushToken(match())), endList(), Comment());
   }
 
   Rule NonEmptyArray() {
@@ -69,6 +73,14 @@ class ValueParser extends BaseParser<List<Object>> {
   
   Rule EmptyArray() {
     return Sequence('[', ']', startList(), endList());
+  }
+  
+  Rule SignedNumber() {
+    return Sequence(Optional(AnyOf("+-")), Number());
+  }
+  
+  Rule Number() {
+    return OneOrMore(CharRange('0', '9'));
   }
 
   Rule OtherValue() {

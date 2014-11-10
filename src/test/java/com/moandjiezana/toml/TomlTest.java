@@ -158,6 +158,25 @@ public class TomlTest {
 
     assertEquals(-5.25D, toml.getDouble("double").doubleValue(), 0.0);
   }
+  
+  @Test
+  public void should_get_double_with_a_plus_sign() throws Exception {
+    Toml toml = new Toml().parse("double = +5.25");
+
+    assertEquals(5.25D, toml.getDouble("double").doubleValue(), 0.0);
+  }
+  
+  @Test
+  public void should_get_exponent() throws Exception {
+    Toml toml = new Toml().parse("lower_case = 1e6\nupper_case = 2E6\nwith_plus = 5e+22\nboth_plus = +5E+22\nnegative = -2E-2\nfractional = 6.626e-34");
+
+    assertEquals(Math.pow(1, 6), toml.getDouble("lower_case"), 0.0);
+    assertEquals(Math.pow(2, 6), toml.getDouble("upper_case"), 0.0);
+    assertEquals(Math.pow(5, 22), toml.getDouble("with_plus"), 0.0);
+    assertEquals(Math.pow(5, 22), toml.getDouble("both_plus"), 0.0);
+    assertEquals(Math.pow(-2, -2), toml.getDouble("negative"), 0.0);
+    assertEquals(Math.pow(6.626D, -34), toml.getDouble("fractional"), 0.0);
+  }
 
   @Test
   public void should_get_table() throws Exception {
