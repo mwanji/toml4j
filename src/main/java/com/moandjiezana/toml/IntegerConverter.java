@@ -17,7 +17,12 @@ class IntegerConverter implements ValueConverter {
   public Object convert(String s) {
     List<String> resultValue = parse(parser().Integer(), s);
     
-    return Long.valueOf(resultValue.get(0));
+    String longString = resultValue.get(0);
+    if (longString.startsWith("+")) {
+      longString = longString.substring(1);
+    }
+    
+    return Long.valueOf(longString);
   }
 
   private IntegerConverter() {}

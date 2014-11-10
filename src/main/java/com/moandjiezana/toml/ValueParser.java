@@ -48,7 +48,7 @@ class ValueParser extends BaseParser<List<Object>> {
   }
   
   public Rule Integer() {
-    return Sequence(startList(), Sequence(Sequence(Optional('-'), OneOrMore(CharRange('0', '9'))), pushToken(match())), endList(), Comment());
+    return Sequence(startList(), Sequence(Sequence(Optional(AnyOf("+-")), OneOrMore(CharRange('0', '9'))), pushToken(match())), endList(), Comment());
   }
 
   Rule NonEmptyArray() {

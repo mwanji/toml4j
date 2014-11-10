@@ -87,6 +87,13 @@ public class TomlTest {
 
     assertEquals(-1001, toml.getLong("b").intValue());
   }
+  
+  @Test
+  public void should_get_number_with_plus_sign() throws Exception {
+    Toml toml = new Toml().parse("a = +1001\nb = 1001");
+
+    assertEquals(toml.getLong("b"), toml.getLong("a"));
+  }
 
   @Test
   public void should_get_array() throws Exception {
