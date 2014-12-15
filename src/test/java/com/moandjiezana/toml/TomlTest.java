@@ -197,6 +197,11 @@ public class TomlTest {
   public void should_fail_on_key_name_with_hash() throws Exception {
     new Toml().parse("a# = 1");
   }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_key_name_starting_with_square_bracket() throws Exception {
+    new Toml().parse("[a = 1");
+  }
 
   @Test(expected = IllegalStateException.class)
   public void should_fail_when_key_is_overwritten_by_table() {
