@@ -1,8 +1,6 @@
 package com.moandjiezana.toml;
 
-import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -10,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -19,165 +16,6 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 public class TomlTest {
-
-  @Test
-  public void should_get_string() throws Exception {
-    Toml toml = new Toml().parse("a = \"a\"");
-
-    assertEquals("a", toml.getString("a"));
-  }
-
-  @Test
-  public void should_get_empty_string() {
-    Toml toml = new Toml().parse("a = \"\"");
-    assertEquals("", toml.getString("a"));
-  }
-
-  @Test
-  public void should_get_empty_string_with_trailing_new_line() {
-    Toml toml = new Toml().parse("a = \"\"\n");
-    assertEquals("", toml.getString("a"));
-  }
-  
-  @Test
-  public void should_get_basic_multiline_string() throws Exception {
-    Toml toml = new Toml().parse(file("should_get_basic_multiline_string"));
-    
-    assertEquals(toml.getString("ref"), toml.getString("one_line"));
-    assertEquals(toml.getString("ref"), toml.getString("many_lines"));
-  }
-  
-  @Test
-  public void should_get_multiline_string_without_new_lines() throws Exception {
-    Toml toml = new Toml().parse(file("should_get_multiline_string_without_new_lines"));
-    
-    assertEquals(toml.getString("ref"), toml.getString("multi1"));
-    assertEquals(toml.getString("ref"), toml.getString("multi2"));
-  }
-  
-  @Test
-  public void should_get_literal_string() throws Exception {
-    Toml toml = new Toml().parse(file("should_get_literal_string"));
-    
-    assertEquals("C:\\Users\\nodejs\\templates", toml.getString("winpath"));
-    assertEquals("\\\\ServerX\\admin$\\system32\\", toml.getString("winpath2"));
-    assertEquals("Tom \"Dubs\" Preston-Werner", toml.getString("quoted"));
-    assertEquals("<\\i\\c*\\s*>", toml.getString("regex"));
-  }
-  
-  @Test
-  public void should_get_multiline_literal_string() throws Exception {
-    Toml toml = new Toml().parse(file("should_get_multiline_literal_string"));
-    
-    assertTrue(toml.getString("empty_line").isEmpty());
-    assertEquals(toml.getString("regex2_ref"), toml.getString("regex2"));
-    assertEquals(toml.getString("lines_ref"), toml.getString("lines"));
-  }
-  
-  @Test
-  public void should_get_number() throws Exception {
-    Toml toml = new Toml().parse("b = 1001");
-
-    assertEquals(1001, toml.getLong("b").intValue());
-  }
-
-  @Test
-  public void should_get_negative_number() throws Exception {
-    Toml toml = new Toml().parse("b = -1001");
-
-    assertEquals(-1001, toml.getLong("b").intValue());
-  }
-  
-  @Test
-  public void should_get_number_with_plus_sign() throws Exception {
-    Toml toml = new Toml().parse("a = +1001\nb = 1001");
-
-    assertEquals(toml.getLong("b"), toml.getLong("a"));
-  }
-
-  @Test
-  public void should_get_array() throws Exception {
-    Toml toml = new Toml().parse("list = [\"a\", \"b\", \"c\"]");
-
-    assertEquals(asList("a", "b", "c"), toml.getList("list", String.class));
-  }
-
-  @Test
-  public void should_allow_multiline_array() throws Exception {
-    Toml toml = new Toml().parse(file("should_allow_multiline_array"));
-
-    assertEquals(asList("a", "b", "c"), toml.getList("a", String.class));
-  }
-
-  @Test
-  @SuppressWarnings("unchecked")
-  public void should_get_nested_arrays() throws Exception {
-    Toml clients = new Toml().parse("data = [ [\"gamma\", \"delta\"], [1, 2]] # just an update to make sure parsers support it");
-
-    assertEquals(asList(asList("gamma", "delta"), asList(1L, 2L)), clients.getList("data", String.class));
-  }
-
-  @Test
-  @SuppressWarnings("unchecked")
-  public void should_get_nested_arrays_with_no_space_between_outer_and_inner_array() throws Exception {
-    Toml clients = new Toml().parse("data = [[\"gamma\", \"delta\"], [1, 2]] # just an update to make sure parsers support it");
-
-    assertEquals(asList(asList("gamma", "delta"), asList(1L, 2L)), clients.getList("data", String.class));
-  }
-
-  @Test
-  public void should_get_boolean() throws Exception {
-    Toml toml = new Toml().parse("bool_false = false\nbool_true = true");
-
-    assertFalse(toml.getBoolean("bool_false"));
-    assertTrue(toml.getBoolean("bool_true"));
-  }
-
-  @Test
-  public void should_get_date() throws Exception {
-    Toml toml = new Toml().parse("a_date = 2011-11-10T13:12:00Z");
-
-    Calendar calendar = Calendar.getInstance();
-    calendar.set(2011, Calendar.NOVEMBER, 10, 13, 12, 00);
-    calendar.set(Calendar.MILLISECOND, 0);
-    calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-    assertEquals(calendar.getTime(), toml.getDate("a_date"));
-  }
-
-  @Test
-  public void should_get_double() throws Exception {
-    Toml toml = new Toml().parse("double = 5.25");
-
-    assertEquals(5.25D, toml.getDouble("double").doubleValue(), 0.0);
-  }
-
-  @Test
-  public void should_get_negative_double() throws Exception {
-    Toml toml = new Toml().parse("double = -5.25");
-
-    assertEquals(-5.25D, toml.getDouble("double").doubleValue(), 0.0);
-  }
-  
-  @Test
-  public void should_get_double_with_a_plus_sign() throws Exception {
-    Toml toml = new Toml().parse("double = +5.25");
-
-    assertEquals(5.25D, toml.getDouble("double").doubleValue(), 0.0);
-  }
-  
-  @Test
-  public void should_get_exponent() throws Exception {
-    Toml toml = new Toml().parse("lower_case = 1e6\nupper_case = 2E6\nwith_plus = 5e+22\nboth_plus = +5E+22\nnegative = -2E-2\nfractional = 6.626e-34");
-
-    assertEquals(Math.pow(1, 6), toml.getDouble("lower_case"), 0.0);
-    assertEquals(Math.pow(2, 6), toml.getDouble("upper_case"), 0.0);
-    assertEquals(Math.pow(5, 22), toml.getDouble("with_plus"), 0.0);
-    assertEquals(Math.pow(5, 22), toml.getDouble("both_plus"), 0.0);
-    assertEquals(Math.pow(-2, -2), toml.getDouble("negative"), 0.0);
-    assertEquals(Math.pow(6.626D, -34), toml.getDouble("fractional"), 0.0);
-  }
-
   @Test
   public void should_get_table() throws Exception {
     Toml toml = new Toml().parse("[group]\nkey = \"value\"");
@@ -250,13 +88,6 @@ public class TomlTest {
 
     assertTrue(Reflection.field("values").ofType(Map.class).in(toml).get().isEmpty());
     assertNull(toml.getString("x"));
-  }
-
-  @Test
-  public void should_return_empty_list_when_no_value_for_table_array() throws Exception {
-    List<Toml> tomls = new Toml().parse("[a]").getTables("b");
-
-    assertTrue(tomls.isEmpty());
   }
 
   @Test
@@ -356,32 +187,6 @@ public class TomlTest {
     assertEquals("abc\nabc", toml.getString("i"));
     assertEquals("abc\nabc", toml.getString("j"));
   }
-
-  @Test
-  public void should_support_special_characters_in_strings() {
-    Toml toml = new Toml().parse(new File(getClass().getResource("should_support_special_characters_in_strings.toml").getFile()));
-
-    assertEquals("\" \t \n \r \\ / \b \f", toml.getString("key"));
-  }
-
-  @Test
-  public void should_support_unicode_characters_in_strings() throws Exception {
-    Toml toml = new Toml().parse(new File(getClass().getResource("should_support_special_characters_in_strings.toml").getFile()));
-
-    assertEquals("more or less ±", toml.getString("unicode_key"));
-  }
-
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_reserved_special_character_in_strings() throws Exception {
-    new Toml().parse("key=\"\\m\"");
-  }
-
-  @Test
-  public void should_ignore_comma_at_end_of_array() throws Exception {
-    Toml toml = new Toml().parse("key=[1,2,3,]");
-
-    assertEquals(asList(1L, 2L, 3L), toml.getList("key", Long.class));
-  }
   
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_empty_key_name() throws Exception {
@@ -391,11 +196,6 @@ public class TomlTest {
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_key_name_with_hash() throws Exception {
     new Toml().parse("a# = 1");
-  }
-  
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_non_existant_date() throws Exception {
-    new Toml().parse("d = 2012-13-01T15:00:00Z");
   }
 
   @Test(expected = IllegalStateException.class)
@@ -414,83 +214,8 @@ public class TomlTest {
   }
 
   @Test(expected = IllegalStateException.class)
-  public void should_fail_on_invalid_number() throws Exception {
-    new Toml().parse("a = 200-");
-  }
-
-  @Test(expected = IllegalStateException.class)
   public void should_fail_when_illegal_characters_after_table() throws Exception {
     new Toml().parse("[error]   if you didn't catch this, your parser is broken");
-  }
-  
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_when_illegal_characters_after_key() throws Exception {
-    new Toml().parse("number = 3.14  pi");
-  }
-  
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_when_illegal_characters_after_integer() throws Exception {
-    new Toml().parse("number = 314  pi");
-  }
-
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_float_without_leading_0() {
-    new Toml().parse("answer = .12345");
-  }
-
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_negative_float_without_leading_0() {
-    new Toml().parse("answer = -.12345");
-  }
-  
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_float_without_digits_after_dot() {
-    new Toml().parse("answer = 1.");
-  }
-
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_negative_float_without_digits_after_dot() {
-    new Toml().parse("answer = -1.");
-  }
-
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_invalid_boolean_true() {
-    new Toml().parse("answer = true abc");
-  }
-
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_invalid_boolean_false() {
-    new Toml().parse("answer = false abc");
-  }
-
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_text_after_literal_string() {
-    new Toml().parse("a = ' ' jdkf");
-  }
-  
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_unterminated_literal_string() throws Exception {
-    new Toml().parse("a = 'some text");
-  }
-  
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_unterminated_multiline_literal_string() throws Exception {
-    new Toml().parse("a = '''some\n text\n''\nb = '''1'''");
-  }
-  
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_unterminated_multiline_literal_string_on_single_line() throws Exception {
-    new Toml().parse("a = '''some text''");
-  }
-
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_text_outside_multiline_string() {
-    new Toml().parse("a = \"\"\" \"\"\" jdkf");
-  }
-  
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_unterminated_multiline_string() throws Exception {
-    new Toml().parse("a = \"\"\"some text\"\"");
   }
 
   private File file(String file) {
