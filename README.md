@@ -2,7 +2,7 @@
 
 toml4j is a [TOML 0.3.1](https://github.com/toml-lang/toml/tree/v0.3.1) parser for Java.
 
-[![Build Status](https://travis-ci.org/mwanji/toml4j.svg)](https://travis-ci.org/mwanji/toml4j) [![Coverage Status](https://img.shields.io/coveralls/mwanji/toml4j.svg)](https://coveralls.io/r/mwanji/toml4j)
+[![Maven Central](https://img.shields.io/maven-central/v/com.moandjiezana.toml/toml4j.svg)](https://search.maven.org/#search|gav|1|g%3A%22com.moandjiezana.toml%22%20AND%20a%3A%22toml4j%22) [![Build Status](https://shields.io/travis/mwanji/toml4j.svg)](https://travis-ci.org/mwanji/toml4j) [![Coverage Status](https://img.shields.io/coveralls/mwanji/toml4j.svg)](https://coveralls.io/r/mwanji/toml4j)
 
 For the bleeding-edge version integrating the latest specs, see the [work-in-progress branch](https://github.com/mwanji/toml4j/tree/wip).
 
