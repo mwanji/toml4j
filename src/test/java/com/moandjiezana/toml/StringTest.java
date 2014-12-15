@@ -77,6 +77,7 @@ public class StringTest {
     Toml toml = new Toml().parse(new File(getClass().getResource("should_support_special_characters_in_strings.toml").getFile()));
 
     assertEquals("more or less ±", toml.getString("unicode_key"));
+    assertEquals("more or less ±", toml.getString("unicode_key_uppercase"));
   }
 
   @Test(expected = IllegalStateException.class)

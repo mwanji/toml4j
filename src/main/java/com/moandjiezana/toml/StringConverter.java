@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 class StringConverter implements ValueConverter {
   
   static final StringConverter STRING_PARSER = new StringConverter();
-  private static final Pattern UNICODE_REGEX = Pattern.compile("\\\\u(.*)");
+  private static final Pattern UNICODE_REGEX = Pattern.compile("\\\\[uU](.*)");
 
   @Override
   public boolean canConvert(String s) {
