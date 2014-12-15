@@ -9,30 +9,25 @@ import org.junit.Test;
 
 public class DateTest {
   
+  private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
+
   @Test
   public void should_get_date() throws Exception {
     Toml toml = new Toml().parse("a_date = 2011-11-10T13:12:00Z");
 
-    Calendar calendar = Calendar.getInstance();
+    Calendar calendar = Calendar.getInstance(UTC);
     calendar.set(2011, Calendar.NOVEMBER, 10, 13, 12, 00);
     calendar.set(Calendar.MILLISECOND, 0);
-    calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
 
     assertEquals(calendar.getTime(), toml.getDate("a_date"));
   }
 
-  public static void main(String[] args) {
-    for (String tz : TimeZone.getAvailableIDs(-7 * 60 * 60 * 1000)) {
-      System.out.println(tz);
-    }
-  }
-  
   @Test
-  public void should_get_date_with_timezone_offset() throws Exception {
+  public void should_get_date_with_offset() throws Exception {
     Toml toml = new Toml().parse("a_date = 1979-05-27T00:32:00-07:00");
 
-    Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT-7"));
-    calendar.set(1979, Calendar.MAY, 27, 0, 32, 00);
+    Calendar calendar = Calendar.getInstance(UTC);
+    calendar.set(1979, Calendar.MAY, 27, 7, 32, 00);
     calendar.set(Calendar.MILLISECOND, 0);
 
     assertEquals(calendar.getTime(), toml.getDate("a_date"));
@@ -40,10 +35,21 @@ public class DateTest {
   
   @Test
   public void should_get_date_with_fractional_seconds() throws Exception {
+    Toml toml = new Toml().parse("a_date = 1979-05-27T00:32:00.999Z");
+    
+    Calendar calendar = Calendar.getInstance(UTC);
+    calendar.set(1979, Calendar.MAY, 27, 0, 32, 00);
+    calendar.set(Calendar.MILLISECOND, 999);
+    
+    assertEquals(calendar.getTime(), toml.getDate("a_date"));
+  }
+  
+  @Test
+  public void should_get_date_with_fractional_seconds_and_offset() throws Exception {
     Toml toml = new Toml().parse("a_date = 1979-05-27T00:32:00.999-07:00");
     
-    Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT-7"));
-    calendar.set(1979, Calendar.MAY, 27, 0, 32, 00);
+    Calendar calendar = Calendar.getInstance(UTC);
+    calendar.set(1979, Calendar.MAY, 27, 7, 32, 00);
     calendar.set(Calendar.MILLISECOND, 999);
     
     assertEquals(calendar.getTime(), toml.getDate("a_date"));

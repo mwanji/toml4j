@@ -183,6 +183,10 @@ Long tableD = toml.getLong("table.d"); // returns null, not 5
 Long arrayD = toml.getLong("array[0].d"); // returns 3
 ````
 
+### Limitations
+
+Date precision is limited to milliseconds.
+
 ## License
 
 toml4j is copyright of Moandji Ezana and is licensed under the [MIT License](LICENSE)
