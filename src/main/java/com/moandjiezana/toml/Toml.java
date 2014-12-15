@@ -33,13 +33,13 @@ import com.google.gson.JsonElement;
  * {@link #getList(String, Class)}, {@link #getTable(String)} and {@link #getTables(String)} return empty values if there is no matching key.</p>
  *
  * <p>Example usage:</p>
- * <code><pre>
+ * <pre><code>
  * Toml toml = new Toml().parse(getTomlFile());
  * String name = toml.getString("name");
  * Long port = toml.getLong("server.ip"); // compound key. Is equivalent to:
  * Long port2 = toml.getTable("server").getLong("ip");
  * MyConfig config = toml.to(MyConfig.class);
- * </pre></code>
+ * </code></pre>
  *
  */
 public class Toml {
@@ -67,7 +67,7 @@ public class Toml {
   /**
    * Populates the current Toml instance with values from file.
    *
-   * @param file
+   * @param file The File to be read
    * @return this instance
    * @throws IllegalStateException If file contains invalid TOML
    */
@@ -82,7 +82,7 @@ public class Toml {
   /**
    * Populates the current Toml instance with values from inputStream.
    *
-   * @param inputStream
+   * @param inputStream Closed after it has been read.
    * @return this instance
    * @throws IllegalStateException If file contains invalid TOML
    */
@@ -93,7 +93,7 @@ public class Toml {
   /**
    * Populates the current Toml instance with values from reader.
    *
-   * @param reader
+   * @param reader Closed after it has been read.
    * @return this instance
    * @throws IllegalStateException If file contains invalid TOML
    */
@@ -122,7 +122,7 @@ public class Toml {
   /**
    * Populates the current Toml instance with values from tomlString.
    *
-   * @param tomlString
+   * @param tomlString String to be read.
    * @return this instance
    * @throws IllegalStateException If tomlString is not valid TOML
    */
@@ -169,9 +169,8 @@ public class Toml {
   }
 
   /**
-   * If no value is found for key, an empty Toml instance is returned.
-   *
-   * @param key
+   * @param key A table name, not including square brackets.
+   * @return A new Toml instance. Empty if no value is found for key.
    */
   @SuppressWarnings("unchecked")
   public Toml getTable(String key) {
@@ -179,8 +178,8 @@ public class Toml {
   }
 
   /**
-   * If no value is found for key, an empty list is returned.
-   * @param key
+   * @param key Name of array of tables, not including square brackets.
+   * @return An empty List if no value is found for key.
    */
   @SuppressWarnings("unchecked")
   public List<Toml> getTables(String key) {
@@ -214,7 +213,9 @@ public class Toml {
    *  <li>TOML array to {@link Set}</li>
    * </ul>
    *
-   * @param targetClass
+   * @param targetClass Class to deserialize TOML to.
+   * @param <T> type of targetClass.
+   * @return A new instance of targetClass.
    */
   public <T> T to(Class<T> targetClass) {
     return to(targetClass, DEFAULT_GSON);
