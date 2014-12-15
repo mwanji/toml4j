@@ -66,6 +66,10 @@ class Results {
     if (!tables.add(tableName)) {
       errors.append("Table " + tableName + " defined twice!\n");
     }
+    
+    if (tableName.endsWith(".")) {
+      errors.append("Implicit table name cannot be empty: " + tableName);
+    }
 
     while (stack.size() > 1) {
       stack.pop();
