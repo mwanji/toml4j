@@ -1,6 +1,6 @@
 # toml4j
 
-toml4j is a [TOML 0.2.0](https://github.com/mojombo/toml/tree/v0.2.0) parser for Java that uses the [Parboiled](http://www.parboiled.org) PEG parser.
+toml4j is a [TOML 0.3.1](https://github.com/toml-lang/toml/tree/v0.3.1) parser for Java that uses the [Parboiled](http://www.parboiled.org) PEG parser.
 
 [![Build Status](https://travis-ci.org/mwanji/toml4j.svg?branch=wip)](https://travis-ci.org/mwanji/toml4j) [![Coverage Status](https://img.shields.io/coveralls/mwanji/toml4j.svg)](https://coveralls.io/r/mwanji/toml4j?branch=wip)
 
@@ -77,6 +77,7 @@ All TOML primitives can be mapped, as well as a number of Java-specific types:
 * A TOML Number can be converted to any primitive type (or the wrapper equivalent), `BigInteger` or `BigDecimal`
 * A TOML string can be converted to a `String`, enum, `java.net.URI` or `java.net.URL`
 * A single-letter TOML string can be converted to a `char` or `Character`
+* Multiline and literal TOML strings can be converted to `String`
 * A TOML array can be converted to a `List`, `Set` or array. The generic type can be anything that can be converted.
 * A TOML table can be converted to a custom class or to a `Map<String, Object>`. The generic type of the value can be anything that can be converted.
 
@@ -97,7 +98,7 @@ Use the getters to retrieve the data:
 
 You can also navigate values within a table with a compound key of the form `table.key`. Use a zero-based index such as `tableArray[0].key` to navigate table arrays.
 
-Non-existant keys return null.
+Non-existent keys return null.
 
 ````
 title = "TOML Example"
