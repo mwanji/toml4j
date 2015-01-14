@@ -74,14 +74,17 @@ assert user.address.street.equals("123 A Street");
 
 Any keys not found in both the TOML and the class are ignored. Fields may be private.
 
-All TOML primitives can be mapped, as well as a number of Java-specific types:
+TOML primitives can be mapped to a number of Java types:
 
-* A TOML Number can be converted to any primitive type (or the wrapper equivalent), `BigInteger` or `BigDecimal`
-* A TOML string can be converted to a `String`, enum, `java.net.URI` or `java.net.URL`
-* A single-letter TOML string can be converted to a `char` or `Character`
-* Multiline and literal TOML strings can be converted to `String`
-* A TOML array can be converted to a `List`, `Set` or array. The generic type can be anything that can be converted.
-* A TOML table can be converted to a custom class or to a `Map<String, Object>`. The generic type of the value can be anything that can be converted.
+TOML | Java
+---- | ----
+Integer | `int`, `long` (or wrapper), `java.math.BigInteger`
+Float | float`, `double` (or wrapper), `java.math.BigDecimal`
+String | `String`, enum, `java.net.URI`, `java.net.URL`
+One-letter String | `char`, `Character`
+Multiline and Literal Strings | `String`
+Array | `List`, `Set`, array. The generic type can be anything that can be converted.
+Table | Custom class, `Map<String, Object>`
 
 Custom classes, Maps and collections thereof can be nested to any level. See [TomlToClassTest#should_convert_fruit_table_array()](src/test/java/com/moandjiezana/toml/TomlToClassTest.java) for an example.
 
