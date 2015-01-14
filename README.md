@@ -2,7 +2,7 @@
 
 toml4j is a [TOML 0.3.1](https://github.com/toml-lang/toml/tree/v0.3.1) parser for Java that uses the [Parboiled](http://www.parboiled.org) PEG parser.
 
-[![Build Status](https://travis-ci.org/mwanji/toml4j.svg?branch=wip)](https://travis-ci.org/mwanji/toml4j) [![Coverage Status](https://img.shields.io/coveralls/mwanji/toml4j.svg)](https://coveralls.io/r/mwanji/toml4j?branch=wip)
+[![Build Status](https://travis-ci.org/mwanji/toml4j.svg?branch=wip)](https://travis-ci.org/mwanji/toml4j) [![Coverage Status](https://img.shields.io/coveralls/mwanji/toml4j.svg)](https://coveralls.io/r/mwanji/toml4j?branch=wip) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 For the bleeding-edge version integrating the latest specs, see the [work-in-progress branch](https://github.com/mwanji/toml4j/tree/wip).
 
