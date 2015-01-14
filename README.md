@@ -51,6 +51,9 @@ name = "Mwanji Ezana"
 [address]
   street = "123 A Street"
   city = "AnyVille"
+  
+[contacts]
+  "email address" = me@example.com
 ````
 
 ````java
@@ -62,6 +65,7 @@ class Address {
 class User {
   String name;
   Address address;
+  Map<String, Object> contacts;
 }
 ````
 
@@ -70,9 +74,12 @@ User user = new Toml().parse(tomlFile).to(User.class);
 
 assert user.name.equals("Mwanji Ezana");
 assert user.address.street.equals("123 A Street");
+assert user.contacts.get("\"email address\"").equals("me@example.com");
 ````
 
 Any keys not found in both the TOML and the class are ignored. Fields may be private.
+
+Quoted keys cannot be mapped directly to a Java object, but they can be used as keys within a `Map`.
 
 All TOML primitives can be mapped, as well as a number of Java-specific types:
 
@@ -102,8 +109,11 @@ You can also navigate values within a table with a compound key of the form `tab
 
 Non-existent keys return null.
 
+When retrieving quoted keys, the quotes must be used and the key must be spelled exactly the same way, including whitespace.
+
 ````
 title = "TOML Example"
+"sub title" = "Now with quoted keys"
 
 [database]
   ports = [ 8001, 8001, 8002 ]
@@ -136,6 +146,7 @@ title = "TOML Example"
 Toml toml = new Toml().parse(getTomlFile());
 
 String title = toml.getString("title");
+String subTitle = toml.getString("\"sub title\"");
 Boolean enabled = toml.getBoolean("database.enabled");
 List<Long> ports = toml.getList("database.ports", Long.class);
 String password = toml.getString("database.credentials.password");

@@ -75,7 +75,7 @@ class Results {
       stack.pop();
     }
 
-    String[] tableParts = tableName.split("\\.");
+    String[] tableParts = Keys.split(tableName);
     for (int i = 0; i < tableParts.length; i++) {
       String tablePart = tableParts[i];
       Container currentContainer = stack.peek();

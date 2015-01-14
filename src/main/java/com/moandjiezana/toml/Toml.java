@@ -246,13 +246,14 @@ public class Toml {
 
   @SuppressWarnings("unchecked")
   private Object get(String key) {
-    String[] split = key.split("\\.");
+    if (values.containsKey(key)) {
+      return values.get(key);
+    }
+
+    String[] split = Keys.split(key);
     Object current = new HashMap<String, Object>(values);
     
     for (int i = 0; i < split.length; i++) {
-      if (i == 0 && values.containsKey(key)) {
-        return values.get(key);
-      }
       
       String keyWithDot = join(Arrays.copyOfRange(split, i, split.length));
       if (current instanceof Map && ((Map<String, Object>) current).containsKey(keyWithDot)) {
