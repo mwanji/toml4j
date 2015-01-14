@@ -10,32 +10,32 @@ For the bleeding-edge version integrating the latest specs, see the [work-in-pro
 
 Add the following dependency to your POM (or equivalent for other dependency managers):
 
-````xml
+```xml
 <dependency>
   <groupId>com.moandjiezana.toml</groupId>
   <artifactId>toml4j</artifactId>
   <version>0.3.1</version>
 </dependency>
-````
+```
 
 Requires Java 1.6.
 
 ## Quick start
 
-````java
+```java
 Toml toml = new Toml().parse(getTomlFile());
 String someValue = toml.getString("someKey");
 Date someDate = toml.getDate("someTable.someDate");
 MyClass myClass = toml.to(MyClass.class);
-````
+```
 
 ## Usage
 
 A `com.moandjiezana.toml.Toml` instance is populated by calling one of `parse(File)`, `parse(InputStream)`, `parse(Reader)` or `parse(String)`.
 
-````java
+```java
 Toml toml = new Toml().parse("a=1");
-````
+```
 
 An exception is thrown if the source is not valid TOML.
 
@@ -45,15 +45,15 @@ The data can then be accessed either by converting the Toml instance to your own
 
 `Toml#to(Class<T>)` maps a Toml instance to the given class.
 
-````
+```toml
 name = "Mwanji Ezana"
 
 [address]
   street = "123 A Street"
   city = "AnyVille"
-````
+```
 
-````java
+```java
 class Address {
   String street;
   String city;
@@ -63,14 +63,14 @@ class User {
   String name;
   Address address;
 }
-````
+```
 
-````java
+```java
 User user = new Toml().parse(tomlFile).to(User.class);
 
 assert user.name.equals("Mwanji Ezana");
 assert user.address.street.equals("123 A Street");
-````
+```
 
 Any keys not found in both the TOML and the class are ignored. Fields may be private.
 
@@ -102,7 +102,7 @@ You can also navigate values within a table with a compound key of the form `tab
 
 Non-existent keys return null.
 
-````
+```toml
 title = "TOML Example"
 
 [database]
@@ -130,9 +130,9 @@ title = "TOML Example"
     location = "Geneva"
   [[networks.operators]]
     location = "Paris"
-````
+```
 
-````java
+```java
 Toml toml = new Toml().parse(getTomlFile());
 
 String title = toml.getString("title");
@@ -148,13 +148,13 @@ Toml network1 = toml.getTable("networks[0]");
 String network2Name = toml.getString("networks[1].name"); // "Level 2"
 List<Toml> network3Operators = toml.getTables("networks[2].operators");
 String network3Operator2Location = toml.getString("networks[2].operators[1].location"); // "Paris"
-````
+```
 
 ### Defaults
 
 The constructor can be given a set of default values that will be used as fallbacks. For tables and table arrays, a shallow merge is performed.
 
-````
+```toml
 # defaults
 a = 2
 b = 3
@@ -162,9 +162,9 @@ b = 3
 [table]
   c = 4
   d = 5
-````
+```
 
-````
+```toml
 a = 1
 
 [table]
@@ -172,9 +172,9 @@ a = 1
   
 [[array]]
   d = 3
-````
+```
 
-````java
+```java
 Toml defaults = new Toml().parse(getDefaultsFile());
 Toml toml = new Toml(defaults).parse(getTomlFile());
 
@@ -184,7 +184,7 @@ Long c = toml.getLong("c"); // returns null
 Long tableC = toml.getLong("table.c"); // returns 2, not 4
 Long tableD = toml.getLong("table.d"); // returns null, not 5
 Long arrayD = toml.getLong("array[0].d"); // returns 3
-````
+```
 
 ### Limitations
 
