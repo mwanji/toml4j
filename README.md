@@ -79,7 +79,7 @@ TOML primitives can be mapped to a number of Java types:
 TOML | Java
 ---- | ----
 Integer | `int`, `long` (or wrapper), `java.math.BigInteger`
-Float | float`, `double` (or wrapper), `java.math.BigDecimal`
+Float | `float`, `double` (or wrapper), `java.math.BigDecimal`
 String | `String`, enum, `java.net.URI`, `java.net.URL`
 One-letter String | `char`, `Character`
 Multiline and Literal Strings | `String`
