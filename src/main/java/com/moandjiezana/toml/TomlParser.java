@@ -186,12 +186,7 @@ class TomlParser {
   }
 
   private String getTableName(String line) {
-    List<Object> resultValue = parse(parser().Table(), line);
-    if (resultValue == null) {
-      return null;
-    }
-
-    return (String) resultValue.get(0);
+    return Keys.getTableName(line);
   }
 
   private boolean isKeyValid(String key) {

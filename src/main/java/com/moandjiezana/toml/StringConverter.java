@@ -35,25 +35,16 @@ class StringConverter implements ValueConverter {
     
     value = value.substring(1, stringTerminator);
     value = replaceUnicodeCharacters(value);
-
-    chars = value.toCharArray();
-    for (int i = 0; i < chars.length - 1; i++) {
-      char ch = chars[i];
-      char next = chars[i + 1];
-
-      if (ch == '\\' && next == '\\') {
-        i++;
-      } else if (ch == '\\' && !(next == 'b' || next == 'f' || next == 'n' || next == 't' || next == 'r' || next == '"' || next == '/' || next == '\\')) {
-        return INVALID;
-      }
-    }
-
     value = replaceSpecialCharacters(value);
+    
+    if (value == null) {
+      return INVALID;
+    }
 
     return value;
   }
 
-  private String replaceUnicodeCharacters(String value) {
+  String replaceUnicodeCharacters(String value) {
     Matcher unicodeMatcher = UNICODE_REGEX.matcher(value);
 
     while (unicodeMatcher.find()) {
@@ -62,7 +53,19 @@ class StringConverter implements ValueConverter {
     return value;
   }
 
-  private String replaceSpecialCharacters(String value) {
+  String replaceSpecialCharacters(String value) {
+    char[] chars = value.toCharArray();
+    for (int i = 0; i < chars.length - 1; i++) {
+      char ch = chars[i];
+      char next = chars[i + 1];
+
+      if (ch == '\\' && next == '\\') {
+        i++;
+      } else if (ch == '\\' && !(next == 'b' || next == 'f' || next == 'n' || next == 't' || next == 'r' || next == '"' || next == '/' || next == '\\')) {
+        return null;
+      }
+    }
+
     return value.replace("\\n", "\n")
       .replace("\\\"", "\"")
       .replace("\\t", "\t")

@@ -75,9 +75,9 @@ class Results {
       stack.pop();
     }
 
-    String[] tableParts = Keys.split(tableName);
+    Keys.Key[] tableParts = Keys.split(tableName);
     for (int i = 0; i < tableParts.length; i++) {
-      String tablePart = tableParts[i];
+      String tablePart = tableParts[i].name;
       Container currentContainer = stack.peek();
       if (tablePart.isEmpty()) {
         errors.append("Empty implicit table: " + tableName + "!\n");

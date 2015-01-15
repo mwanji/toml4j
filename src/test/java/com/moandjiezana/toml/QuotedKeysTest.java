@@ -51,11 +51,34 @@ public class QuotedKeysTest {
   }
   
   @Test
-  public void should_convert() throws Exception {
+  public void should_convert_quoted_keys_to_map_but_not_to_object_fields() throws Exception {
     Quoted quoted = new Toml().parse("\"ʎǝʞ\" = \"value\"  \n[map]  \n  \"ʎǝʞ\" = \"value\"").to(Quoted.class);
     
     assertNull(quoted.ʎǝʞ);
     assertEquals("value", quoted.map.get("\"ʎǝʞ\""));
+  }
+  
+  @Test
+  public void should_support_table_array_index_with_quoted_key() throws Exception {
+    Toml toml = new Toml().parse("[[dog.\" type\"]] \n  name = \"type0\"  \n  [[dog.\" type\"]]  \n  name = \"type1\"");
+    
+    assertEquals("type0", toml.getString("dog.\" type\"[0].name"));
+    assertEquals("type1", toml.getString("dog.\" type\"[1].name"));
+  }
+  
+  @Test
+  public void should_support_quoted_key_containing_square_brackets() throws Exception {
+    Toml toml = new Toml().parse("[dog.\" type[abc]\"] \n  name = \"type0\"  \n  [dog.\" type[1]\"]  \n  \"name[]\" = \"type1\"");
+    
+    assertEquals("type0", toml.getString("dog.\" type[abc]\".name"));
+    assertEquals("type1", toml.getString("dog.\" type[1]\".\"name[]\""));
+  }
+  
+  @Test
+  public void should_support_quoted_key_containing_escaped_quote() throws Exception {
+    Toml toml = new Toml().parse("[dog.\"ty\\\"pe\"] \n  \"na\\\"me\" = \"type0\"");
+    
+    assertEquals("type0", toml.getString("dog.\"ty\\\"pe\".\"na\\\"me\""));
   }
   
   private static class Quoted {

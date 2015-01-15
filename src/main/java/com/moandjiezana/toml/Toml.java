@@ -12,14 +12,12 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.gson.Gson;
@@ -250,51 +248,27 @@ public class Toml {
       return values.get(key);
     }
 
-    String[] split = Keys.split(key);
     Object current = new HashMap<String, Object>(values);
     
-    for (int i = 0; i < split.length; i++) {
-      
-      String keyWithDot = join(Arrays.copyOfRange(split, i, split.length));
-      if (current instanceof Map && ((Map<String, Object>) current).containsKey(keyWithDot)) {
-        return ((Map<String, Object>) current).get(keyWithDot);
-      }
-      
-      String splitKey = split[i];
-      Matcher matcher = ARRAY_INDEX_PATTERN.matcher(splitKey);
-      int index = -1;
-
-      if (matcher.find()) {
-        splitKey = matcher.group(1);
-        index = Integer.parseInt(matcher.group(2), 10);
+    Keys.Key[] keys = Keys.split(key);
+    
+    for (Keys.Key k : keys) {
+      if (k.index == -1 && current instanceof Map && ((Map<String, Object>) current).containsKey(k.path)) {
+        return ((Map<String, Object>) current).get(k.path);
       }
 
-      current = ((Map<String, Object>) current).get(splitKey);
+      current = ((Map<String, Object>) current).get(k.name);
 
-      if (index > -1 && current != null) {
-        current = ((List<?>) current).get(index);
+      if (k.index > -1 && current != null) {
+        current = ((List<?>) current).get(k.index);
       }
 
       if (current == null) {
         return defaults != null ? defaults.get(key) : null;
       }
     }
-
+    
     return current;
-  }
-  
-  private String join(String[] strings) {
-    StringBuilder sb = new StringBuilder();
-    
-    for (String string : strings) {
-      sb.append(string).append('.');
-    }
-    
-    if (sb.length() > 0) {
-      sb.deleteCharAt(sb.length() - 1);
-    }
-    
-    return sb.toString();
   }
 
   private Toml(Toml defaults, Map<String, Object> values) {
