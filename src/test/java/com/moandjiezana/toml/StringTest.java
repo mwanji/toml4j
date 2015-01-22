@@ -69,7 +69,7 @@ public class StringTest {
   public void should_support_special_characters_in_strings() {
     Toml toml = new Toml().parse(new File(getClass().getResource("should_support_special_characters_in_strings.toml").getFile()));
 
-    assertEquals("\" \t \n \r \\ / \b \f", toml.getString("key"));
+    assertEquals("\" \t \n \r \\ \b \f", toml.getString("key"));
   }
 
   @Test
@@ -83,6 +83,11 @@ public class StringTest {
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_reserved_special_character_in_strings() throws Exception {
     new Toml().parse("key=\"\\m\"");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_escaped_slash() throws Exception {
+    new Toml().parse("key=\"\\/\"");
   }
 
   @Test(expected = IllegalStateException.class)

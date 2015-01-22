@@ -61,7 +61,7 @@ class StringConverter implements ValueConverter {
 
       if (ch == '\\' && next == '\\') {
         i++;
-      } else if (ch == '\\' && !(next == 'b' || next == 'f' || next == 'n' || next == 't' || next == 'r' || next == '"' || next == '/' || next == '\\')) {
+      } else if (ch == '\\' && !(next == 'b' || next == 'f' || next == 'n' || next == 't' || next == 'r' || next == '"' || next == '\\')) {
         return null;
       }
     }

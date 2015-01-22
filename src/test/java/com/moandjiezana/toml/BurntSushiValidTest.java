@@ -156,7 +156,7 @@ public class BurntSushiValidTest {
   
   @Test
   public void string_escapes() throws Exception {
-    run("string-escapes");
+    run("string-escapes-modified");
   }
   
   @Test
