@@ -59,10 +59,6 @@ public class NumberTest {
     assertEquals(6.626D * Math.pow(10, -34), toml.getDouble("fractional"), 0.0);
   }
   
-  public static void main(String[] args) {
-    System.out.println(1e6);
-  }
-
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_invalid_number() throws Exception {
     new Toml().parse("a = 200-");

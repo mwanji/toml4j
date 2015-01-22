@@ -6,18 +6,9 @@ import java.util.List;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
-import org.parboiled.parserunners.RecoveringParseRunner;
-import org.parboiled.support.ParseTreeUtils;
-import org.parboiled.support.ParsingResult;
 
 @BuildParseTree
 class ValueParser extends BaseParser<List<Object>> {
-  
-  public static void main(String[] args) {
-    ParsingResult<Object> parsingResult = new RecoveringParseRunner<Object>(ValueConverterUtils.parser().T()).run("'''abc''' # comment");
-    
-    System.out.println(ParseTreeUtils.printNodeTree(parsingResult));
-  }
   
   public Rule T() {
     return Sequence("'''", OneOrMore(TestNot("'''"), ANY), "'''", Comment());
