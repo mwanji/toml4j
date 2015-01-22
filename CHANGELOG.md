@@ -1,5 +1,8 @@
 # toml4j Changelog
 
+## NEXT
+* Fixed short-form Unicode escapes
+
 ## 0.3.1 / 2014-12-16
 * Support for [TOML 0.3.1](https://github.com/toml-lang/toml/tree/v0.3.1) spec
 * Pass TOML validator (https://github.com/BurntSushi/toml-test), which uncovered many bugs.
