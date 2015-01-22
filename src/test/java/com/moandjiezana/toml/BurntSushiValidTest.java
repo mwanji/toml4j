@@ -14,6 +14,7 @@ import java.util.TimeZone;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.gson.Gson;
@@ -198,12 +199,12 @@ public class BurntSushiValidTest {
     run("table-sub-empty");
   }
 
-  @Test
+  @Test @Ignore
   public void table_whitespace() throws Exception {
     run("table-whitespace");
   }
 
-  @Test
+  @Test @Ignore
   public void table_with_pound() throws Exception {
     run("table-with-pound");
   }

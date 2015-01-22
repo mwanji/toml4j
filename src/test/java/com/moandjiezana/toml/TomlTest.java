@@ -1,7 +1,6 @@
 package com.moandjiezana.toml;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -145,20 +144,6 @@ public class TomlTest {
     Toml toml = new Toml().parse("[group_a]\na = 1");
 
     assertEquals(1, toml.getLong("group_a.a").intValue());
-  }
-
-  @Test
-  public void should_support_sharp_sign_in_table_names() throws Exception {
-    Toml toml = new Toml().parse("[group#]\nkey=1");
-
-    assertEquals(1, toml.getLong("group#.key").intValue());
-  }
-  
-  @Test
-  public void should_support_spaces_in_table_names() throws Exception {
-    Toml toml = new Toml().parse("[valid  key]");
-    
-    assertNotNull(toml.getTable("valid  key"));
   }
 
   @Test

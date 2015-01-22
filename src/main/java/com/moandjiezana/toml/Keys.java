@@ -7,6 +7,8 @@ import java.util.List;
 
 class Keys {
   
+  private static final String ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_-.";
+  
   static class Key {
     final String name;
     final int index;
@@ -65,7 +67,7 @@ class Keys {
   }
   
   /**
-   * @param line raw TOML iine to parse
+   * @param line trimmed TOML line to parse
    * @return null if line is not a valid table identifier
    */
   static String getTableName(String line) {
@@ -81,7 +83,7 @@ class Keys {
       } else if (!quoted && c == ']') {
         terminated = true;
         break;
-      } else if (!quoted && c == '[') {
+      } else if (!quoted && (ALLOWED_CHARS.indexOf(c) == -1)) {
         break;
       }
       
