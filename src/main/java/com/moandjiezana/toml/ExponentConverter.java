@@ -16,6 +16,6 @@ class ExponentConverter implements ValueConverter {
   public Object convert(String s) {
     String[] exponentString = ((String) parse(parser().Exponent(), s).get(0)).split("[eE]");
     
-    return Math.pow(Double.parseDouble(exponentString[0]), Double.parseDouble(exponentString[1]));
+    return Double.parseDouble(exponentString[0]) * Math.pow(10, Double.parseDouble(exponentString[1]));
   }
 }

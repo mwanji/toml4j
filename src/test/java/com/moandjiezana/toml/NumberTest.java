@@ -51,12 +51,16 @@ public class NumberTest {
   public void should_get_exponent() throws Exception {
     Toml toml = new Toml().parse("lower_case = 1e6\nupper_case = 2E6\nwith_plus = 5e+22\nboth_plus = +5E+22\nnegative = -2E-2\nfractional = 6.626e-34");
 
-    assertEquals(Math.pow(1, 6), toml.getDouble("lower_case"), 0.0);
-    assertEquals(Math.pow(2, 6), toml.getDouble("upper_case"), 0.0);
-    assertEquals(Math.pow(5, 22), toml.getDouble("with_plus"), 0.0);
-    assertEquals(Math.pow(5, 22), toml.getDouble("both_plus"), 0.0);
-    assertEquals(Math.pow(-2, -2), toml.getDouble("negative"), 0.0);
-    assertEquals(Math.pow(6.626D, -34), toml.getDouble("fractional"), 0.0);
+    assertEquals(1e6, toml.getDouble("lower_case"), 0.0);
+    assertEquals(2E6, toml.getDouble("upper_case"), 0.0);
+    assertEquals(5e22, toml.getDouble("with_plus"), 0.0);
+    assertEquals(5e22, toml.getDouble("both_plus"), 0.0);
+    assertEquals(-2e-2, toml.getDouble("negative"), 0.0);
+    assertEquals(6.626D * Math.pow(10, -34), toml.getDouble("fractional"), 0.0);
+  }
+  
+  public static void main(String[] args) {
+    System.out.println(1e6);
   }
 
   @Test(expected = IllegalStateException.class)
