@@ -12,14 +12,12 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.gson.Gson;
@@ -33,13 +31,13 @@ import com.google.gson.JsonElement;
  * {@link #getList(String, Class)}, {@link #getTable(String)} and {@link #getTables(String)} return empty values if there is no matching key.</p>
  *
  * <p>Example usage:</p>
- * <code><pre>
+ * <pre><code>
  * Toml toml = new Toml().parse(getTomlFile());
  * String name = toml.getString("name");
  * Long port = toml.getLong("server.ip"); // compound key. Is equivalent to:
  * Long port2 = toml.getTable("server").getLong("ip");
  * MyConfig config = toml.to(MyConfig.class);
- * </pre></code>
+ * </code></pre>
  *
  */
 public class Toml {
@@ -67,7 +65,7 @@ public class Toml {
   /**
    * Populates the current Toml instance with values from file.
    *
-   * @param file
+   * @param file The File to be read
    * @return this instance
    * @throws IllegalStateException If file contains invalid TOML
    */
@@ -82,7 +80,7 @@ public class Toml {
   /**
    * Populates the current Toml instance with values from inputStream.
    *
-   * @param inputStream
+   * @param inputStream Closed after it has been read.
    * @return this instance
    * @throws IllegalStateException If file contains invalid TOML
    */
@@ -93,7 +91,7 @@ public class Toml {
   /**
    * Populates the current Toml instance with values from reader.
    *
-   * @param reader
+   * @param reader Closed after it has been read.
    * @return this instance
    * @throws IllegalStateException If file contains invalid TOML
    */
@@ -122,7 +120,7 @@ public class Toml {
   /**
    * Populates the current Toml instance with values from tomlString.
    *
-   * @param tomlString
+   * @param tomlString String to be read.
    * @return this instance
    * @throws IllegalStateException If tomlString is not valid TOML
    */
@@ -169,9 +167,8 @@ public class Toml {
   }
 
   /**
-   * If no value is found for key, an empty Toml instance is returned.
-   *
-   * @param key
+   * @param key A table name, not including square brackets.
+   * @return A new Toml instance. Empty if no value is found for key.
    */
   @SuppressWarnings("unchecked")
   public Toml getTable(String key) {
@@ -179,8 +176,8 @@ public class Toml {
   }
 
   /**
-   * If no value is found for key, an empty list is returned.
-   * @param key
+   * @param key Name of array of tables, not including square brackets.
+   * @return An empty List if no value is found for key.
    */
   @SuppressWarnings("unchecked")
   public List<Toml> getTables(String key) {
@@ -214,7 +211,9 @@ public class Toml {
    *  <li>TOML array to {@link Set}</li>
    * </ul>
    *
-   * @param targetClass
+   * @param targetClass Class to deserialize TOML to.
+   * @param <T> type of targetClass.
+   * @return A new instance of targetClass.
    */
   public <T> T to(Class<T> targetClass) {
     return to(targetClass, DEFAULT_GSON);
@@ -245,54 +244,31 @@ public class Toml {
 
   @SuppressWarnings("unchecked")
   private Object get(String key) {
-    String[] split = key.split("\\.");
+    if (values.containsKey(key)) {
+      return values.get(key);
+    }
+
     Object current = new HashMap<String, Object>(values);
     
-    for (int i = 0; i < split.length; i++) {
-      if (i == 0 && values.containsKey(key)) {
-        return values.get(key);
-      }
-      
-      String keyWithDot = join(Arrays.copyOfRange(split, i, split.length));
-      if (current instanceof Map && ((Map<String, Object>) current).containsKey(keyWithDot)) {
-        return ((Map<String, Object>) current).get(keyWithDot);
-      }
-      
-      String splitKey = split[i];
-      Matcher matcher = ARRAY_INDEX_PATTERN.matcher(splitKey);
-      int index = -1;
-
-      if (matcher.find()) {
-        splitKey = matcher.group(1);
-        index = Integer.parseInt(matcher.group(2), 10);
+    Keys.Key[] keys = Keys.split(key);
+    
+    for (Keys.Key k : keys) {
+      if (k.index == -1 && current instanceof Map && ((Map<String, Object>) current).containsKey(k.path)) {
+        return ((Map<String, Object>) current).get(k.path);
       }
 
-      current = ((Map<String, Object>) current).get(splitKey);
+      current = ((Map<String, Object>) current).get(k.name);
 
-      if (index > -1 && current != null) {
-        current = ((List<?>) current).get(index);
+      if (k.index > -1 && current != null) {
+        current = ((List<?>) current).get(k.index);
       }
 
       if (current == null) {
         return defaults != null ? defaults.get(key) : null;
       }
     }
-
+    
     return current;
-  }
-  
-  private String join(String[] strings) {
-    StringBuilder sb = new StringBuilder();
-    
-    for (String string : strings) {
-      sb.append(string).append('.');
-    }
-    
-    if (sb.length() > 0) {
-      sb.deleteCharAt(sb.length() - 1);
-    }
-    
-    return sb.toString();
   }
 
   private Toml(Toml defaults, Map<String, Object> values) {
