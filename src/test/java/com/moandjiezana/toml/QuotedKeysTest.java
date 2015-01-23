@@ -81,6 +81,28 @@ public class QuotedKeysTest {
     assertEquals("type0", toml.getString("dog.\"ty\\\"pe\".\"na\\\"me\""));
   }
   
+  @Test
+  public void should_support_fully_quoted_table_name() throws Exception {
+    Toml toml = new Toml().parse("[\"abc.def\"]  \n  key = 1");
+    
+    assertEquals(1, toml.getLong("\"abc.def\".key").intValue());
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_malformed_quoted_key() throws Exception {
+    new Toml().parse("k\"ey\" = 1");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_malformed_quoted_table() throws Exception {
+    new Toml().parse("[a\"bc\"]");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_malformed_quoted_nested_table() throws Exception {
+    new Toml().parse("[a.a\"bc\"]");
+  }
+  
   private static class Quoted {
     
     String ʎǝʞ;

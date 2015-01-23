@@ -36,7 +36,7 @@ class TomlParser {
       }
 
       if (isTableArray(line)) {
-        String tableName = getTableArrayName(line);
+        String tableName = Keys.getTableArrayName(line);
         if (tableName != null) {
           results.startTableArray(tableName);
           String afterTableName = line.substring(tableName.length() + 4);
@@ -51,7 +51,7 @@ class TomlParser {
       }
 
       if (multiline.isNotMultiline() && isTable(line)) {
-        String tableName = getTableName(line);
+        String tableName = Keys.getTableName(line);
         if (tableName != null) {
           results.startTables(tableName);
         } else {
@@ -140,14 +140,14 @@ class TomlParser {
           continue;
         }
       } else {
-        key = pair[0].trim();
+        key = Keys.getKey(pair[0]);
+        if (key == null) {
+          results.errors.append("Invalid key name: " + pair[0] + "\n");
+          continue;
+        }
         value = pair[1].trim();
       }
 
-      if (!isKeyValid(key)) {
-        results.errors.append("Invalid key name: " + key + "\n");
-        continue;
-      }
 
       Object convertedValue = VALUE_ANALYSIS.convert(value);
 
@@ -169,24 +169,8 @@ class TomlParser {
     return line.startsWith("[[");
   }
   
-  private String getTableArrayName(String line) {
-    return Keys.getTableArrayName(line);
-  }
-
   private boolean isTable(String line) {
     return line.startsWith("[");
-  }
-
-  private String getTableName(String line) {
-    return Keys.getTableName(line);
-  }
-
-  private boolean isKeyValid(String key) {
-    if (key.contains("#") || key.trim().isEmpty()) {
-      return false;
-    }
-
-    return true;
   }
 
   private boolean isComment(String line) {

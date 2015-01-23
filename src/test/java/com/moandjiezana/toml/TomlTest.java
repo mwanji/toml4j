@@ -116,13 +116,6 @@ public class TomlTest {
 
     assertEquals(1, toml.getLong("a_a").intValue());
   }
-
-  @Test
-  public void should_support_question_marks_in_key_names() throws Exception {
-    Toml toml = new Toml().parse("key?=true");
-
-    assertTrue(toml.getBoolean("key?"));
-  }
   
   @Test
   public void should_support_dots_in_key_names() throws Exception {
@@ -206,26 +199,6 @@ public class TomlTest {
   @Test(expected = IllegalStateException.class)
   public void should_fail_when_illegal_characters_after_table() throws Exception {
     new Toml().parse("[error]   if you didn't catch this, your parser is broken");
-  }
-  
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_empty_table_name() {
-    new Toml().parse("[]");
-  }
-  
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_compound_table_name_ending_with_empty_table_name() {
-    new Toml().parse("[a.]");
-  }
-  
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_compound_table_name_containing_empty_table_name() {
-    new Toml().parse("[a..b]");
-  }
-  
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_compound_table_name_starting_with_empty_table_name() {
-    new Toml().parse("[.b]");
   }
 
   private File file(String file) {

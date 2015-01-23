@@ -25,6 +25,35 @@ class Keys {
     }
   }
 
+  static String getKey(String key) {
+    key = key.trim();
+    
+    if (key.isEmpty()) {
+      return null;
+    }
+    
+    boolean quoted = false;
+    char[] chars = key.toCharArray();
+    StringBuilder sb = new StringBuilder(key.length());
+    
+    for (int i = 0; i < chars.length; i++) {
+      char c = chars[i];
+      
+      if (c == '"' && (i == 0 || chars[i - 1] != '\\')) {
+        if (!quoted && i > 0 && chars [i - 1] != '.') {
+          return null;
+        }
+        quoted = !quoted;
+      } else if (!quoted && (ALLOWED_CHARS.indexOf(c) == -1)) {
+        return null;
+      }
+      
+      sb.append(c);
+    }
+    
+    return sb.toString();
+  }
+
   static Keys.Key[] split(String key) {
     List<Key> splitKey = new ArrayList<Key>();
     StringBuilder current = new StringBuilder();
@@ -111,6 +140,9 @@ class Keys {
     for (int i = 1; i < chars.length; i++) {
       char c = chars[i];
       if (c == '"' && chars[i - 1] != '\\') {
+        if (!quoted && i > 1 && chars [i - 1] != '.') {
+          break;
+        }
         quoted = !quoted;
       } else if (!quoted && c == ']') {
         terminated = true;
