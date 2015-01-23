@@ -26,10 +26,6 @@ class ValueParser extends BaseParser<List<Object>> {
     return FirstOf(EmptyMultilineLiteralString(), Sequence("'''", startList(), Sequence(OneOrMore(TestNot("'''"), ANY), pushToken(match())), "'''", endList(), Comment()));
   }
   
-  public Rule Boolean() {
-    return Sequence(startList(), FirstOf("true", "false"), pushToken(match()), endList(), Comment());
-  }
-  
   public Rule Integer() {
     return Sequence(startList(), Sequence(SignedNumber(), pushToken(match())), endList(), Comment());
   }

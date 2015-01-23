@@ -1,10 +1,7 @@
 package com.moandjiezana.toml;
 
 import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
-import static com.moandjiezana.toml.ValueConverterUtils.parse;
-import static com.moandjiezana.toml.ValueConverterUtils.parser;
 
-import java.util.List;
 
 class BooleanConverter implements ValueConverter {
   
@@ -17,13 +14,15 @@ class BooleanConverter implements ValueConverter {
 
   @Override
   public Object convert(String s) {
-    List<String> resultValue = parse(parser().Boolean(), s);
+    Boolean b = s.startsWith("true") ? Boolean.TRUE : Boolean.FALSE;
     
-    if (resultValue == null) {
+    int endIndex = b == Boolean.TRUE ? 4 : 5;
+    
+    if (!ValueConverterUtils.isComment(s.substring(endIndex))) {
       return INVALID;
     }
     
-    return Boolean.valueOf(resultValue.get(0));
+    return b;
   }
 
   private BooleanConverter() {}
