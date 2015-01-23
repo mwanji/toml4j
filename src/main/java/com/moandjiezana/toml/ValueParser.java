@@ -13,10 +13,6 @@ class ValueParser extends BaseParser<List<Object>> {
   public Rule Array() {
     return FirstOf(EmptyArray(), Sequence('[', startList(), OneOrMore(FirstOf(NonEmptyArray(), ' ', ',')), ']', endList()));
   }
-
-  public Rule Table() {
-    return Sequence('[', startList(), Sequence(OneOrMore(NoneOf("[]")), pushToken(match())), ']', endList(), Comment());
-  }
   
   public Rule LiteralString() {
     return FirstOf(EmptyLiteralString(), Sequence('\'', OneOrMore(TestNot("'"), ANY), startList(), pushToken(match()) , '\'', endList(), Comment()));
@@ -24,10 +20,6 @@ class ValueParser extends BaseParser<List<Object>> {
   
   public Rule MultilineLiteralString() {
     return FirstOf(EmptyMultilineLiteralString(), Sequence("'''", startList(), Sequence(OneOrMore(TestNot("'''"), ANY), pushToken(match())), "'''", endList(), Comment()));
-  }
-  
-  public Rule Integer() {
-    return Sequence(startList(), Sequence(SignedNumber(), pushToken(match())), endList(), Comment());
   }
   
   public Rule Exponent() {
