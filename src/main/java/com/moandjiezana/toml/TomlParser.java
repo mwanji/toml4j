@@ -1,6 +1,7 @@
 package com.moandjiezana.toml;
 
 import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
+import static com.moandjiezana.toml.ValueConverterUtils.isComment;
 
 import java.util.regex.Pattern;
 
@@ -39,10 +40,6 @@ class TomlParser {
         String tableName = Keys.getTableArrayName(line);
         if (tableName != null) {
           results.startTableArray(tableName);
-          String afterTableName = line.substring(tableName.length() + 4);
-          if (!isComment(afterTableName)) {
-            results.errors.append("Invalid table array definition: " + line + "\n\n");
-          }
         } else {
           results.errors.append("Invalid table array definition: " + line + "\n\n");
         }
@@ -171,24 +168,6 @@ class TomlParser {
   
   private boolean isTable(String line) {
     return line.startsWith("[");
-  }
-
-  private boolean isComment(String line) {
-    if (line == null || line.isEmpty()) {
-      return true;
-    }
-
-    char[] chars = line.toCharArray();
-
-    for (char c : chars) {
-      if (Character.isWhitespace(c)) {
-        continue;
-      }
-
-      return c == '#';
-    }
-
-    return false;
   }
 
   private String removeComment(String line) {
