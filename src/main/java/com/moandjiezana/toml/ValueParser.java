@@ -14,10 +14,6 @@ class ValueParser extends BaseParser<List<Object>> {
     return FirstOf(EmptyArray(), Sequence('[', startList(), OneOrMore(FirstOf(NonEmptyArray(), ' ', ',')), ']', endList()));
   }
   
-  public Rule LiteralString() {
-    return FirstOf(EmptyLiteralString(), Sequence('\'', OneOrMore(TestNot("'"), ANY), startList(), pushToken(match()) , '\'', endList(), Comment()));
-  }
-  
   public Rule MultilineLiteralString() {
     return FirstOf(EmptyMultilineLiteralString(), Sequence("'''", startList(), Sequence(OneOrMore(TestNot("'''"), ANY), pushToken(match())), "'''", endList(), Comment()));
   }

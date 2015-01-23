@@ -1,9 +1,7 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueConverterUtils.parse;
-import static com.moandjiezana.toml.ValueConverterUtils.parser;
+import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
 
-import java.util.List;
 
 class LiteralStringConverter implements ValueConverter {
 
@@ -16,13 +14,36 @@ class LiteralStringConverter implements ValueConverter {
 
   @Override
   public Object convert(String s) {
-    List<String> resultValue = parse(parser().LiteralString(), s);
+    char[] chars = s.toCharArray();
+    boolean terminated = false;
+    StringBuilder sb = new StringBuilder(s.length());
     
-    if (resultValue == null) {
-      return ValueConverterUtils.INVALID;
+    for (int i = 1; i < chars.length; i++) {
+      char c = chars[i];
+      
+      if (c == '\'') {
+        terminated = true;
+        continue;
+      }
+      
+      if (!terminated) {
+        sb.append(c);
+      }
+      
+      if (terminated && c == '#') {
+        break;
+      }
+      
+      if (terminated && !Character.isWhitespace(c)) {
+        return INVALID;
+      }
     }
     
-    return resultValue.get(0);
+    if (!terminated) {
+      return INVALID;
+    }
+    
+    return sb.toString();
   }
 
   private LiteralStringConverter() {}
