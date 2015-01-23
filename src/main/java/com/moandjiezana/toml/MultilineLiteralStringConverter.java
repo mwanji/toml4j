@@ -1,10 +1,6 @@
 package com.moandjiezana.toml;
 
 import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
-import static com.moandjiezana.toml.ValueConverterUtils.parse;
-import static com.moandjiezana.toml.ValueConverterUtils.parser;
-
-import java.util.List;
 
 class MultilineLiteralStringConverter implements ValueConverter {
   
@@ -17,13 +13,33 @@ class MultilineLiteralStringConverter implements ValueConverter {
 
   @Override
   public Object convert(String s) {
-    List<String> result = parse(parser().MultilineLiteralString(), s);
+    char[] chars = s.toCharArray();
+    boolean terminated = false;
+    StringBuilder sb = new StringBuilder(s.length());
     
-    if (result == null) {
-      return INVALID;
+    for (int i = 3; i < chars.length; i++) {
+      char c = chars[i];
+      
+      if (c == '\'' && chars.length > i + 2 && chars[i + 1] == '\'' && chars[i + 2] == '\'') {
+        i += 2;
+        terminated = true;
+        continue;
+      }
+      
+      if (!terminated) {
+        sb.append(c);
+      }
+      
+      if (terminated && c == '#') {
+        break;
+      }
+      
+      if (terminated && !Character.isWhitespace(c)) {
+        return INVALID;
+      }
     }
-    
-    return result.get(0);
+
+    return sb.toString();
   }
 
   private MultilineLiteralStringConverter() {}

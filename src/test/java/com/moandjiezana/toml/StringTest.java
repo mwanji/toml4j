@@ -101,8 +101,13 @@ public class StringTest {
   }
   
   @Test(expected = IllegalStateException.class)
-  public void should_fail_on_unterminated_multiline_literal_string() throws Exception {
+  public void should_fail_on_multiline_literal_string_with_malformed_comment() throws Exception {
     new Toml().parse("a = '''some\n text\n''\nb = '''1'''");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_unterminated_multiline_literal_string() throws Exception {
+    new Toml().parse("a = '''some\n text\n''");
   }
   
   @Test(expected = IllegalStateException.class)

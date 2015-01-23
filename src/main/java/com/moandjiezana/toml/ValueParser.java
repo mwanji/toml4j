@@ -14,10 +14,6 @@ class ValueParser extends BaseParser<List<Object>> {
     return FirstOf(EmptyArray(), Sequence('[', startList(), OneOrMore(FirstOf(NonEmptyArray(), ' ', ',')), ']', endList()));
   }
   
-  public Rule MultilineLiteralString() {
-    return FirstOf(EmptyMultilineLiteralString(), Sequence("'''", startList(), Sequence(OneOrMore(TestNot("'''"), ANY), pushToken(match())), "'''", endList(), Comment()));
-  }
-  
   Rule NonEmptyArray() {
     return FirstOf(Array(), OneOrMore(TestNot(']'), FirstOf(StringToken(), Array(), ',', ' ', OtherValue())));
   }
@@ -26,34 +22,14 @@ class ValueParser extends BaseParser<List<Object>> {
     return Sequence(Sequence('"', ZeroOrMore(Sequence(TestNot('"'), ANY)), '"'), pushToken(match()));
   }
   
-  Rule EmptyLiteralString() {
-    return Sequence('\'', '\'', startList(), pushToken(""), endList());
-  }
-  
-  Rule EmptyMultilineLiteralString() {
-    return Sequence("'''", "'''", startList(), pushToken(""), endList(), Comment());
-  }
-  
   Rule EmptyArray() {
     return Sequence('[', ']', startList(), endList());
   }
   
-  Rule SignedNumber() {
-    return Sequence(Optional(AnyOf("+-")), Number());
-  }
-  
-  Rule Number() {
-    return OneOrMore(CharRange('0', '9'));
-  }
-
   Rule OtherValue() {
     return Sequence(ZeroOrMore(NoneOf("],")), pushToken(match()));
   }
   
-  Rule Comment() {
-    return FirstOf(EOI, OneOrMore(' ', Sequence('#', ZeroOrMore(ANY))));
-  }
-
   boolean startList() {
     ArrayList<Object> newTokens = new ArrayList<Object>();
 
