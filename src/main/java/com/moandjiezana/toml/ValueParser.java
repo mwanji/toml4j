@@ -22,10 +22,6 @@ class ValueParser extends BaseParser<List<Object>> {
     return FirstOf(EmptyMultilineLiteralString(), Sequence("'''", startList(), Sequence(OneOrMore(TestNot("'''"), ANY), pushToken(match())), "'''", endList(), Comment()));
   }
   
-  public Rule Exponent() {
-    return Sequence(startList(), Sequence(Sequence(SignedNumber(), Optional(Sequence('.', Number())), FirstOf('e', 'E'), SignedNumber()), pushToken(match())), endList(), Comment());
-  }
-
   Rule NonEmptyArray() {
     return FirstOf(Array(), OneOrMore(TestNot(']'), FirstOf(StringToken(), Array(), ',', ' ', OtherValue())));
   }
