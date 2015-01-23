@@ -10,10 +10,6 @@ import org.parboiled.annotations.BuildParseTree;
 @BuildParseTree
 class ValueParser extends BaseParser<List<Object>> {
   
-  public Rule T() {
-    return Sequence("'''", OneOrMore(TestNot("'''"), ANY), "'''", Comment());
-  }
-
   public Rule Array() {
     return FirstOf(EmptyArray(), Sequence('[', startList(), OneOrMore(FirstOf(NonEmptyArray(), ' ', ',')), ']', endList()));
   }
@@ -22,10 +18,6 @@ class ValueParser extends BaseParser<List<Object>> {
     return Sequence('[', startList(), Sequence(OneOrMore(NoneOf("[]")), pushToken(match())), ']', endList(), Comment());
   }
   
-  public Rule TableArray() {
-    return Sequence('[', '[', startList(), Sequence(OneOrMore(NoneOf("[]")), pushToken(match())), ']', ']', endList(), FirstOf(EOI, Sequence(TestNot(']'), ANY)));
-  }
-
   public Rule LiteralString() {
     return FirstOf(EmptyLiteralString(), Sequence('\'', OneOrMore(TestNot("'"), ANY), startList(), pushToken(match()) , '\'', endList(), Comment()));
   }

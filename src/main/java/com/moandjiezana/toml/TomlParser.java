@@ -1,10 +1,7 @@
 package com.moandjiezana.toml;
 
 import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
-import static com.moandjiezana.toml.ValueConverterUtils.parse;
-import static com.moandjiezana.toml.ValueConverterUtils.parser;
 
-import java.util.List;
 import java.util.regex.Pattern;
 
 class TomlParser {
@@ -173,12 +170,7 @@ class TomlParser {
   }
   
   private String getTableArrayName(String line) {
-    List<Object> resultValue = parse(parser().TableArray(), line);
-    if (resultValue == null) {
-      return null;
-    }
-
-    return (String) resultValue.get(0);
+    return Keys.getTableArrayName(line);
   }
 
   private boolean isTable(String line) {

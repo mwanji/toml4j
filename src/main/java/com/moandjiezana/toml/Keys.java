@@ -65,6 +65,38 @@ class Keys {
     
     return splitKey.toArray(new Key[0]);
   }
+
+  static String getTableArrayName(String line) {
+    StringBuilder sb = new StringBuilder();
+    char[] chars = line.toCharArray();
+    boolean quoted = false;
+    boolean terminated = false;
+    
+    for (int i = 2; i < chars.length; i++) {
+      char c = chars[i];
+      if (c == '"' && chars[i - 1] != '\\') {
+        quoted = !quoted;
+      } else if (!quoted && c == ']') {
+        if (chars.length > i + 1 && chars[i + 1] == ']') {
+          terminated = true;
+          break;
+        }
+      } else if (!quoted && (ALLOWED_CHARS.indexOf(c) == -1)) {
+        break;
+      }
+      
+      sb.append(c);
+    }
+    
+    String tableName = sb.toString();
+    
+    if (!terminated || tableName.isEmpty() || !isComment(line.substring(tableName.length() + 4))) {
+      return null;
+    }
+    
+    tableName = StringConverter.STRING_PARSER.replaceUnicodeCharacters(tableName);
+    return tableName;
+  }
   
   /**
    * @param line trimmed TOML line to parse
