@@ -15,35 +15,30 @@ class LiteralStringConverter implements ValueConverter {
   @Override
   public Object convert(String s) {
     char[] chars = s.toCharArray();
-    boolean terminated = false;
-    StringBuilder sb = new StringBuilder(s.length());
+    int endIndex = -1;
     
     for (int i = 1; i < chars.length; i++) {
       char c = chars[i];
       
       if (c == '\'') {
-        terminated = true;
+        endIndex = i;
         continue;
       }
       
-      if (!terminated) {
-        sb.append(c);
-      }
-      
-      if (terminated && c == '#') {
+      if (endIndex > -1 && c == '#') {
         break;
       }
       
-      if (terminated && !Character.isWhitespace(c)) {
+      if (endIndex > -1 && !Character.isWhitespace(c)) {
         return INVALID;
       }
     }
     
-    if (!terminated) {
+    if (endIndex == -1) {
       return INVALID;
     }
     
-    return sb.toString();
+    return s.substring(1, endIndex);
   }
 
   private LiteralStringConverter() {}
