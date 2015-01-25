@@ -3,6 +3,7 @@
 ## NEXT
 * Fixed short-form Unicode escapes
 * Fixed exponent handling
+* Dropped dependency on Parboiled
 * Updated Gson to 2.3.1
 
 ## 0.3.1 / 2014-12-16

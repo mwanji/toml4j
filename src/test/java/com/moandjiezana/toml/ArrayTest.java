@@ -1,7 +1,9 @@
 package com.moandjiezana.toml;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -55,6 +57,20 @@ public class ArrayTest {
     Toml toml = new Toml().parse("key=[1,2,3,]");
 
     assertEquals(asList(1L, 2L, 3L), toml.getList("key", Long.class));
+  }
+  
+  @Test
+  public void should_support_mixed_string_types() throws Exception {
+    Toml toml = new Toml().parse("key = [\"a\", 'b', \"\"\"c\"\"\", '''d''']");
+    
+    assertThat(toml.getList("key", String.class), contains("a", "b", "c", "d"));
+  }
+  
+  @Test
+  public void should_support_array_terminator_in_strings() throws Exception {
+    Toml toml = new Toml().parse("key = [\"a]\", 'b]', \"\"\"c]\"\"\", '''d]''']");
+    
+    assertThat(toml.getList("key", String.class), contains("a]", "b]", "c]", "d]"));
   }
   
   private File file(String file) {
