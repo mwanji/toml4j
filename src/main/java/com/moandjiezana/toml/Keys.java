@@ -100,18 +100,36 @@ class Keys {
     char[] chars = line.toCharArray();
     boolean quoted = false;
     boolean terminated = false;
+    int endIndex = -1;
+    boolean preKey = true;
     
     for (int i = 2; i < chars.length; i++) {
       char c = chars[i];
       if (c == '"' && chars[i - 1] != '\\') {
+        if (!quoted && i > 1 && chars [i - 1] != '.' && !Character.isWhitespace(chars[i - 1])) {
+          break;
+        }
         quoted = !quoted;
       } else if (!quoted && c == ']') {
         if (chars.length > i + 1 && chars[i + 1] == ']') {
           terminated = true;
+          endIndex = i + 1;
           break;
         }
+      } else if (!quoted && c == '.') {
+        preKey = true;
+      } else if (!quoted && Character.isWhitespace(c)) {
+        if (preKey && i > 2 && chars[i - 1] != '.' && !Character.isWhitespace(chars[i - 1])) {
+          break;
+        }
+        if (!preKey && chars.length > i + 1 && chars[i + 1] != '.' && chars[i + 1] != ']' && !Character.isWhitespace(chars[i + 1])) {
+          break;
+        }
+        continue;
       } else if (!quoted && (ALLOWED_CHARS.indexOf(c) == -1)) {
         break;
+      } else {
+        preKey = false;
       }
       
       sb.append(c);
@@ -119,12 +137,11 @@ class Keys {
     
     String tableName = sb.toString();
     
-    if (!terminated || tableName.isEmpty() || !isComment(line.substring(tableName.length() + 4))) {
+    if (!terminated || tableName.isEmpty() || !isComment(line.substring(endIndex + 1))) {
       return null;
     }
     
-    tableName = StringConverter.STRING_PARSER.replaceUnicodeCharacters(tableName);
-    return tableName;
+    return StringConverter.STRING_PARSER.replaceUnicodeCharacters(tableName);
   }
   
   /**
@@ -136,19 +153,34 @@ class Keys {
     char[] chars = line.toCharArray();
     boolean quoted = false;
     boolean terminated = false;
+    int endIndex = -1;
+    boolean preKey = true;
     
     for (int i = 1; i < chars.length; i++) {
       char c = chars[i];
       if (c == '"' && chars[i - 1] != '\\') {
-        if (!quoted && i > 1 && chars [i - 1] != '.') {
+        if (!quoted && i > 1 && chars [i - 1] != '.' && !Character.isWhitespace(chars[i - 1])) {
           break;
         }
         quoted = !quoted;
       } else if (!quoted && c == ']') {
         terminated = true;
+        endIndex = i;
         break;
+      } else if (!quoted && c == '.') {
+        preKey = true;
+      } else if (!quoted && Character.isWhitespace(c)) {
+        if (preKey && i > 1 && chars[i - 1] != '.' && !Character.isWhitespace(chars[i - 1])) {
+          break;
+        }
+        if (!preKey && chars.length > i + 1 && chars[i + 1] != '.' && chars[i + 1] != ']' && !Character.isWhitespace(chars[i + 1])) {
+          break;
+        }
+        continue;
       } else if (!quoted && (ALLOWED_CHARS.indexOf(c) == -1)) {
         break;
+      } else if (!quoted) {
+        preKey = false;
       }
       
       sb.append(c);
@@ -156,12 +188,11 @@ class Keys {
     
     String tableName = sb.toString();
     
-    if (!terminated || !isComment(line.substring(tableName.length() + 2))) {
+    if (!terminated || !isComment(line.substring(endIndex + 1))) {
       return null;
     }
     
-    tableName = StringConverter.STRING_PARSER.replaceUnicodeCharacters(tableName);
-    return tableName;
+    return StringConverter.STRING_PARSER.replaceUnicodeCharacters(tableName);
   }
   
   private Keys() {}

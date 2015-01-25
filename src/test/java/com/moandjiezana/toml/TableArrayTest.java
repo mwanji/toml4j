@@ -87,6 +87,11 @@ public class TableArrayTest {
     assertEquals("granny smith", appleVariety.getString("name"));
     assertEquals("plantain", bananaVariety);
   }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_empty_table_array_name() {
+    new Toml().parse("[[]]");
+  }
 
   private File file(String fileName) {
     return new File(getClass().getResource(fileName + ".toml").getFile());

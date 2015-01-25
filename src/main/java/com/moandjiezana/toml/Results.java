@@ -29,9 +29,9 @@ class Results {
       stack.pop();
     }
 
-    String[] tableParts = tableName.split("\\.");
+    Keys.Key[] tableParts = Keys.split(tableName);
     for (int i = 0; i < tableParts.length; i++) {
-      String tablePart = tableParts[i];
+      String tablePart = tableParts[i].name;
       Container currentContainer = stack.peek();
 
       if (currentContainer.get(tablePart) instanceof Container.TableArray) {

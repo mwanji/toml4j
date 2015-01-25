@@ -60,10 +60,17 @@ public class QuotedKeysTest {
   
   @Test
   public void should_support_table_array_index_with_quoted_key() throws Exception {
-    Toml toml = new Toml().parse("[[dog.\" type\"]] \n  name = \"type0\"  \n  [[dog.\" type\"]]  \n  name = \"type1\"");
+    Toml toml = new Toml().parse("[[ dog. \" type\" ]] \n  name = \"type0\"  \n  [[dog.\" type\"]]  \n  name = \"type1\"");
     
     assertEquals("type0", toml.getString("dog.\" type\"[0].name"));
     assertEquals("type1", toml.getString("dog.\" type\"[1].name"));
+  }
+  
+  @Test
+  public void should_support_table_array_index_with_dot_in_quoted_key() throws Exception {
+    Toml toml = new Toml().parse("[[ dog. \"a.type\" ]] \n  name = \"type0\"");
+    
+    assertEquals("type0", toml.getString("dog.\"a.type\"[0].name"));
   }
   
   @Test
@@ -86,6 +93,13 @@ public class QuotedKeysTest {
     Toml toml = new Toml().parse("[\"abc.def\"]  \n  key = 1");
     
     assertEquals(1, toml.getLong("\"abc.def\".key").intValue());
+  }
+  
+  @Test
+  public void should_support_whitespace_around_key_segments() throws Exception {
+    Toml toml = new Toml().parse("[  dog. \"type\". breed   ] \n  name = \"type0\"");
+    
+    assertEquals("type0", toml.getString("dog.\"type\".breed.name"));
   }
   
   @Test(expected = IllegalStateException.class)
