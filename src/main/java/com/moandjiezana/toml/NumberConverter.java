@@ -11,10 +11,6 @@ class NumberConverter implements ValueConverter {
     
     return firstChar == '+' || firstChar == '-' || Character.isDigit(firstChar);
   }
-  
-  public static void main(String[] args) {
-    new NumberConverter().convert("5e+22");
-  }
 
   @Override
   public Object convert(String s) {
