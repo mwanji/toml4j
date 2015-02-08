@@ -42,7 +42,7 @@ public class RealWorldTest {
     assertEquals("192.168.1.1", database.getString("server"));
     assertEquals(5000L, database.getLong("connection_max").longValue());
     assertTrue(database.getBoolean("enabled"));
-    assertEquals(Arrays.asList(8001L, 8001L, 8002L), database.getList("ports", Long.class));
+    assertEquals(Arrays.asList(8001L, 8001L, 8002L), database.<Long>getList("ports"));
 
     Toml servers = toml.getTable("servers");
     Toml alphaServers = servers.getTable("alpha");
@@ -54,8 +54,8 @@ public class RealWorldTest {
     assertEquals("中国", betaServers.getString("country"));
 
     Toml clients = toml.getTable("clients");
-    assertEquals(asList(asList("gamma", "delta"), asList(1L, 2L)), clients.getList("data", String.class));
-    assertEquals(asList("alpha", "omega"), clients.getList("hosts", String.class));
+    assertEquals(asList(asList("gamma", "delta"), asList(1L, 2L)), clients.<String>getList("data"));
+    assertEquals(asList("alpha", "omega"), clients.<String>getList("hosts"));
   }
 
   @Test
@@ -63,13 +63,13 @@ public class RealWorldTest {
     Toml toml = new Toml().parse(new File(getClass().getResource("hard_example.toml").getFile()));
 
     assertEquals("You'll hate me after this - #", toml.getString("the.test_string"));
-    assertEquals(asList("] ", " # "), toml.getList("the.hard.test_array", String.class));
-    assertEquals(asList("Test #11 ]proved that", "Experiment #9 was a success"), toml.getList("the.hard.test_array2", String.class));
+    assertEquals(asList("] ", " # "), toml.<String>getList("the.hard.test_array"));
+    assertEquals(asList("Test #11 ]proved that", "Experiment #9 was a success"), toml.<String>getList("the.hard.test_array2"));
     assertEquals(" Same thing, but with a string #", toml.getString("the.hard.another_test_string"));
     assertEquals(" And when \"'s are in the string, along with # \"", toml.getString("the.hard.harder_test_string"));
     Toml theHardBit = toml.getTable("the.hard.\"bit#\"");
     assertEquals("You don't think some user won't do that?", theHardBit.getString("\"what?\""));
-    assertEquals(asList("]"), theHardBit.getList("multi_line_array", String.class));
+    assertEquals(asList("]"), theHardBit.<String>getList("multi_line_array"));
   }
   
   @SuppressWarnings("unchecked")
@@ -106,12 +106,12 @@ public class RealWorldTest {
     assertEquals(6.626e-34, toml.getDouble("Float.both.key").doubleValue(), 0);
     assertTrue(toml.getBoolean("Booleans.True"));
     assertFalse(toml.getBoolean("Booleans.False"));
-    assertThat(toml.getList("Array.key1", Long.class), contains(1L, 2L, 3L));
-    assertThat(toml.getList("Array.key2", String.class), contains("red", "yellow", "green"));
-    assertEquals(asList(asList(1L, 2L), asList(3L, 4L, 5L)), toml.getList("Array.key3", List.class));
-    assertEquals(asList(asList(1L, 2L), asList("a", "b", "c")), toml.getList("Array.key4", List.class));
-    assertThat(toml.getList("Array.key5", Long.class), contains(1L, 2L, 3L));
-    assertThat(toml.getList("Array.key6", Long.class), contains(1L, 2L));
+    assertThat(toml.<Long>getList("Array.key1"), contains(1L, 2L, 3L));
+    assertThat(toml.<String>getList("Array.key2"), contains("red", "yellow", "green"));
+    assertEquals(asList(asList(1L, 2L), asList(3L, 4L, 5L)), toml.<List>getList("Array.key3"));
+    assertEquals(asList(asList(1L, 2L), asList("a", "b", "c")), toml.<List>getList("Array.key4"));
+    assertThat(toml.<Long>getList("Array.key5"), contains(1L, 2L, 3L));
+    assertThat(toml.<Long>getList("Array.key6"), contains(1L, 2L));
     assertEquals("Hammer", toml.getString("products[0].name"));
     assertEquals(738594937, toml.getLong("products[0].sku").intValue());
     assertNotNull(toml.getTable("products[1]"));

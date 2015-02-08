@@ -19,14 +19,14 @@ public class ArrayTest {
   public void should_get_array() throws Exception {
     Toml toml = new Toml().parse("list = [\"a\", \"b\", \"c\"]");
 
-    assertEquals(asList("a", "b", "c"), toml.getList("list", String.class));
+    assertEquals(asList("a", "b", "c"), toml.<String>getList("list"));
   }
 
   @Test
   public void should_allow_multiline_array() throws Exception {
     Toml toml = new Toml().parse(file("should_allow_multiline_array"));
 
-    assertEquals(asList("a", "b", "c"), toml.getList("a", String.class));
+    assertEquals(asList("a", "b", "c"), toml.<String>getList("a"));
   }
 
   @Test
@@ -34,7 +34,7 @@ public class ArrayTest {
   public void should_get_nested_arrays() throws Exception {
     Toml clients = new Toml().parse("data = [ [\"gamma\", \"delta\"], [1, 2]] # just an update to make sure parsers support it");
 
-    assertEquals(asList(asList("gamma", "delta"), asList(1L, 2L)), clients.getList("data", String.class));
+    assertEquals(asList(asList("gamma", "delta"), asList(1L, 2L)), clients.<String>getList("data"));
   }
 
   @Test
@@ -42,7 +42,7 @@ public class ArrayTest {
   public void should_get_nested_arrays_with_no_space_between_outer_and_inner_array() throws Exception {
     Toml clients = new Toml().parse("data = [[\"gamma\", \"delta\"], [1, 2]] # just an update to make sure parsers support it");
 
-    assertEquals(asList(asList("gamma", "delta"), asList(1L, 2L)), clients.getList("data", String.class));
+    assertEquals(asList(asList("gamma", "delta"), asList(1L, 2L)), clients.<String>getList("data"));
   }
 
   @Test
@@ -56,21 +56,21 @@ public class ArrayTest {
   public void should_ignore_comma_at_end_of_array() throws Exception {
     Toml toml = new Toml().parse("key=[1,2,3,]");
 
-    assertEquals(asList(1L, 2L, 3L), toml.getList("key", Long.class));
+    assertEquals(asList(1L, 2L, 3L), toml.<Long>getList("key"));
   }
   
   @Test
   public void should_support_mixed_string_types() throws Exception {
     Toml toml = new Toml().parse("key = [\"a\", 'b', \"\"\"c\"\"\", '''d''']");
     
-    assertThat(toml.getList("key", String.class), contains("a", "b", "c", "d"));
+    assertThat(toml.<String>getList("key"), contains("a", "b", "c", "d"));
   }
   
   @Test
   public void should_support_array_terminator_in_strings() throws Exception {
     Toml toml = new Toml().parse("key = [\"a]\", 'b]', \"\"\"c]\"\"\", '''d]''']");
     
-    assertThat(toml.getList("key", String.class), contains("a]", "b]", "c]", "d]"));
+    assertThat(toml.<String>getList("key"), contains("a]", "b]", "c]", "d]"));
   }
   
   private File file(String file) {

@@ -28,7 +28,7 @@ import com.google.gson.JsonElement;
  *
  * <p>All getters can fall back to default values if they have been provided.
  * Getters for simple values (String, Date, etc.) will return null if no matching key exists.
- * {@link #getList(String, Class)}, {@link #getTable(String)} and {@link #getTables(String)} return empty values if there is no matching key.</p>
+ * {@link #getList(String)}, {@link #getTable(String)} and {@link #getTables(String)} return empty values if there is no matching key.</p>
  *
  * <p>Example usage:</p>
  * <pre><code>
@@ -144,7 +144,7 @@ public class Toml {
   }
 
   @SuppressWarnings("unchecked")
-  public <T> List<T> getList(String key, Class<T> itemClass) {
+  public <T> List<T> getList(String key) {
     List<T> list = (List<T>) get(key);
 
     if (list == null) {

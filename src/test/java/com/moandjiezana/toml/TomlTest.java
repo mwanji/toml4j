@@ -71,7 +71,7 @@ public class TomlTest {
   public void should_return_empty_list_if_no_value_for_key() throws Exception {
     Toml toml = new Toml().parse("");
 
-    assertTrue(toml.getList("a", String.class).isEmpty());
+    assertTrue(toml.<String>getList("a").isEmpty());
   }
 
   @Test
@@ -158,7 +158,7 @@ public class TomlTest {
     cal.set(Calendar.MILLISECOND, 0);
     cal.setTimeZone(TimeZone.getTimeZone("UTC"));
     assertEquals(cal.getTime(), toml.getDate("d"));
-    assertThat(toml.getList("e", String.class), Matchers.contains("a", "b"));
+    assertThat(toml.<String>getList("e"), Matchers.contains("a", "b"));
     assertTrue(toml.getBoolean("f"));
     assertEquals("abc", toml.getString("g"));
     assertEquals("abc", toml.getString("h"));
