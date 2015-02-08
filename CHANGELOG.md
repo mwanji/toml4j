@@ -5,16 +5,13 @@
 ### Changed
 
 * Toml#getList(String) replaced Toml#getList(String, Class) 
+* Dropped dependency on Parboiled and its significant transitive dependencies
+* Updated Gson to 2.3.1
 
 ### Fixed
 
 * Fixed short-form Unicode escapes
 * Fixed exponent handling
-
-### Misc.
-
-* Dropped dependency on Parboiled and its significant transitive dependencies
-* Updated Gson to 2.3.1
 
 ## 0.3.1 / 2014-12-16
 * Support for [TOML 0.3.1](https://github.com/toml-lang/toml/tree/v0.3.1) spec

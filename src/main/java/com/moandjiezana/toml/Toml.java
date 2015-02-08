@@ -25,7 +25,7 @@ import com.google.gson.JsonElement;
 /**
  * <p>Provides access to the keys and tables in a TOML data source.</p>
  *
- * <p>All getters can fall back to default values if they have been provided.
+ * <p>All getters can fall back to default values if they have been provided as a constructor argument.
  * Getters for simple values (String, Date, etc.) will return null if no matching key exists.
  * {@link #getList(String)}, {@link #getTable(String)} and {@link #getTables(String)} return empty values if there is no matching key.</p>
  *
