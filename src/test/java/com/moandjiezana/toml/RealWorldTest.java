@@ -108,8 +108,8 @@ public class RealWorldTest {
     assertFalse(toml.getBoolean("Booleans.False"));
     assertThat(toml.<Long>getList("Array.key1"), contains(1L, 2L, 3L));
     assertThat(toml.<String>getList("Array.key2"), contains("red", "yellow", "green"));
-    assertEquals(asList(asList(1L, 2L), asList(3L, 4L, 5L)), toml.<List>getList("Array.key3"));
-    assertEquals(asList(asList(1L, 2L), asList("a", "b", "c")), toml.<List>getList("Array.key4"));
+    assertEquals(asList(asList(1L, 2L), asList(3L, 4L, 5L)), toml.<List<Long>>getList("Array.key3"));
+    assertEquals(asList(asList(1L, 2L), asList("a", "b", "c")), toml.<List<Long>>getList("Array.key4"));
     assertThat(toml.<Long>getList("Array.key5"), contains(1L, 2L, 3L));
     assertThat(toml.<Long>getList("Array.key6"), contains(1L, 2L));
     assertEquals("Hammer", toml.getString("products[0].name"));

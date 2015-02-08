@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -43,7 +42,6 @@ import com.google.gson.JsonElement;
 public class Toml {
 
   private static final Gson DEFAULT_GSON = new Gson();
-  private static final Pattern ARRAY_INDEX_PATTERN = Pattern.compile("(.*)\\[(\\d+)\\]");
 
   private Map<String, Object> values = new HashMap<String, Object>();
   private final Toml defaults;
@@ -143,8 +141,8 @@ public class Toml {
     return (Long) get(key);
   }
 
-  @SuppressWarnings("unchecked")
   public <T> List<T> getList(String key) {
+    @SuppressWarnings("unchecked")
     List<T> list = (List<T>) get(key);
 
     if (list == null) {
