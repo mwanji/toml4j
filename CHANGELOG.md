@@ -1,9 +1,19 @@
 # toml4j Changelog
 
-## NEXT
+## Unreleased
+
+### Changed
+
+* Toml#getList(String) replaced Toml#getList(String, Class) 
+
+### Fixed
+
 * Fixed short-form Unicode escapes
 * Fixed exponent handling
-* Dropped dependency on Parboiled
+
+### Misc.
+
+* Dropped dependency on Parboiled and its significant transitive dependencies
 * Updated Gson to 2.3.1
 
 ## 0.3.1 / 2014-12-16

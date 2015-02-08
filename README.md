@@ -104,7 +104,7 @@ Use the getters to retrieve the data:
 * `getBoolean(String)`
 * `getLong(String)`
 * `getDouble(String)`
-* `getList(String, Class<T>)`
+* `getList(String)`
 * `getTable(String)` returns a new Toml instance containing only the keys in that table.
 * `getTables(String)`, for table arrays, returns `List<Toml>`. 
 
@@ -151,7 +151,7 @@ Toml toml = new Toml().parse(getTomlFile());
 String title = toml.getString("title");
 String subTitle = toml.getString("\"sub title\"");
 Boolean enabled = toml.getBoolean("database.enabled");
-List<Long> ports = toml.getList("database.ports", Long.class);
+List<Long> ports = toml.getList("database.ports");
 String password = toml.getString("database.credentials.password");
 
 Toml servers = toml.getTable("servers");
