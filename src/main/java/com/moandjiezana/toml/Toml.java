@@ -124,7 +124,7 @@ public class Toml {
    */
   public Toml parse(String tomlString) throws IllegalStateException {
     Results results = new TomlParser().run(tomlString);
-    if (results.errors.length() > 0) {
+    if (results.errors.hasErrors()) {
       throw new IllegalStateException(results.errors.toString());
     }
 

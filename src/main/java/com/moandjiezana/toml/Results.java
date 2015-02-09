@@ -7,8 +7,100 @@ import java.util.Map;
 import java.util.Set;
 
 class Results {
+  
+  static class Errors {
+    
+    private final StringBuilder sb = new StringBuilder();
+    
+    void duplicateTable(String table, int line) {
+      sb.append("Duplicate table definition: [")
+        .append(table)
+        .append("]\n");
+    }
+    
+    void emptyImplicitTable(String table, int line) {
+      sb.append("Invalid table definition due to empty implicit table name: ");
+      if (!table.startsWith("[")) {
+        sb.append('[');
+      }
+      sb.append(table);
+      if (!table.endsWith("]")) {
+        sb.append(']');
+      }
+      sb.append("\n");
+    }
+    
+    void invalidTable(String table, int line) {
+      sb.append("Invalid table definition on line ")
+        .append(line)
+        .append(": ");
+      if (!table.startsWith("[")) {
+        sb.append('[');
+      }
+      sb.append(table);
+      if (!table.endsWith("]")) {
+        sb.append(']');
+      }
+      sb.append("]\n");
+    }
+    
+    void duplicateKey(String key, int line) {
+      sb.append("Duplicate key: ")
+        .append(key)
+        .append('\n');
+    }
+    
+    void invalidKey(String key, int line) {
+      sb.append("Invalid key");
+      if (line > -1) {
+        sb.append(" on line ")
+          .append(line);
+      }
+      sb.append(": ")
+        .append(key)
+        .append('\n');
+    }
+    
+    void invalidTableArray(String tableArray, int line) {
+      sb.append("Invalid table array definition on line ")
+        .append(line)
+        .append(": ")
+        .append(tableArray)
+        .append('\n');
+    }
+    
+    void invalidValue(String key, String value, int line) {
+      sb.append("Invalid value on line ")
+        .append(line)
+        .append(": ")
+        .append(key)
+        .append(" = ")
+        .append(value)
+        .append('\n');
+    }
+    
+    void unterminated(String key, String multiline, int line) {
+      sb.append("Unterminated multiline value on line ")
+        .append(line)
+        .append(": ")
+        .append(key)
+        .append(" = ")
+        .append(multiline.trim())
+        .append('\n');
+    }
+    
+    boolean hasErrors() {
+      return sb.length() > 0;
+    }
+    
+    @Override
+    public String toString() {
+      return sb.toString();
+    }
+  }
+  
   Set<String> tables = new HashSet<String>();
-  StringBuilder errors = new StringBuilder();
+  final Errors errors = new Errors();
   private Deque<Container> stack = new ArrayDeque<Container>();
 
   Results() {
@@ -20,7 +112,7 @@ class Results {
     if (currentTable.accepts(key)) {
       currentTable.put(key, value);
     } else {
-      errors.append("Key " + key + " is defined twice!\n");
+      errors.duplicateKey(key, -1);
     }
   }
 
@@ -56,7 +148,7 @@ class Results {
           stack.push(((Container.TableArray) newContainer).getCurrent());
         }
       } else {
-        errors.append("Duplicate key and table definitions for " + tableName + "!\n");
+        errors.duplicateTable(tableName, -1);
         break;
       }
     }
@@ -64,11 +156,11 @@ class Results {
 
   void startTables(String tableName) {
     if (!tables.add(tableName)) {
-      errors.append("Table " + tableName + " defined twice!\n");
+      errors.duplicateTable(tableName, -1);
     }
     
     if (tableName.endsWith(".")) {
-      errors.append("Implicit table name cannot be empty: " + tableName);
+      errors.emptyImplicitTable(tableName, -1);
     }
 
     while (stack.size() > 1) {
@@ -80,7 +172,7 @@ class Results {
       String tablePart = tableParts[i].name;
       Container currentContainer = stack.peek();
       if (tablePart.isEmpty()) {
-        errors.append("Empty implicit table: " + tableName + "!\n");
+        errors.emptyImplicitTable(tableName, -1);
       } else if (currentContainer.get(tablePart) instanceof Container) {
         Container nextTable = (Container) currentContainer.get(tablePart);
         stack.push(nextTable);
@@ -90,7 +182,7 @@ class Results {
       } else if (currentContainer.accepts(tablePart)) {
         startTable(tablePart);
       } else {
-        errors.append("Duplicate key and table definitions for " + tableName + "!\n");
+        errors.duplicateTable(tableName, -1);
         break;
       }
     }
