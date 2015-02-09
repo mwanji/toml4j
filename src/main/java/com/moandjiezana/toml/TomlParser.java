@@ -19,6 +19,7 @@ class TomlParser {
     }
 
     String[] lines = tomlString.split("[\\n\\r]");
+    int lastKeyLine = 1;
     StringBuilder multilineBuilder = new StringBuilder();
     Multiline multiline = Multiline.NONE;
     
@@ -41,7 +42,7 @@ class TomlParser {
         if (tableName != null) {
           results.startTableArray(tableName);
         } else {
-          results.errors.append("Invalid table array definition: " + line + "\n\n");
+          results.errors.invalidTableArray(line, i + 1);
         }
 
         continue;
@@ -52,14 +53,14 @@ class TomlParser {
         if (tableName != null) {
           results.startTables(tableName);
         } else {
-          results.errors.append("Invalid table definition: " + line + "\n\n");
+          results.errors.invalidTable(line.trim(), i + 1);
         }
 
         continue;
       }
       
       if (multiline.isNotMultiline() && !line.contains("=")) {
-        results.errors.append("Invalid key definition: " + line);
+        results.errors.invalidKey(line, i + 1);
         continue;
       }
 
@@ -139,24 +140,24 @@ class TomlParser {
       } else {
         key = Keys.getKey(pair[0]);
         if (key == null) {
-          results.errors.append("Invalid key name: " + pair[0] + "\n");
+          results.errors.invalidKey(pair[0], i + 1);
           continue;
         }
         value = pair[1].trim();
       }
 
-
+      lastKeyLine = i + 1;
       Object convertedValue = VALUE_ANALYSIS.convert(value);
 
       if (convertedValue != INVALID) {
         results.addValue(key, convertedValue);
       } else {
-        results.errors.append("Invalid key/value: " + key + " = " + value + "\n");
+        results.errors.invalidValue(key, value, i + 1);
       }
     }
     
     if (multiline != Multiline.NONE) {
-      results.errors.append("Unterminated multiline " + multiline.toString().toLowerCase().replace('_', ' ') + "\n");
+      results.errors.unterminated(key, multilineBuilder.toString().trim(), lastKeyLine);
     }
 
     return results;

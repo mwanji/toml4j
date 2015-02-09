@@ -8,6 +8,10 @@
 * Dropped dependency on Parboiled and its significant transitive dependencies
 * Updated Gson to 2.3.1
 
+### Added
+
+* Line numbers included in error messages
+
 ### Fixed
 
 * Fixed short-form Unicode escapes
