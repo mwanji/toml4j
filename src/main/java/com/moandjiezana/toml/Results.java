@@ -109,7 +109,15 @@ class Results {
 
   void addValue(String key, Object value) {
     Container currentTable = stack.peek();
-    if (currentTable.accepts(key)) {
+    
+    if (value instanceof Map) {
+      startTable(key);
+      @SuppressWarnings("unchecked")
+      Map<String, Object> valueMap = (Map<String, Object>) value;
+      for (Map.Entry<String, Object> entry : valueMap.entrySet()) {
+        addValue(entry.getKey(), entry.getValue());
+      }
+    } else if (currentTable.accepts(key)) {
       currentTable.put(key, value);
     } else {
       errors.duplicateKey(key, -1);

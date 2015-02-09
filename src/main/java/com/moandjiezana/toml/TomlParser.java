@@ -37,6 +37,7 @@ class TomlParser {
         continue;
       }
 
+      // TODO check that this works in multiline context
       if (isTableArray(line)) {
         String tableName = Keys.getTableArrayName(line);
         if (tableName != null) {
