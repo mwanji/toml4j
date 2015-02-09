@@ -59,6 +59,34 @@ public class NumberTest {
     assertEquals(6.626D * Math.pow(10, -34), toml.getDouble("fractional"), 0.0);
   }
   
+  @Test
+  public void should_get_integer_with_underscores() throws Exception {
+    Toml toml = new Toml().parse("val = 100_000_000");
+    
+    assertEquals(100000000L, toml.getLong("val").intValue());
+  }
+  
+  @Test
+  public void should_get_float_with_underscores() throws Exception {
+    Toml toml = new Toml().parse("val = 100_000.123_456");
+    
+    assertEquals(100000.123456, toml.getDouble("val").doubleValue(), 0);
+  }
+  
+  @Test
+  public void should_get_exponent_with_underscores() throws Exception {
+    Toml toml = new Toml().parse("val = 1_5e1_00");
+    
+    assertEquals(15e100, toml.getDouble("val").doubleValue(), 0.0);
+  }
+  
+  @Test
+  public void should_accept_irregular_underscores() throws Exception {
+    Toml toml = new Toml().parse("val = 1_2_3_4_5");
+    
+    assertEquals(12345L, toml.getLong("val").longValue());
+  }
+  
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_invalid_number() throws Exception {
     new Toml().parse("a = 200-");
@@ -128,5 +156,55 @@ public class NumberTest {
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_float_with_two_dots() {
     new Toml().parse("answer = 1.1.1");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_underscore_at_beginning() {
+    new Toml().parse("answer = _1");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_underscore_at_end() {
+    new Toml().parse("answer = 1_");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_two_underscores_in_a_row() {
+    new Toml().parse("answer = 1__1");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_underscore_after_minus_sign() {
+    new Toml().parse("answer = -_1");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_underscore_after_plus_sign() {
+    new Toml().parse("answer = +_1");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_underscore_before_dot() {
+    new Toml().parse("answer = 1_.1");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_underscore_after_dot() {
+    new Toml().parse("answer = 1._1");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_underscore_before_E() {
+    new Toml().parse("answer = 1_E1");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_underscore_after_E() {
+    new Toml().parse("answer = 1E_1");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_underscore_followed_by_whitespace() {
+    new Toml().parse("answer = _ 1");
   }
 }
