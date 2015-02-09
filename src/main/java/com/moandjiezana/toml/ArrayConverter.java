@@ -22,7 +22,7 @@ class ArrayConverter implements ValueConverter {
     return convert(s, new AtomicInteger(1), true);
   }
   
-  public Object convert(String s, AtomicInteger sharedIndex, boolean topLevel) {
+  private Object convert(String s, AtomicInteger sharedIndex, boolean topLevel) {
     char[] chars = s.toCharArray();
     List<Object> arrayItems = new ArrayList<Object>();
     boolean terminated = false;
