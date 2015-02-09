@@ -11,6 +11,26 @@
   <name>toml4j</name>
   <description>A parser for TOML</description>
   <url>http://moandjiezana.com/toml/toml4j</url>
+  <licenses>
+    <license>
+      <name>The MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:git:git@github.com:mwanji/toml4j.git</connection>
+    <developerConnection>scm:git:git@github.com:mwanji/toml4j.git</developerConnection>
+    <url>https://github.com/mwanji/toml4j</url>
+  </scm>
+  <issueManagement>
+    <system>Github Issues</system>
+    <url>https://github.com/mwanji/toml4j/issues</url>
+  </issueManagement>
+  <ciManagement>
+    <system>Travis CI</system>
+    <url>https://travis-ci.org/mwanji/toml4j</url>
+  </ciManagement>
   <developers>
     <developer>
       <id>moandji.ezana</id>
@@ -18,7 +38,8 @@
       <email>mwanji@gmail.com</email>
     </developer>
   </developers>
-
+  <inceptionYear>2013</inceptionYear>
+  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -79,22 +100,6 @@
       </plugin>
     </plugins>
   </build>
-  <licenses>
-    <license>
-      <name>The MIT License</name>
-      <url>http://www.opensource.org/licenses/mit-license.php</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-  <scm>
-    <connection>scm:git:git@github.com:mwanji/toml4j.git</connection>
-    <developerConnection>scm:git:git@github.com:mwanji/toml4j.git</developerConnection>
-    <url>https://github.com/mwanji/toml4j</url>
-  </scm>
-  <issueManagement>
-    <system>Github Issues</system>
-    <url>https://github.com/mwanji/toml4j/issues</url>
-  </issueManagement>
   <profiles>
     <profile>
       <id>release-sign-artifacts</id>
