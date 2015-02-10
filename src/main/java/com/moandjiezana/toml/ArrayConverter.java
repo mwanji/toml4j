@@ -19,7 +19,7 @@ class ArrayConverter implements ValueConverter {
 
   @Override
   public Object convert(String s) {
-    AtomicInteger sharedIndex = new AtomicInteger(1);
+    AtomicInteger sharedIndex = new AtomicInteger();
     Object converted = convert(s, sharedIndex);
     
     char[] chars = s.toCharArray();
@@ -39,119 +39,56 @@ class ArrayConverter implements ValueConverter {
     return converted;
   }
   
-  Object convert(String s, AtomicInteger sharedIndex) {
+  @Override
+  public Object convert(String s, AtomicInteger index) {
     char[] chars = s.toCharArray();
     List<Object> arrayItems = new ArrayList<Object>();
     boolean terminated = false;
-    StringType stringType = StringType.NONE;
-    StringBuilder current = new StringBuilder();
     
-    for (; sharedIndex.get() < chars.length; sharedIndex.incrementAndGet()) {
-      int i = sharedIndex.get();
-      char c = chars[sharedIndex.get()];
+    for (int i = index.incrementAndGet(); i < chars.length; i = index.incrementAndGet()) {
 
-      if (stringType == StringType.NONE) {
-        if (c == ',') {
-          if (current.toString().trim().length() > 0) {
-            arrayItems.add(current.toString());
-          }
-          current = new StringBuilder();
-          continue;
-        }
+      char c = chars[i];
 
-        if (c == '[') {
-          sharedIndex.incrementAndGet();
-          arrayItems.add(convert(s, sharedIndex));
-          continue;
-        }
-
-        if (c == ']') {
-          terminated = true;
-          if (current.toString().trim().length() > 0) {
-            arrayItems.add(current.toString());
-          }
-          current = new StringBuilder();
-          break;
-        }
+      if (Character.isWhitespace(c)) {
+        continue;
+      }
+      if (c == ',') {
+        continue;
       }
 
-      if (c == '"' && chars[i - 1] != '\\' && !stringType.accepts(c)) {
-        if (chars.length > i + 2 && chars[i + 1] == c && chars[i + 2] == c) {
-          stringType = stringType.flip(StringType.MULTILINE);
-        } else {
-          stringType = stringType.flip(StringType.BASIC);
-        }
-      }
-      
-      if (c == '\'' && !stringType.accepts(c)) {
-        if (chars.length > i + 2 && chars[i + 1] == c && chars[i + 2] == c) {
-          stringType = stringType.flip(StringType.MULTILINE_LITERAL);
-        } else {
-          stringType = stringType.flip(StringType.LITERAL);
-        }
+      if (c == '[') {
+        arrayItems.add(convert(s, index));
+        continue;
       }
 
-      current.append(c);
+      if (c == ']') {
+        terminated = true;
+        break;
+      }
+
+      arrayItems.add(VALUE_CONVERTERS.convert(s, index));
     }
     
     if (!terminated) {
       return INVALID;
     }
     
-    return convertList(arrayItems);
-  }
-
-  private Object convertList(List<Object> tokens) {
-    ArrayList<Object> nestedList = new ArrayList<Object>();
-
-    for (Object token : tokens) {
-      if (token instanceof String) {
-        Object converted = VALUE_CONVERTERS.convert(((String) token).trim());
-        if (converted == INVALID) {
-          return INVALID;
-        }
-        if (isHomogenousArray(converted, nestedList)) {
-          nestedList.add(converted);
-        } else {
-          return INVALID;
-        }
-      } else if (token instanceof List) {
-        @SuppressWarnings("unchecked")
-        List<Object> convertedList = (List<Object>) token;
-        if (isHomogenousArray(convertedList, nestedList)) {
-          nestedList.add(convertedList);
-        } else {
-          return INVALID;
-        }
+    for (Object arrayItem : arrayItems) {
+      if (arrayItem == INVALID) {
+        return INVALID;
+      }
+      
+      if (!isHomogenousArray(arrayItem, arrayItems)) {
+        return INVALID;
       }
     }
-
-    return nestedList;
+    
+    return arrayItems;
   }
 
   private boolean isHomogenousArray(Object o, List<?> values) {
     return values.isEmpty() || values.get(0).getClass().isAssignableFrom(o.getClass()) || o.getClass().isAssignableFrom(values.get(0).getClass());
   }
   
-  private static enum StringType {
-    NONE, BASIC, LITERAL, MULTILINE, MULTILINE_LITERAL;
-    
-    StringType flip(StringType to) {
-      return this == NONE ? to : NONE;
-    }
-    
-    boolean accepts(char c) {
-      if (this == BASIC || this == MULTILINE) {
-        return c != '"';
-      }
-      
-      if (this == LITERAL || this == MULTILINE_LITERAL) {
-        return c != '\'';
-      }
-      
-      return false;
-    }
-  }
-
   private ArrayConverter() {}
 }

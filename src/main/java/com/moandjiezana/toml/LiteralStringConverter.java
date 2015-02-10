@@ -1,6 +1,9 @@
 package com.moandjiezana.toml;
 
 import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
+import static com.moandjiezana.toml.ValueConverterUtils.isComment;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 class LiteralStringConverter implements ValueConverter {
@@ -14,31 +17,38 @@ class LiteralStringConverter implements ValueConverter {
 
   @Override
   public Object convert(String s) {
-    char[] chars = s.toCharArray();
-    int endIndex = -1;
+    AtomicInteger index = new AtomicInteger();
+    Object converted = convert(s, index);
     
-    for (int i = 1; i < chars.length; i++) {
-      char c = chars[i];
-      
-      if (c == '\'') {
-        endIndex = i;
-        continue;
-      }
-      
-      if (endIndex > -1 && c == '#') {
-        break;
-      }
-      
-      if (endIndex > -1 && !Character.isWhitespace(c)) {
-        return INVALID;
-      }
-    }
-    
-    if (endIndex == -1) {
+    if (converted == INVALID || !isComment(s.substring(index.incrementAndGet()))) {
       return INVALID;
     }
     
-    return s.substring(1, endIndex);
+    return converted;
+  }
+
+  @Override
+  public Object convert(String s, AtomicInteger index) {
+    char[] chars = s.toCharArray();
+    boolean terminated = false;
+    int startIndex = index.incrementAndGet();
+    
+    for (int i = index.get(); i < chars.length; i = index.incrementAndGet()) {
+      char c = chars[i];
+      
+      if (c == '\'') {
+        terminated = true;
+        break;
+      }
+    }
+    
+    if (!terminated) {
+      return INVALID;
+    }
+    
+    String substring = s.substring(startIndex, index.get());
+    
+    return substring;
   }
 
   private LiteralStringConverter() {}

@@ -1,6 +1,9 @@
 package com.moandjiezana.toml;
 
 import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
+import static com.moandjiezana.toml.ValueConverterUtils.isComment;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 class MultilineLiteralStringConverter implements ValueConverter {
   
@@ -13,28 +16,33 @@ class MultilineLiteralStringConverter implements ValueConverter {
 
   @Override
   public Object convert(String s) {
+    AtomicInteger index = new AtomicInteger();
+    Object converted = convert(s, index);
+    
+    if (converted == INVALID || !isComment(s.substring(index.incrementAndGet()))) {
+      return INVALID;
+    }
+    
+    return converted;
+  }
+
+  @Override
+  public Object convert(String s, AtomicInteger index) {
     char[] chars = s.toCharArray();
+    int startIndex = index.addAndGet(3);
     int endIndex = -1;
     
-    for (int i = 3; i < chars.length; i++) {
+    for (int i = startIndex; i < chars.length; i = index.incrementAndGet()) {
       char c = chars[i];
       
       if (c == '\'' && chars.length > i + 2 && chars[i + 1] == '\'' && chars[i + 2] == '\'') {
         endIndex = i;
-        i += 2;
-        continue;
-      }
-      
-      if (endIndex > -1 && c == '#') {
+        index.addAndGet(2);
         break;
-      }
-      
-      if (endIndex > -1 && !Character.isWhitespace(c)) {
-        return INVALID;
       }
     }
 
-    return s.substring(3, endIndex);
+    return s.substring(startIndex, endIndex);
   }
 
   private MultilineLiteralStringConverter() {}
