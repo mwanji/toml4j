@@ -1,5 +1,6 @@
 package com.moandjiezana.toml;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -8,6 +9,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.junit.Test;
@@ -59,7 +61,6 @@ public class InlineTableTest {
   public void should_read_inline_table_with_dates() throws Exception {
     Toml toml = new Toml().parse("point = { x = 2015-02-09T22:05:00Z, y = 2015-02-09T21:05:00Z }");
 
-
     Calendar x = Calendar.getInstance(UTC);
     x.set(2015, Calendar.FEBRUARY, 9, 22, 5, 00);
     x.set(Calendar.MILLISECOND, 0);
@@ -73,18 +74,37 @@ public class InlineTableTest {
   }
   
   @Test
-  public void should_support_array_of_inline_tables() throws Exception {
-    Toml toml = new Toml().parse(getClass().getResourceAsStream("should_support_array_of_inline_tables.toml"));
+  public void should_read_arrays() throws Exception {
+    Toml toml = new Toml().parse("arrays = { integers = [1, 2, 3], strings = [\"a\", \"b\", \"c\"] }");
     
-    assertThat(toml.getList("points"), hasSize(4));
-    assertEquals(1, toml.getLong("points[0].x").longValue());
-    assertEquals(2, toml.getLong("points[0].y").longValue());
-    assertEquals(3, toml.getLong("points[0].z").longValue());
-    assertEquals(7, toml.getLong("points[1].x").longValue());
-    assertEquals(8, toml.getLong("points[1].y").longValue());
-    assertEquals(9, toml.getLong("points[1].z").longValue());
-    assertEquals(2, toml.getLong("points[2].x").longValue());
-    assertEquals(4, toml.getLong("points[2].y").longValue());
-    assertEquals(8, toml.getLong("points[2].z").longValue());
+    assertThat(toml.<Long>getList("arrays.integers"), contains(1L, 2L, 3L));
+    assertThat(toml.<String>getList("arrays.strings"), contains("a", "b", "c"));
+  }
+  
+  @Test
+  public void should_read_nested_arrays() throws Exception {
+    Toml toml = new Toml().parse("arrays = { nested = [[1, 2, 3], [4, 5, 6]] }").getTable("arrays");
+    
+    List<List<Long>> nested = toml.<List<Long>>getList("nested");
+    assertThat(nested, hasSize(2));
+    assertThat(nested.get(0), contains(1L, 2L, 3L));
+    assertThat(nested.get(1), contains(4L, 5L, 6L));
+  }
+  
+  @Test
+  public void should_read_mixed_inline_table() throws Exception {
+    Toml toml = new Toml().parse("point = { date = 2015-02-09T22:05:00Z, bool = true, integer = 123, float = 123.456, string = \"abc\", list = [5, 6, 7, 8] }").getTable("point");
+
+
+    Calendar date = Calendar.getInstance(UTC);
+    date.set(2015, Calendar.FEBRUARY, 9, 22, 5, 00);
+    date.set(Calendar.MILLISECOND, 0);
+    
+    assertEquals(date.getTime(), toml.getDate("date"));
+    assertTrue(toml.getBoolean("bool"));
+    assertEquals(123, toml.getLong("integer").intValue());
+    assertEquals(123.456, toml.getDouble("float"), 0);
+    assertEquals("abc", toml.getString("string"));
+    assertThat(toml.<Long>getList("list"), contains(5L, 6L, 7L, 8L));
   }
 }

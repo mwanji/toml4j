@@ -19,32 +19,36 @@ class ArrayConverter implements ValueConverter {
 
   @Override
   public Object convert(String s) {
-    return convert(s, new AtomicInteger(1), true);
+    AtomicInteger sharedIndex = new AtomicInteger(1);
+    Object converted = convert(s, sharedIndex);
+    
+    char[] chars = s.toCharArray();
+    
+    for (int i = sharedIndex.incrementAndGet(); i < chars.length; i++) {
+      char c = chars[i];
+      
+      if (c == '#') {
+        break;
+      }
+      
+      if (!Character.isWhitespace(c)) {
+        return INVALID;
+      }
+    }
+    
+    return converted;
   }
   
-  private Object convert(String s, AtomicInteger sharedIndex, boolean topLevel) {
+  Object convert(String s, AtomicInteger sharedIndex) {
     char[] chars = s.toCharArray();
     List<Object> arrayItems = new ArrayList<Object>();
     boolean terminated = false;
     StringType stringType = StringType.NONE;
     StringBuilder current = new StringBuilder();
     
-    for (int i = 1; i < chars.length; i++, sharedIndex.incrementAndGet()) {
-      char c = chars[i];
-
-      if (terminated && !topLevel) {
-        break;
-      }
-
-      if (terminated) {
-        if (c == '#') {
-          break;
-        }
-        if (!Character.isWhitespace(c)) {
-          return INVALID;
-        }
-        continue;
-      }
+    for (; sharedIndex.get() < chars.length; sharedIndex.incrementAndGet()) {
+      int i = sharedIndex.get();
+      char c = chars[sharedIndex.get()];
 
       if (stringType == StringType.NONE) {
         if (c == ',') {
@@ -56,8 +60,8 @@ class ArrayConverter implements ValueConverter {
         }
 
         if (c == '[') {
-          arrayItems.add(convert(s.substring(i), sharedIndex, false));
-          i = sharedIndex.get();
+          sharedIndex.incrementAndGet();
+          arrayItems.add(convert(s, sharedIndex));
           continue;
         }
 
@@ -67,7 +71,7 @@ class ArrayConverter implements ValueConverter {
             arrayItems.add(current.toString());
           }
           current = new StringBuilder();
-          continue;
+          break;
         }
       }
 

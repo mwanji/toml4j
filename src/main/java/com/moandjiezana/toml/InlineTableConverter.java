@@ -3,6 +3,7 @@ package com.moandjiezana.toml;
 import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
 
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 class InlineTableConverter implements ValueConverter {
 
@@ -21,6 +22,7 @@ class InlineTableConverter implements ValueConverter {
     boolean pairHasKey = false;
     boolean inValue = false;
     boolean quoted = false;
+    boolean inArray = false;
     boolean inString = false;
     boolean terminated = false;
     StringBuilder currentKey = new StringBuilder();
@@ -46,14 +48,35 @@ class InlineTableConverter implements ValueConverter {
         (inValue ? current : currentKey).append(c);
       } else if (quoted) {
         (inKey ? currentKey : current).append(c);
-      } else if (c == ',') {
-        Object converted = CONVERTERS.convert(current.toString().trim());
+      } else if (c == '[' && inValue) {
+        AtomicInteger sharedIndex = new AtomicInteger(i);
+        sharedIndex.incrementAndGet();
+        Object converted = ArrayConverter.ARRAY_PARSER.convert(s, sharedIndex);
         
         if (converted == INVALID) {
           return INVALID;
         }
         
         results.put(currentKey.toString().trim(), converted);
+        i = sharedIndex.get();
+        inArray = true;
+        continue;
+      } else if (c == ']' && inArray) {
+        current.append(']');
+        inArray = false;
+      } else if (c == ',') {
+        if (inArray) {
+          inArray = false;
+        } else {
+          Object converted = CONVERTERS.convert(current.toString().trim());
+          
+          if (converted == INVALID) {
+            return INVALID;
+          }
+          
+          results.put(currentKey.toString().trim(), converted);
+        }
+
         inKey = true;
         pairHasKey = false;
         inValue = false;
