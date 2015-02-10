@@ -117,6 +117,7 @@ class Results {
       for (Map.Entry<String, Object> entry : valueMap.entrySet()) {
         addValue(entry.getKey(), entry.getValue());
       }
+      stack.pop();
     } else if (currentTable.accepts(key)) {
       currentTable.put(key, value);
     } else {

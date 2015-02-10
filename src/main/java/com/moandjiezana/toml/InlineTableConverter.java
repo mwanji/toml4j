@@ -17,31 +17,38 @@ class InlineTableConverter implements ValueConverter {
 
   @Override
   public Object convert(String s) {
+    AtomicInteger sharedIndex = new AtomicInteger(1);
+    Object converted = convert(s, sharedIndex);
+    char[] chars = s.toCharArray();
+    
+    for (; sharedIndex.get() < s.length(); sharedIndex.incrementAndGet()) {
+      char c = chars[sharedIndex.get()];
+      if (Character.isWhitespace(c)) {
+        continue;
+      }
+      if (c == '#') {
+        break;
+      }
+      
+      return INVALID;
+    }
+    
+    return converted;
+  }
+
+  Object convert(String s, AtomicInteger sharedIndex) {
     char[] chars = s.toCharArray();
     boolean inKey = true;
-    boolean pairHasKey = false;
     boolean inValue = false;
     boolean quoted = false;
-    boolean inArray = false;
-    boolean inString = false;
     boolean terminated = false;
     StringBuilder currentKey = new StringBuilder();
     StringBuilder current = new StringBuilder();
     HashMap<String, Object> results = new HashMap<String, Object>();
     
-    for (int i = 1; i < chars.length; i++) {
+    for (; sharedIndex.get() < chars.length; sharedIndex.incrementAndGet()) {
+      int i = sharedIndex.get();
       char c = chars[i];
-      
-      if (terminated) {
-        if (Character.isWhitespace(c)) {
-          continue;
-        }
-        if (c == '#') {
-          break;
-        }
-        
-        return INVALID;
-      }
       
       if (c == '"') {
         quoted = !quoted;
@@ -49,7 +56,6 @@ class InlineTableConverter implements ValueConverter {
       } else if (quoted) {
         (inKey ? currentKey : current).append(c);
       } else if (c == '[' && inValue) {
-        AtomicInteger sharedIndex = new AtomicInteger(i);
         sharedIndex.incrementAndGet();
         Object converted = ArrayConverter.ARRAY_PARSER.convert(s, sharedIndex);
         
@@ -59,15 +65,23 @@ class InlineTableConverter implements ValueConverter {
         
         results.put(currentKey.toString().trim(), converted);
         i = sharedIndex.get();
-        inArray = true;
         continue;
-      } else if (c == ']' && inArray) {
-        current.append(']');
-        inArray = false;
+      } else if (c == '{') {
+        sharedIndex.incrementAndGet();
+        Object converted = convert(s, sharedIndex);
+        
+        if (converted == INVALID) {
+          return INVALID;
+        }
+        
+        results.put(currentKey.toString().trim(), converted);
+
+        inKey = true;
+        inValue = false;
+        currentKey = new StringBuilder();
+        current = new StringBuilder();
       } else if (c == ',') {
-        if (inArray) {
-          inArray = false;
-        } else {
+        if (!current.toString().trim().isEmpty()) {
           Object converted = CONVERTERS.convert(current.toString().trim());
           
           if (converted == INVALID) {
@@ -78,28 +92,28 @@ class InlineTableConverter implements ValueConverter {
         }
 
         inKey = true;
-        pairHasKey = false;
         inValue = false;
         currentKey = new StringBuilder();
         current = new StringBuilder();
       } else if (c == '=') {
         inKey = false;
-        pairHasKey = true;
         inValue = true;
       } else if (c == '}') {
         terminated = true;
         
-        if (current.toString().trim().length() == 0) {
-          continue;
+        String trimmed = current.toString().trim();
+        if (!trimmed.isEmpty()) {
+          Object converted = CONVERTERS.convert(trimmed);
+          
+          if (converted == INVALID) {
+            return INVALID;
+          }
+          
+          results.put(currentKey.toString().trim(), converted);
         }
 
-        Object converted = CONVERTERS.convert(current.toString().trim());
-        
-        if (converted == INVALID) {
-          return INVALID;
-        }
-        
-        results.put(currentKey.toString().trim(), converted);
+        sharedIndex.incrementAndGet();
+        break;
       } else {
         (inKey ? currentKey : current).append(c);
       }

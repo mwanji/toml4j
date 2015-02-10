@@ -107,4 +107,22 @@ public class InlineTableTest {
     assertEquals("abc", toml.getString("string"));
     assertThat(toml.<Long>getList("list"), contains(5L, 6L, 7L, 8L));
   }
+  
+  @Test
+  public void should_read_nested_inline_tables() throws Exception {
+    Toml tables = new Toml().parse("tables = { t1 = { t1_1 = 1, t1_2 = 2}, t2 = { t2_1 = \"a\"} }").getTable("tables");
+    
+    assertEquals(1L, tables.getLong("t1.t1_1").longValue());
+    assertEquals(2L, tables.getLong("t1.t1_2").longValue());
+    assertEquals("a", tables.getString("t2.t2_1"));
+  }
+  
+  @Test
+  public void should_read_all_string_types() throws Exception {
+    Toml strings = new Toml().parse("strings = { literal = 'ab]\"c', multiline = \"\"\"de]\"f\"\"\", multiline_literal = '''gh]\"i''' }").getTable("strings");
+    
+    assertEquals("ab]\"c", strings.getString("literal"));
+    assertEquals("de]\"f", strings.getString("multiline"));
+    assertEquals("gh]\"i", strings.getString("multiline_literal"));
+  }
 }
