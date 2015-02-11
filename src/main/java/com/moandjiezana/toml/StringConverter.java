@@ -3,6 +3,7 @@ package com.moandjiezana.toml;
 import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
 import static com.moandjiezana.toml.ValueConverterUtils.isComment;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,22 +19,35 @@ class StringConverter implements ValueConverter {
 
   @Override
   public Object convert(String value) {
-    int stringTerminator = -1;
+    AtomicInteger index = new AtomicInteger();
+    Object converted = convert(value, index);
+    
+    if (converted == INVALID || !isComment(value.substring(index.incrementAndGet()))) {
+      return INVALID;
+    }
+    
+    return converted;
+  }
+
+  @Override
+  public Object convert(String value, AtomicInteger sharedIndex) {
+    int startIndex = sharedIndex.incrementAndGet();
+    int endIndex = -1;
     char[] chars = value.toCharArray();
 
-    for (int i = 1; i < chars.length; i++) {
+    for (int i = sharedIndex.get(); i < chars.length; i = sharedIndex.incrementAndGet()) {
       char ch = chars[i];
       if (ch == '"' && chars[i - 1] != '\\') {
-        stringTerminator = i;
+        endIndex = i;
         break;
       }
     }
 
-    if (stringTerminator == -1 || !isComment(value.substring(stringTerminator + 1))) {
+    if (endIndex == -1) {
       return INVALID;
     }
     
-    value = value.substring(1, stringTerminator);
+    value = value.substring(startIndex, endIndex);
     value = replaceUnicodeCharacters(value);
     value = replaceSpecialCharacters(value);
     

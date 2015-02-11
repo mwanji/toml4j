@@ -1,9 +1,13 @@
 package com.moandjiezana.toml;
 
 import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
+import static com.moandjiezana.toml.ValueConverterUtils.isComment;
+import static com.moandjiezana.toml.ValueConverterUtils.unterminated;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 class MultilineStringConverter implements ValueConverter {
-  
+
   static final MultilineStringConverter MULTILINE_STRING_PARSER = new MultilineStringConverter();
 
   @Override
@@ -13,22 +17,50 @@ class MultilineStringConverter implements ValueConverter {
 
   @Override
   public Object convert(String s) {
-    int terminator = s.indexOf("\"\"\"", 3);
-    
-    if (terminator == -1) {
+    AtomicInteger index = new AtomicInteger();
+    Object converted = convert(s, index);
+
+    if (converted == INVALID || !isComment(s.substring(index.incrementAndGet()))) {
       return INVALID;
     }
-    
-    if (!ValueConverterUtils.isComment(s.substring(terminator + 3))) {
-      return INVALID;
-    }
-    
-    s = s.substring(2, terminator + 1);
-    s = s.replaceAll("\\\\\\s+", "");
-    
-    return StringConverter.STRING_PARSER.convert(s);
+
+    return converted;
   }
-  
-  private MultilineStringConverter() {}
+
+  @Override
+  public Object convert(String s, AtomicInteger index) {
+    char[] chars = s.toCharArray();
+    int originalStartIndex = index.get();
+    int startIndex = index.addAndGet(3);
+    int endIndex = -1;
+    
+    if (chars[startIndex] == '\n') {
+      startIndex = index.incrementAndGet();
+    }
+    
+    for (int i = startIndex; i < chars.length; i = index.incrementAndGet()) {
+      char c = chars[i];
+
+      if (c == '"' && chars.length > i + 2 && chars[i + 1] == '"' && chars[i + 2] == '"') {
+        endIndex = i;
+        index.addAndGet(2);
+        break;
+      }
+    }
+    
+    if (endIndex == -1) {
+      return unterminated(s.substring(originalStartIndex, s.length()));
+    }
+
+    s = s.substring(startIndex, endIndex);
+    s = s.replaceAll("\\\\\\s+", "");
+    s = StringConverter.STRING_PARSER.replaceUnicodeCharacters(s);
+    s = StringConverter.STRING_PARSER.replaceSpecialCharacters(s);
+
+    return s;
+  }
+
+  private MultilineStringConverter() {
+  }
 
 }

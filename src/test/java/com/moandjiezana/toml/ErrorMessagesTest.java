@@ -53,21 +53,35 @@ public class ErrorMessagesTest {
   
   @Test
   public void should_message_invalid_value() throws Exception {
-    e.expectMessage("Invalid value on line 1: k = 1 t");
+    e.expectMessage("Invalid text after key k on line 1");
     
     new Toml().parse("k = 1 t");
   }
   
   @Test
-  public void should_message_unterminated_value() throws Exception {
-    e.expectMessage("Unterminated multiline value on line 1: k = '''abc");
+  public void should_message_unterminated_multiline_literal_string() throws Exception {
+    e.expectMessage("Unterminated value on line 1: k = '''abc");
     
     new Toml().parse("k = '''abc");
   }
   
   @Test
+  public void should_message_unterminated_multiline_string() throws Exception {
+    e.expectMessage("Unterminated value on line 1: k = \"\"\"abc\"\"");
+    
+    new Toml().parse("k = \"\"\"abc\"\"");
+  }
+  
+  @Test
+  public void should_message_unterminated_array() throws Exception {
+    e.expectMessage("Unterminated value on line 1: k = [\"abc\"");
+    
+    new Toml().parse("k = [\"abc\"");
+  }
+  
+  @Test
   public void should_message_key_without_equals() throws Exception {
-    e.expectMessage("Invalid key on line 2: k");
+    e.expectMessage("Key k is not followed by an equals sign on line 2");
     
     new Toml().parse("\nk\n=3");
   }

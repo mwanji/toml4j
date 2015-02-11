@@ -50,6 +50,33 @@ class Results {
         .append('\n');
     }
     
+    void invalidIdentifier(Identifier identifier, int line) {
+      if (identifier.isKey()) {
+        invalidKey(identifier.getName(), line);
+      } else if (identifier.isTable()) {
+        invalidTable(identifier.getName(), line);
+      } else if (identifier.isTableArray()) {
+        invalidTableArray(identifier.getName(), line);
+      }
+    }
+    
+    void invalidTextAfterIdentifier(Identifier identifier, char text, int line) {
+      if (identifier.isKey() && text == '\n') {
+        sb.append("Key ")
+          .append(identifier.getName())
+          .append(" is not followed by an equals sign on line ")
+          .append(line)
+          .append('\n');
+      } else {
+        sb.append("Invalid text after key ")
+          .append(identifier.getName())
+          .append(" on line ")
+          .append(line)
+          .append(". Make sure to terminate the value or add a comment (#).")
+          .append('\n');
+      }
+    }
+    
     void invalidKey(String key, int line) {
       sb.append("Invalid key");
       if (line > -1) {
@@ -79,13 +106,13 @@ class Results {
         .append('\n');
     }
     
-    void unterminated(String key, String multiline, int line) {
-      sb.append("Unterminated multiline value on line ")
+    void unterminated(String key, String value, int line) {
+      sb.append("Unterminated value on line ")
         .append(line)
         .append(": ")
         .append(key)
         .append(" = ")
-        .append(multiline.trim())
+        .append(value.trim())
         .append('\n');
     }
     
@@ -98,8 +125,7 @@ class Results {
       return sb.toString();
     }
   }
-  
-  Set<String> tables = new HashSet<String>();
+    Set<String> tables = new HashSet<String>();
   final Errors errors = new Errors();
   private Deque<Container> stack = new ArrayDeque<Container>();
 
@@ -109,7 +135,16 @@ class Results {
 
   void addValue(String key, Object value) {
     Container currentTable = stack.peek();
-    if (currentTable.accepts(key)) {
+    
+    if (value instanceof Map) {
+      startTable(key);
+      @SuppressWarnings("unchecked")
+      Map<String, Object> valueMap = (Map<String, Object>) value;
+      for (Map.Entry<String, Object> entry : valueMap.entrySet()) {
+        addValue(entry.getKey(), entry.getValue());
+      }
+      stack.pop();
+    } else if (currentTable.accepts(key)) {
       currentTable.put(key, value);
     } else {
       errors.duplicateKey(key, -1);

@@ -1,6 +1,9 @@
 package com.moandjiezana.toml;
 
 import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
+import static com.moandjiezana.toml.ValueConverterUtils.isComment;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 class NumberConverter implements ValueConverter {
   static final NumberConverter NUMBER_PARSER = new NumberConverter();
@@ -14,20 +17,33 @@ class NumberConverter implements ValueConverter {
 
   @Override
   public Object convert(String s) {
+    AtomicInteger index = new AtomicInteger();
+    Object converted = convert(s, index);
+    
+    if (converted == INVALID || (s.length() > index.get() + 1 && !isComment(s.substring(index.incrementAndGet())))) {
+      return INVALID;
+    }
+    
+    return converted;
+  }
+
+  @Override
+  public Object convert(String s, AtomicInteger index) {
     char[] chars = s.toCharArray();
-    boolean whitespace = false;
     boolean signable = true;
     boolean dottable = false;
     boolean exponentable = false;
+    boolean terminatable = false;
     String type = "";
     StringBuilder sb = new StringBuilder();
 
-    for (int i = 0; i < chars.length; i++) {
+    for (int i = index.get(); i < chars.length; i = index.incrementAndGet()) {
       char c = chars[i];
 
       if (Character.isDigit(c)) {
         sb.append(c);
         signable = false;
+        terminatable = true;
         if (type.isEmpty()) {
           type = "integer";
           dottable = true;
@@ -35,26 +51,28 @@ class NumberConverter implements ValueConverter {
         exponentable = !type.equals("exponent");
       } else if ((c == '+' || c == '-') && signable && chars.length > i + 1) {
         signable = false;
+        terminatable = false;
         if (c == '-') {
           sb.append('-');
         }
       } else if (c == '.' && dottable && chars.length > i + 1) {
         sb.append('.');
         type = "float";
+        terminatable = false;
         dottable = false;
         exponentable = false;
       } else if ((c == 'E' || c == 'e') && exponentable && chars.length > i + 1) {
         sb.append('E');
         type = "exponent";
+        terminatable = false;
         signable = true;
         dottable = false;
         exponentable = false;
-      } else if (Character.isWhitespace(c)) {
-        whitespace = true;
-      } else if (whitespace && c == '#') {
-        break;
       } else {
-        type = "";
+        if (!terminatable) {
+          type = "";
+        }
+        index.decrementAndGet();
         break;
       }
     }

@@ -1,6 +1,7 @@
 package com.moandjiezana.toml;
 
 import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
+import static com.moandjiezana.toml.ValueConverters.CONVERTERS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +11,6 @@ class ArrayConverter implements ValueConverter {
 
   static final ArrayConverter ARRAY_PARSER = new ArrayConverter();
 
-  private static final ValueConverters VALUE_CONVERTERS = new ValueConverters();
-
   @Override
   public boolean canConvert(String s) {
     return s.startsWith("[");
@@ -19,135 +18,75 @@ class ArrayConverter implements ValueConverter {
 
   @Override
   public Object convert(String s) {
-    return convert(s, new AtomicInteger(1), true);
+    AtomicInteger sharedIndex = new AtomicInteger();
+    Object converted = convert(s, sharedIndex);
+    
+    char[] chars = s.toCharArray();
+    
+    for (int i = sharedIndex.incrementAndGet(); i < chars.length; i++) {
+      char c = chars[i];
+      
+      if (c == '#') {
+        break;
+      }
+      
+      if (!Character.isWhitespace(c)) {
+        return INVALID;
+      }
+    }
+    
+    return converted;
   }
   
-  public Object convert(String s, AtomicInteger sharedIndex, boolean topLevel) {
+  @Override
+  public Object convert(String s, AtomicInteger index) {
+    int startIndex = index.get();
     char[] chars = s.toCharArray();
     List<Object> arrayItems = new ArrayList<Object>();
     boolean terminated = false;
-    StringType stringType = StringType.NONE;
-    StringBuilder current = new StringBuilder();
+    boolean inComment = false;
     
-    for (int i = 1; i < chars.length; i++, sharedIndex.incrementAndGet()) {
+    for (int i = index.incrementAndGet(); i < chars.length; i = index.incrementAndGet()) {
+
       char c = chars[i];
-
-      if (terminated && !topLevel) {
-        break;
-      }
-
-      if (terminated) {
-        if (c == '#') {
-          break;
-        }
-        if (!Character.isWhitespace(c)) {
-          return INVALID;
-        }
-        continue;
-      }
-
-      if (stringType == StringType.NONE) {
-        if (c == ',') {
-          if (current.toString().trim().length() > 0) {
-            arrayItems.add(current.toString());
-          }
-          current = new StringBuilder();
-          continue;
-        }
-
-        if (c == '[') {
-          arrayItems.add(convert(s.substring(i), sharedIndex, false));
-          i = sharedIndex.get();
-          continue;
-        }
-
-        if (c == ']') {
-          terminated = true;
-          if (current.toString().trim().length() > 0) {
-            arrayItems.add(current.toString());
-          }
-          current = new StringBuilder();
-          continue;
-        }
-      }
-
-      if (c == '"' && chars[i - 1] != '\\' && !stringType.accepts(c)) {
-        if (chars.length > i + 2 && chars[i + 1] == c && chars[i + 2] == c) {
-          stringType = stringType.flip(StringType.MULTILINE);
-        } else {
-          stringType = stringType.flip(StringType.BASIC);
-        }
-      }
       
-      if (c == '\'' && !stringType.accepts(c)) {
-        if (chars.length > i + 2 && chars[i + 1] == c && chars[i + 2] == c) {
-          stringType = stringType.flip(StringType.MULTILINE_LITERAL);
-        } else {
-          stringType = stringType.flip(StringType.LITERAL);
-        }
+      if (c == '#' && !inComment) {
+        inComment = true;
+      } else if (c == '\n') {
+        inComment = false;
+      } else if (inComment || Character.isWhitespace(c) || c == ',') {
+        continue;
+      } else if (c == '[') {
+        arrayItems.add(convert(s, index));
+        continue;
+      } else if (c == ']') {
+        terminated = true;
+        break;
+      } else {
+        arrayItems.add(CONVERTERS.convert(s, index));
       }
-
-      current.append(c);
     }
     
     if (!terminated) {
-      return INVALID;
+      return ValueConverterUtils.unterminated(s.substring(startIndex, s.length()));
     }
     
-    return convertList(arrayItems);
-  }
-
-  private Object convertList(List<Object> tokens) {
-    ArrayList<Object> nestedList = new ArrayList<Object>();
-
-    for (Object token : tokens) {
-      if (token instanceof String) {
-        Object converted = VALUE_CONVERTERS.convert(((String) token).trim());
-        if (converted == INVALID) {
-          return INVALID;
-        }
-        if (isHomogenousArray(converted, nestedList)) {
-          nestedList.add(converted);
-        } else {
-          return INVALID;
-        }
-      } else if (token instanceof List) {
-        @SuppressWarnings("unchecked")
-        List<Object> convertedList = (List<Object>) token;
-        if (isHomogenousArray(convertedList, nestedList)) {
-          nestedList.add(convertedList);
-        } else {
-          return INVALID;
-        }
+    for (Object arrayItem : arrayItems) {
+      if (arrayItem == INVALID) {
+        return INVALID;
+      }
+      
+      if (!isHomogenousArray(arrayItem, arrayItems)) {
+        return INVALID;
       }
     }
-
-    return nestedList;
+    
+    return arrayItems;
   }
 
   private boolean isHomogenousArray(Object o, List<?> values) {
     return values.isEmpty() || values.get(0).getClass().isAssignableFrom(o.getClass()) || o.getClass().isAssignableFrom(values.get(0).getClass());
   }
   
-  private static enum StringType {
-    NONE, BASIC, LITERAL, MULTILINE, MULTILINE_LITERAL;
-    
-    StringType flip(StringType to) {
-      return this == NONE ? to : NONE;
-    }
-    
-    boolean accepts(char c) {
-      if (this == BASIC || this == MULTILINE) {
-        return c != '"';
-      }
-      
-      if (this == LITERAL || this == MULTILINE_LITERAL) {
-        return c != '\'';
-      }
-      
-      return false;
-    }
-  }
-
   private ArrayConverter() {}
 }
