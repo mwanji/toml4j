@@ -99,6 +99,9 @@ public class ArrayTest {
     assertEquals(2, toml.getLong("points[2].x").longValue());
     assertEquals(4, toml.getLong("points[2].y").longValue());
     assertEquals(8, toml.getLong("points[2].z").longValue());
+    assertEquals("3", toml.getString("points[3].x"));
+    assertEquals("6", toml.getString("points[3].y"));
+    assertEquals("12", toml.getString("points[3].z"));
   }
   
   private File file(String file) {
