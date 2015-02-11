@@ -85,4 +85,32 @@ public class ErrorMessagesTest {
     
     new Toml().parse("\nk\n=3");
   }
+  
+  @Test
+  public void should_display_correct_line_number_with_literal_multiline_string() throws Exception {
+    e.expectMessage("on line 7");
+    
+    new Toml().parse("[table]\n\n k = '''abc\n\ndef\n'''\n # comment \n j = 4.\n l = 5");
+  }
+  
+  @Test
+  public void should_display_correct_line_number_with_multiline_string() throws Exception {
+    e.expectMessage("on line 8");
+    
+    new Toml().parse("[table]\n\n k = \"\"\"\nabc\n\ndef\n\"\"\"\n # comment \n j = 4.\n l = 5");
+  }
+  
+  @Test
+  public void should_display_correct_line_number_with_array() throws Exception {
+    e.expectMessage("on line 9");
+    
+    new Toml().parse("[table]\n\n k = [\"\"\"\nabc\n\ndef\n\"\"\"\n, \n # comment \n j = 4.,\n l = 5\n]");
+  }
+  
+  @Test
+  public void should_message_heterogeneous_array() throws Exception {
+    e.expectMessage("k becomes a heterogeneous array on line 2");
+    
+    new Toml().parse("k = [ 1,\n  1.1 ]");
+  }
 }

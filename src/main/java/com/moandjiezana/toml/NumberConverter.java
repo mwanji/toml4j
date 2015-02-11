@@ -1,8 +1,5 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
-import static com.moandjiezana.toml.ValueConverterUtils.isComment;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 class NumberConverter implements ValueConverter {
@@ -16,19 +13,7 @@ class NumberConverter implements ValueConverter {
   }
 
   @Override
-  public Object convert(String s) {
-    AtomicInteger index = new AtomicInteger();
-    Object converted = convert(s, index);
-    
-    if (converted == INVALID || (s.length() > index.get() + 1 && !isComment(s.substring(index.incrementAndGet())))) {
-      return INVALID;
-    }
-    
-    return converted;
-  }
-
-  @Override
-  public Object convert(String s, AtomicInteger index) {
+  public Object convert(String s, AtomicInteger index, Context context) {
     char[] chars = s.toCharArray();
     boolean signable = true;
     boolean dottable = false;
@@ -86,7 +71,9 @@ class NumberConverter implements ValueConverter {
       
       return Double.parseDouble(exponentString[0]) * Math.pow(10, Double.parseDouble(exponentString[1]));
     } else {
-      return INVALID;
+      Results.Errors errors = new Results.Errors();
+      errors.invalidValue(context.identifier.getName(), sb.toString(), context.line.get());
+      return errors;
     }
   }
 }

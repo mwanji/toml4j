@@ -115,6 +115,13 @@ class Results {
         .append(value.trim())
         .append('\n');
     }
+
+    public void heterogenous(String key, int line) {
+      sb.append(key)
+        .append(" becomes a heterogeneous array on line ")
+        .append(line)
+        .append('\n');
+    }
     
     boolean hasErrors() {
       return sb.length() > 0;
@@ -123,6 +130,10 @@ class Results {
     @Override
     public String toString() {
       return sb.toString();
+    }
+
+    public void add(Errors other) {
+      sb.append(other.sb);
     }
   }
     Set<String> tables = new HashSet<String>();

@@ -1,8 +1,5 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
-import static com.moandjiezana.toml.ValueConverterUtils.isComment;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 class MultilineLiteralStringConverter implements ValueConverter {
@@ -15,19 +12,9 @@ class MultilineLiteralStringConverter implements ValueConverter {
   }
 
   @Override
-  public Object convert(String s) {
-    AtomicInteger index = new AtomicInteger();
-    Object converted = convert(s, index);
-    
-    if (converted == INVALID || !isComment(s.substring(index.incrementAndGet()))) {
-      return INVALID;
-    }
-    
-    return converted;
-  }
-
-  @Override
-  public Object convert(String s, AtomicInteger index) {
+  public Object convert(String s, AtomicInteger index, Context context) {
+    AtomicInteger line = context.line;
+    int startLine = line.get();
     char[] chars = s.toCharArray();
     int originalStartIndex = index.get();
     int startIndex = index.addAndGet(3);
@@ -35,10 +22,15 @@ class MultilineLiteralStringConverter implements ValueConverter {
     
     if (chars[startIndex] == '\n') {
       startIndex = index.incrementAndGet();
+      line.incrementAndGet();
     }
     
     for (int i = startIndex; i < chars.length; i = index.incrementAndGet()) {
       char c = chars[i];
+
+      if (c == '\n') {
+        line.incrementAndGet();
+      }
       
       if (c == '\'' && chars.length > i + 2 && chars[i + 1] == '\'' && chars[i + 2] == '\'') {
         endIndex = i;
@@ -48,7 +40,9 @@ class MultilineLiteralStringConverter implements ValueConverter {
     }
     
     if (endIndex == -1) {
-      return ValueConverterUtils.unterminated(s.substring(originalStartIndex, s.length()));
+      Results.Errors errors = new Results.Errors();
+      errors.unterminated(context.identifier.getName(), s.substring(originalStartIndex), startLine);
+      return errors;
     }
 
     return s.substring(startIndex, endIndex);

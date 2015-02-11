@@ -1,9 +1,5 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
-import static com.moandjiezana.toml.ValueConverterUtils.isComment;
-import static com.moandjiezana.toml.ValueConverterUtils.unterminated;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 class MultilineStringConverter implements ValueConverter {
@@ -16,19 +12,9 @@ class MultilineStringConverter implements ValueConverter {
   }
 
   @Override
-  public Object convert(String s) {
-    AtomicInteger index = new AtomicInteger();
-    Object converted = convert(s, index);
-
-    if (converted == INVALID || !isComment(s.substring(index.incrementAndGet()))) {
-      return INVALID;
-    }
-
-    return converted;
-  }
-
-  @Override
-  public Object convert(String s, AtomicInteger index) {
+  public Object convert(String s, AtomicInteger index, Context context) {
+    AtomicInteger line = context.line;
+    int startLine = line.get();
     char[] chars = s.toCharArray();
     int originalStartIndex = index.get();
     int startIndex = index.addAndGet(3);
@@ -36,12 +22,15 @@ class MultilineStringConverter implements ValueConverter {
     
     if (chars[startIndex] == '\n') {
       startIndex = index.incrementAndGet();
+      line.incrementAndGet();
     }
     
     for (int i = startIndex; i < chars.length; i = index.incrementAndGet()) {
       char c = chars[i];
-
-      if (c == '"' && chars.length > i + 2 && chars[i + 1] == '"' && chars[i + 2] == '"') {
+      
+      if (c == '\n') {
+        line.incrementAndGet();
+      } else if (c == '"' && chars.length > i + 2 && chars[i + 1] == '"' && chars[i + 2] == '"') {
         endIndex = i;
         index.addAndGet(2);
         break;
@@ -49,7 +38,9 @@ class MultilineStringConverter implements ValueConverter {
     }
     
     if (endIndex == -1) {
-      return unterminated(s.substring(originalStartIndex, s.length()));
+      Results.Errors errors = new Results.Errors();
+      errors.unterminated(context.identifier.getName(), s.substring(originalStartIndex), startLine);
+      return errors;
     }
 
     s = s.substring(startIndex, endIndex);

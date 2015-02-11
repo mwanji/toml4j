@@ -1,11 +1,8 @@
 package com.moandjiezana.toml;
 
 import static com.moandjiezana.toml.IdentifierConverter.IDENTIFIER_CONVERTER;
-import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
 
 import java.util.concurrent.atomic.AtomicInteger;
-
-import com.moandjiezana.toml.ValueConverterUtils.Unterminated;
 
 class TomlParser {
 
@@ -52,14 +49,11 @@ class TomlParser {
         value = null;
         line.incrementAndGet();
       } else if (!inComment && identifier != null && identifier.isKey() && value == null && !Character.isWhitespace(c)) {
-        int startIndex = index.get();
-        Object converted = ValueConverters.CONVERTERS.convert(tomlString, index);
+        Object converted = ValueConverters.CONVERTERS.convert(tomlString, index, new Context(identifier, line));
         value = converted;
         
-        if (converted == INVALID) {
-          results.errors.invalidValue(identifier.getName(), tomlString.substring(startIndex, Math.min(index.get(), tomlString.length() - 1)), line.get());
-        } else if (converted instanceof Unterminated) {
-          results.errors.unterminated(identifier.getName(), ((Unterminated) converted).payload, line.get());
+        if (converted instanceof Results.Errors) {
+          results.errors.add((Results.Errors) converted);
         } else {
           results.addValue(identifier.getName(), converted);
         }

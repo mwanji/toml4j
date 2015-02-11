@@ -1,8 +1,5 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
-import static com.moandjiezana.toml.ValueConverterUtils.isComment;
-
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,19 +15,7 @@ class StringConverter implements ValueConverter {
   }
 
   @Override
-  public Object convert(String value) {
-    AtomicInteger index = new AtomicInteger();
-    Object converted = convert(value, index);
-    
-    if (converted == INVALID || !isComment(value.substring(index.incrementAndGet()))) {
-      return INVALID;
-    }
-    
-    return converted;
-  }
-
-  @Override
-  public Object convert(String value, AtomicInteger sharedIndex) {
+  public Object convert(String value, AtomicInteger sharedIndex, Context context) {
     int startIndex = sharedIndex.incrementAndGet();
     int endIndex = -1;
     char[] chars = value.toCharArray();
@@ -44,15 +29,19 @@ class StringConverter implements ValueConverter {
     }
 
     if (endIndex == -1) {
-      return INVALID;
+      Results.Errors errors = new Results.Errors();
+      errors.unterminated(context.identifier.getName(), value.substring(startIndex - 1), context.line.get());
+      return errors;
     }
     
-    value = value.substring(startIndex, endIndex);
-    value = replaceUnicodeCharacters(value);
+    String raw = value.substring(startIndex, endIndex);
+    value = replaceUnicodeCharacters(raw);
     value = replaceSpecialCharacters(value);
     
     if (value == null) {
-      return INVALID;
+      Results.Errors errors = new Results.Errors();
+      errors.invalidValue(context.identifier.getName(), raw, context.line.get());
+      return errors;
     }
 
     return value;

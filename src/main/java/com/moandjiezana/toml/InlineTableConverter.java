@@ -1,6 +1,5 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
 import static com.moandjiezana.toml.ValueConverters.CONVERTERS;
 
 import java.util.HashMap;
@@ -16,20 +15,10 @@ class InlineTableConverter implements ValueConverter {
   }
 
   @Override
-  public Object convert(String s) {
-    AtomicInteger index = new AtomicInteger();
-    Object converted = convert(s, index);
-    
-    String substring = s.substring(index.incrementAndGet());
-    if (converted == INVALID || !ValueConverterUtils.isComment(substring)) {
-      return INVALID;
-    }
-    
-    return converted;
-  }
-
-  @Override
-  public Object convert(String s, AtomicInteger sharedIndex) {
+  public Object convert(String s, AtomicInteger sharedIndex, Context context) {
+    AtomicInteger line = context.line;
+    int startLine = line.get();
+    int startIndex = sharedIndex.get();
     char[] chars = s.toCharArray();
     boolean inKey = true;
     boolean inValue = false;
@@ -37,6 +26,7 @@ class InlineTableConverter implements ValueConverter {
     boolean terminated = false;
     StringBuilder currentKey = new StringBuilder();
     HashMap<String, Object> results = new HashMap<String, Object>();
+    Results.Errors errors = new Results.Errors();
     
     for (int i = sharedIndex.incrementAndGet(); sharedIndex.get() < chars.length; i = sharedIndex.incrementAndGet()) {
       char c = chars[i];
@@ -47,10 +37,11 @@ class InlineTableConverter implements ValueConverter {
       } else if (quoted) {
         currentKey.append(c);
       } else if (inValue && !Character.isWhitespace(c)) {
-        Object converted = CONVERTERS.convert(s, sharedIndex);
+        Object converted = CONVERTERS.convert(s, sharedIndex, new Context(new Identifier(currentKey.toString()), context.line));
         
-        if (converted == INVALID) {
-          return INVALID;
+        if (converted instanceof Results.Errors) {
+          errors.add((Results.Errors) converted);
+          return errors;
         }
         
         results.put(currentKey.toString().trim(), converted);
@@ -58,10 +49,11 @@ class InlineTableConverter implements ValueConverter {
         inValue = false;
       } else if (c == '{') {
         sharedIndex.incrementAndGet();
-        Object converted = convert(s, sharedIndex);
+        Object converted = convert(s, sharedIndex, new Context(new Identifier(currentKey.toString()), context.line));
         
-        if (converted == INVALID) {
-          return INVALID;
+        if (converted instanceof Results.Errors) {
+          errors.add((Results.Errors) converted);
+          return errors;
         }
         
         results.put(currentKey.toString().trim(), converted);
@@ -85,7 +77,11 @@ class InlineTableConverter implements ValueConverter {
     }
     
     if (!terminated) {
-      return INVALID;
+      errors.unterminated(context.identifier.getName(), s.substring(startIndex), startLine);
+    }
+    
+    if (errors.hasErrors()) {
+      return errors;
     }
     
     return results;

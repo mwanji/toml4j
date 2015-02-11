@@ -1,6 +1,5 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
 import static com.moandjiezana.toml.ValueConverters.CONVERTERS;
 
 import java.util.ArrayList;
@@ -17,34 +16,15 @@ class ArrayConverter implements ValueConverter {
   }
 
   @Override
-  public Object convert(String s) {
-    AtomicInteger sharedIndex = new AtomicInteger();
-    Object converted = convert(s, sharedIndex);
-    
-    char[] chars = s.toCharArray();
-    
-    for (int i = sharedIndex.incrementAndGet(); i < chars.length; i++) {
-      char c = chars[i];
-      
-      if (c == '#') {
-        break;
-      }
-      
-      if (!Character.isWhitespace(c)) {
-        return INVALID;
-      }
-    }
-    
-    return converted;
-  }
-  
-  @Override
-  public Object convert(String s, AtomicInteger index) {
+  public Object convert(String s, AtomicInteger index, Context context) {
+    AtomicInteger line = context.line;
+    int startLine = line.get();
     int startIndex = index.get();
     char[] chars = s.toCharArray();
     List<Object> arrayItems = new ArrayList<Object>();
     boolean terminated = false;
     boolean inComment = false;
+    Results.Errors errors = new Results.Errors();
     
     for (int i = index.incrementAndGet(); i < chars.length; i = index.incrementAndGet()) {
 
@@ -54,31 +34,40 @@ class ArrayConverter implements ValueConverter {
         inComment = true;
       } else if (c == '\n') {
         inComment = false;
+        line.incrementAndGet();
       } else if (inComment || Character.isWhitespace(c) || c == ',') {
         continue;
       } else if (c == '[') {
-        arrayItems.add(convert(s, index));
+        Object converted = convert(s, index, context);
+        if (converted instanceof Results.Errors) {
+          errors.add((Results.Errors) converted);
+        } else if (!isHomogenousArray(converted, arrayItems)) {
+          errors.heterogenous(context.identifier.getName(), line.get());
+        } else {
+          arrayItems.add(converted);
+        }
         continue;
       } else if (c == ']') {
         terminated = true;
         break;
       } else {
-        arrayItems.add(CONVERTERS.convert(s, index));
+        Object converted = CONVERTERS.convert(s, index, context);
+        if (converted instanceof Results.Errors) {
+          errors.add((Results.Errors) converted);
+        } else if (!isHomogenousArray(converted, arrayItems)) {
+          errors.heterogenous(context.identifier.getName(), line.get());
+        } else {
+          arrayItems.add(converted);
+        }
       }
     }
     
     if (!terminated) {
-      return ValueConverterUtils.unterminated(s.substring(startIndex, s.length()));
+      errors.unterminated(context.identifier.getName(), s.substring(startIndex, s.length()), startLine);
     }
     
-    for (Object arrayItem : arrayItems) {
-      if (arrayItem == INVALID) {
-        return INVALID;
-      }
-      
-      if (!isHomogenousArray(arrayItem, arrayItems)) {
-        return INVALID;
-      }
+    if (errors.hasErrors()) {
+      return errors;
     }
     
     return arrayItems;

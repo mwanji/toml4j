@@ -1,8 +1,5 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
-import static com.moandjiezana.toml.ValueConverterUtils.isComment;
-
 import java.text.SimpleDateFormat;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -37,40 +34,7 @@ class DateConverter implements ValueConverter {
   }
 
   @Override
-  public Object convert(String s) {
-    Matcher matcher = DATE_REGEX.matcher(s);
-    matcher.matches();
-    
-    if (!isComment(matcher.group(4))) {
-      return INVALID;
-    }
-    
-    s = matcher.group(1);
-    String zone = matcher.group(3);
-    String fractionalSeconds = matcher.group(2);
-    String format = "yyyy-MM-dd'T'HH:mm:ss";
-    if (fractionalSeconds != null && !fractionalSeconds.isEmpty()) {
-      format += ".SSS";
-      s += fractionalSeconds;
-    }
-    format += "Z";
-    if ("Z".equals(zone)) {
-      s += "+0000";
-    } else if (zone.contains(":")) {
-      s += zone.replace(":", "");
-    }
-    
-    try {
-      SimpleDateFormat dateFormat = new SimpleDateFormat(format);
-      dateFormat.setLenient(false);
-      return dateFormat.parse(s);
-    } catch (Exception e) {
-      return INVALID;
-    }
-  }
-
-  @Override
-  public Object convert(String original, AtomicInteger index) {
+  public Object convert(String original, AtomicInteger index, Context context) {
     StringBuilder sb = new StringBuilder();
     
     for (int i = index.get(); i < original.length(); i = index.incrementAndGet()) {
@@ -87,7 +51,9 @@ class DateConverter implements ValueConverter {
     Matcher matcher = DATE_REGEX.matcher(s);
     
     if (!matcher.matches()) {
-      return INVALID;
+      Results.Errors errors = new Results.Errors();
+      errors.invalidValue(context.identifier.getName(), s, context.line.get());
+      return errors;
     }
     
     String dateString = matcher.group(1);
@@ -110,7 +76,9 @@ class DateConverter implements ValueConverter {
       dateFormat.setLenient(false);
       return dateFormat.parse(dateString);
     } catch (Exception e) {
-      return INVALID;
+      Results.Errors errors = new Results.Errors();
+      errors.invalidValue(context.identifier.getName(), s, context.line.get());
+      return errors;
     }
   }
   
