@@ -15,9 +15,25 @@ class DateConverter implements ValueConverter {
 
   @Override
   public boolean canConvert(String s) {
-    Matcher matcher = DATE_REGEX.matcher(s);
+    if (s.length() < 5) {
+      return false;
+    }
+    
+    char[] chars = s.toCharArray();
 
-    return matcher.matches();
+    for (int i = 0; i < 5; i++) {
+      char c = chars[i];
+      
+      if (i < 4) {
+        if (!Character.isDigit(c)) {
+          return false;
+        }
+      } else if (c != '-') {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   @Override
@@ -55,9 +71,25 @@ class DateConverter implements ValueConverter {
 
   @Override
   public Object convert(String original, AtomicInteger index) {
-    String s = original.substring(index.get());
+    StringBuilder sb = new StringBuilder();
+    
+    for (int i = index.get(); i < original.length(); i = index.incrementAndGet()) {
+      char c = original.charAt(i);
+      if (Character.isDigit(c) || c == '-' || c == ':' || c == '.' || c == 'T' || c == 'Z') {
+        sb.append(c);
+      } else {
+        index.decrementAndGet();
+        break;
+      }
+    }
+    
+    String s = sb.toString();
     Matcher matcher = DATE_REGEX.matcher(s);
-    matcher.matches();
+    
+    if (!matcher.matches()) {
+      return INVALID;
+    }
+    
     String dateString = matcher.group(1);
     String zone = matcher.group(3);
     String fractionalSeconds = matcher.group(2);
@@ -72,9 +104,7 @@ class DateConverter implements ValueConverter {
     } else if (zone.contains(":")) {
       dateString += zone.replace(":", "");
     }
-    
-    index.addAndGet(matcher.end(3) - 1);
-    
+
     try {
       SimpleDateFormat dateFormat = new SimpleDateFormat(format);
       dateFormat.setLenient(false);

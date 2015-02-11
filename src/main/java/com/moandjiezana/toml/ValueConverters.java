@@ -15,20 +15,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 class ValueConverters {
   
+  static final ValueConverters CONVERTERS = new ValueConverters();
+  
   private static final ValueConverter[] PARSERS = { 
     MULTILINE_STRING_PARSER, MULTILINE_LITERAL_STRING_CONVERTER, LITERAL_STRING_PARSER, STRING_PARSER, DATE_PARSER, NUMBER_PARSER, BOOLEAN_PARSER, ARRAY_PARSER, INLINE_TABLE_PARSER
   };
-
-  Object convert(String value) {
-    for (ValueConverter valueParser : PARSERS) {
-      if (valueParser.canConvert(value)) {
-        return valueParser.convert(value);
-      }
-    }
-    
-    return INVALID;
-  }
-  
 
   Object convert(String value, AtomicInteger index) {
     String substring = value.substring(index.get());
@@ -40,4 +31,6 @@ class ValueConverters {
     
     return INVALID;
   }
+  
+  private ValueConverters() {}
 }

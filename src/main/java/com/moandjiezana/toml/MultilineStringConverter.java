@@ -2,6 +2,7 @@ package com.moandjiezana.toml;
 
 import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
 import static com.moandjiezana.toml.ValueConverterUtils.isComment;
+import static com.moandjiezana.toml.ValueConverterUtils.unterminated;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -29,9 +30,14 @@ class MultilineStringConverter implements ValueConverter {
   @Override
   public Object convert(String s, AtomicInteger index) {
     char[] chars = s.toCharArray();
+    int originalStartIndex = index.get();
     int startIndex = index.addAndGet(3);
     int endIndex = -1;
-
+    
+    if (chars[startIndex] == '\n') {
+      startIndex = index.incrementAndGet();
+    }
+    
     for (int i = startIndex; i < chars.length; i = index.incrementAndGet()) {
       char c = chars[i];
 
@@ -43,7 +49,7 @@ class MultilineStringConverter implements ValueConverter {
     }
     
     if (endIndex == -1) {
-      return INVALID;
+      return unterminated(s.substring(originalStartIndex, s.length()));
     }
 
     s = s.substring(startIndex, endIndex);

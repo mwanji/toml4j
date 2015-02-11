@@ -1,6 +1,7 @@
 package com.moandjiezana.toml;
 
 import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
+import static com.moandjiezana.toml.ValueConverters.CONVERTERS;
 
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -8,7 +9,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 class InlineTableConverter implements ValueConverter {
 
   static final InlineTableConverter INLINE_TABLE_PARSER = new InlineTableConverter();
-  private static final ValueConverters CONVERTERS = new ValueConverters();
   
   @Override
   public boolean canConvert(String s) {

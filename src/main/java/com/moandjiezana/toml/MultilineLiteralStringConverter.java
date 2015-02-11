@@ -29,8 +29,13 @@ class MultilineLiteralStringConverter implements ValueConverter {
   @Override
   public Object convert(String s, AtomicInteger index) {
     char[] chars = s.toCharArray();
+    int originalStartIndex = index.get();
     int startIndex = index.addAndGet(3);
     int endIndex = -1;
+    
+    if (chars[startIndex] == '\n') {
+      startIndex = index.incrementAndGet();
+    }
     
     for (int i = startIndex; i < chars.length; i = index.incrementAndGet()) {
       char c = chars[i];
@@ -40,6 +45,10 @@ class MultilineLiteralStringConverter implements ValueConverter {
         index.addAndGet(2);
         break;
       }
+    }
+    
+    if (endIndex == -1) {
+      return ValueConverterUtils.unterminated(s.substring(originalStartIndex, s.length()));
     }
 
     return s.substring(startIndex, endIndex);

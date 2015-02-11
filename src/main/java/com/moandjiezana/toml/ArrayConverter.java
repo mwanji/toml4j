@@ -1,6 +1,7 @@
 package com.moandjiezana.toml;
 
 import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
+import static com.moandjiezana.toml.ValueConverters.CONVERTERS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +10,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 class ArrayConverter implements ValueConverter {
 
   static final ArrayConverter ARRAY_PARSER = new ArrayConverter();
-
-  private static final ValueConverters VALUE_CONVERTERS = new ValueConverters();
 
   @Override
   public boolean canConvert(String s) {
@@ -41,36 +40,35 @@ class ArrayConverter implements ValueConverter {
   
   @Override
   public Object convert(String s, AtomicInteger index) {
+    int startIndex = index.get();
     char[] chars = s.toCharArray();
     List<Object> arrayItems = new ArrayList<Object>();
     boolean terminated = false;
+    boolean inComment = false;
     
     for (int i = index.incrementAndGet(); i < chars.length; i = index.incrementAndGet()) {
 
       char c = chars[i];
-
-      if (Character.isWhitespace(c)) {
+      
+      if (c == '#' && !inComment) {
+        inComment = true;
+      } else if (c == '\n') {
+        inComment = false;
+      } else if (inComment || Character.isWhitespace(c) || c == ',') {
         continue;
-      }
-      if (c == ',') {
-        continue;
-      }
-
-      if (c == '[') {
+      } else if (c == '[') {
         arrayItems.add(convert(s, index));
         continue;
-      }
-
-      if (c == ']') {
+      } else if (c == ']') {
         terminated = true;
         break;
+      } else {
+        arrayItems.add(CONVERTERS.convert(s, index));
       }
-
-      arrayItems.add(VALUE_CONVERTERS.convert(s, index));
     }
     
     if (!terminated) {
-      return INVALID;
+      return ValueConverterUtils.unterminated(s.substring(startIndex, s.length()));
     }
     
     for (Object arrayItem : arrayItems) {
