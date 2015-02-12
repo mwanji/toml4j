@@ -13,9 +13,42 @@ public class BareKeysTest {
     assertEquals("a", toml.getString("a.b.c.key"));
   }
 
+  @Test
+  public void should_support_underscores_in_key_names() throws Exception {
+    Toml toml = new Toml().parse("a_a = 1");
+
+    assertEquals(1, toml.getLong("a_a").intValue());
+  }
+
+  @Test
+  public void should_support_underscores_in_table_names() throws Exception {
+    Toml toml = new Toml().parse("[group_a]\na = 1");
+
+    assertEquals(1, toml.getLong("group_a.a").intValue());
+  }
+
+  @Test
+  public void should_support_numbers_in_key_names() throws Exception {
+    Toml toml = new Toml().parse("a1 = 1");
+
+    assertEquals(1, toml.getLong("a1").intValue());
+  }
+
+  @Test
+  public void should_support_numbers_in_table_names() throws Exception {
+    Toml toml = new Toml().parse("[group1]\na = 1");
+
+    assertEquals(1, toml.getLong("group1.a").intValue());
+  }
+
   @Test(expected = IllegalStateException.class)
   public void should_fail_when_characters_outside_accept_range_are_used_in_table_name() throws Exception {
     new Toml().parse("[~]");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_when_dots_in_key_name() throws Exception {
+    new Toml().parse("a.b = 1");
   }
 
   @Test(expected = IllegalStateException.class)

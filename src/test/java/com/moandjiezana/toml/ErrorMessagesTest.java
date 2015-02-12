@@ -39,7 +39,7 @@ public class ErrorMessagesTest {
   
   @Test
   public void should_message_invalid_key() throws Exception {
-    e.expectMessage("Invalid key on line 1: k\"");
+    e.expectMessage("Key is not followed by an equals sign on line 1: k\" = 1");
     
     new Toml().parse("k\" = 1");
   }
@@ -81,7 +81,7 @@ public class ErrorMessagesTest {
   
   @Test
   public void should_message_key_without_equals() throws Exception {
-    e.expectMessage("Key k is not followed by an equals sign on line 2");
+    e.expectMessage("Key is not followed by an equals sign on line 2: k");
     
     new Toml().parse("\nk\n=3");
   }

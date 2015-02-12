@@ -97,49 +97,6 @@ public class TomlTest {
   }
 
   @Test
-  public void should_support_numbers_in_key_names() throws Exception {
-    Toml toml = new Toml().parse("a1 = 1");
-
-    assertEquals(1, toml.getLong("a1").intValue());
-  }
-
-  @Test
-  public void should_support_numbers_in_table_names() throws Exception {
-    Toml toml = new Toml().parse("[group1]\na = 1");
-
-    assertEquals(1, toml.getLong("group1.a").intValue());
-  }
-
-  @Test
-  public void should_support_underscores_in_key_names() throws Exception {
-    Toml toml = new Toml().parse("a_a = 1");
-
-    assertEquals(1, toml.getLong("a_a").intValue());
-  }
-  
-  @Test
-  public void should_support_dots_in_key_names() throws Exception {
-    Toml toml = new Toml().parse(file("should_support_dots_in_key_names"));
-    
-    assertEquals(1, toml.getLong("a").intValue());
-    assertEquals(2, toml.getLong("b.c").intValue());
-    assertEquals(3, toml.getTable("b").getLong("c").intValue());
-    assertEquals(4, toml.getLong("b.a.b").intValue());
-    assertEquals(5, toml.getLong("d.e.a").intValue());
-    assertEquals(6, toml.getLong("d.e.a.b.c").intValue());
-    assertEquals(6, toml.getTable("d.e").getLong("a.b.c").intValue());
-    assertEquals(7, toml.getTables("f").get(0).getLong("a.b").intValue());
-    assertEquals(8, toml.getLong("f[1].a.b").intValue());
-  }
-
-  @Test
-  public void should_support_underscores_in_table_names() throws Exception {
-    Toml toml = new Toml().parse("[group_a]\na = 1");
-
-    assertEquals(1, toml.getLong("group_a.a").intValue());
-  }
-
-  @Test
   public void should_support_blank_lines() throws Exception {
     Toml toml = new Toml().parse(new File(getClass().getResource("should_support_blank_line.toml").getFile()));
 

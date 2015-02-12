@@ -129,9 +129,14 @@ public class BurntSushiValidTest {
     run("key-special-chars-modified");
   }
   
-  @Test
+  @Test @Ignore
   public void keys_with_dots() throws Exception {
     run("keys-with-dots");
+  }
+  
+  @Test
+  public void keys_with_dots_modified() throws Exception {
+    run("keys-with-dots-modified");
   }
   
   @Test

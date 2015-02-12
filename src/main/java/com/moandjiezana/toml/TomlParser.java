@@ -26,22 +26,16 @@ class TomlParser {
       if (c == '#' && !inComment) {
         inComment = true;
       } else if (!Character.isWhitespace(c) && !inComment && identifier == null) {
-        Identifier id = IDENTIFIER_CONVERTER.convert(chars, index);
+        Identifier id = IDENTIFIER_CONVERTER.convert(chars, index, new Context(null, line, results.errors));
         
-        if (id.isValid()) {
-          char next = chars[index.get()];
-          if (index.get() < chars.length -1 && !id.acceptsNext(next)) {
-            results.errors.invalidTextAfterIdentifier(id, next, line.get());
-          } else if (id.isKey()) {
+        if (id != Identifier.INVALID) {
+          if (id.isKey()) {
             identifier = id;
           } else if (id.isTable()) {
-            results.startTables(Keys.getTableName(id.getName()));
+            results.startTables(id);
           } else if (id.isTableArray()) {
             results.startTableArray(Keys.getTableArrayName(id.getName()));
           }
-          inComment = next == '#';
-        } else {
-          results.errors.invalidIdentifier(id, line.get());
         }
       } else if (c == '\n') {
         inComment = false;
@@ -49,7 +43,7 @@ class TomlParser {
         value = null;
         line.incrementAndGet();
       } else if (!inComment && identifier != null && identifier.isKey() && value == null && !Character.isWhitespace(c)) {
-        Object converted = ValueConverters.CONVERTERS.convert(tomlString, index, new Context(identifier, line));
+        Object converted = ValueConverters.CONVERTERS.convert(tomlString, index, new Context(identifier, line, results.errors));
         value = converted;
         
         if (converted instanceof Results.Errors) {

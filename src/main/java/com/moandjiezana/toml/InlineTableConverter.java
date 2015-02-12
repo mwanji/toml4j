@@ -37,7 +37,7 @@ class InlineTableConverter implements ValueConverter {
       } else if (quoted) {
         currentKey.append(c);
       } else if (inValue && !Character.isWhitespace(c)) {
-        Object converted = CONVERTERS.convert(s, sharedIndex, context.with(new Identifier(currentKey.toString())));
+        Object converted = CONVERTERS.convert(s, sharedIndex, context.with(Identifier.from(currentKey.toString(), context)));
         
         if (converted instanceof Results.Errors) {
           errors.add((Results.Errors) converted);
@@ -49,7 +49,7 @@ class InlineTableConverter implements ValueConverter {
         inValue = false;
       } else if (c == '{') {
         sharedIndex.incrementAndGet();
-        Object converted = convert(s, sharedIndex, context.with(new Identifier(currentKey.toString())));
+        Object converted = convert(s, sharedIndex, context.with(Identifier.from(currentKey.toString(), context)));
         
         if (converted instanceof Results.Errors) {
           errors.add((Results.Errors) converted);

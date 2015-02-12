@@ -61,20 +61,12 @@ class Results {
     }
     
     void invalidTextAfterIdentifier(Identifier identifier, char text, int line) {
-      if (identifier.isKey() && text == '\n') {
-        sb.append("Key ")
-          .append(identifier.getName())
-          .append(" is not followed by an equals sign on line ")
-          .append(line)
-          .append('\n');
-      } else {
-        sb.append("Invalid text after key ")
-          .append(identifier.getName())
-          .append(" on line ")
-          .append(line)
-          .append(". Make sure to terminate the value or add a comment (#).")
-          .append('\n');
-      }
+      sb.append("Invalid text after key ")
+        .append(identifier.getName())
+        .append(" on line ")
+        .append(line)
+        .append(". Make sure to terminate the value or add a comment (#).")
+        .append('\n');
     }
     
     void invalidKey(String key, int line) {
@@ -104,6 +96,14 @@ class Results {
         .append(" = ")
         .append(value)
         .append('\n');
+    }
+    
+    void unterminatedKey(String key, int line) {
+      sb.append("Key is not followed by an equals sign on line ")
+      .append(line)
+      .append(": ")
+      .append(key)
+      .append('\n');
     }
     
     void unterminated(String key, String value, int line) {
@@ -200,7 +200,8 @@ class Results {
     }
   }
 
-  void startTables(String tableName) {
+  void startTables(Identifier id) {
+    String tableName = id.getName().substring(1, id.getName().length() - 1);
     if (!tables.add(tableName)) {
       errors.duplicateTable(tableName, -1);
     }
