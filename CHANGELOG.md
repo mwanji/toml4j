@@ -1,6 +1,6 @@
 # toml4j Changelog
 
-## Unreleased
+## 0.4.0
 
 ### Changed
 
@@ -9,10 +9,7 @@
 
 ### Added
 
-* Line numbers included in error messages
-
-### Added
-
+* Support for [TOML 0.4.0](https://github.com/toml-lang/toml/blob/master/versions/en/toml-v0.4.0.md)
 * Line numbers included in error messages
 
 ### Fixed

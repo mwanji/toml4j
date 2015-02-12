@@ -1,8 +1,8 @@
 # toml4j
 
-toml4j is a [TOML 0.3.1](https://github.com/toml-lang/toml/tree/v0.3.1) parser for Java.
+toml4j is a [TOML 0.4.0](https://github.com/toml-lang/toml/blob/master/versions/en/toml-v0.4.0.md) parser for Java.
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.moandjiezana.toml/toml4j.svg)](https://search.maven.org/#search|gav|1|g%3A%22com.moandjiezana.toml%22%20AND%20a%3A%22toml4j%22) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Build Status](https://img.shields.io/travis/mwanji/toml4j/wip.svg)](https://travis-ci.org/mwanji/toml4j) [![Coverage Status](https://img.shields.io/coveralls/mwanji/toml4j.svg)](https://coveralls.io/r/mwanji/toml4j?branch=wip)
+[![Maven Central](https://img.shields.io/maven-central/v/com.moandjiezana.toml/toml4j.svg)](https://search.maven.org/#search|gav|1|g%3A%22com.moandjiezana.toml%22%20AND%20a%3A%22toml4j%22) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Build Status](https://img.shields.io/travis/mwanji/toml4j/wip.svg)](https://travis-ci.org/mwanji/toml4j) [![Coverage Status](https://img.shields.io/coveralls/mwanji/toml4j.svg)](https://coveralls.io/r/mwanji/toml4j)
 
 For the bleeding-edge version integrating the latest specs, see the [work-in-progress branch](https://github.com/mwanji/toml4j/tree/wip).
 
@@ -14,7 +14,7 @@ Add the following dependency to your POM (or equivalent for other dependency man
 <dependency>
   <groupId>com.moandjiezana.toml</groupId>
   <artifactId>toml4j</artifactId>
-  <version>0.3.1</version>
+  <version>0.4.0</version>
 </dependency>
 ```
 
@@ -112,7 +112,7 @@ You can also navigate values within a table with a compound key of the form `tab
 
 Non-existent keys return null.
 
-When retrieving quoted keys, the quotes must be used and the key must be spelled exactly the same way, including quotes and whitespace.
+When retrieving quoted keys, the quotes must be used and the key must be spelled exactly the same way, including quotes and whitespace. The only exceptions are Unicode escapes: `"\u00B1" = "value"` would be retrieved with `toml.getString("\"±\"")`.
 
 ```toml
 title = "TOML Example"
@@ -206,4 +206,4 @@ Date precision is limited to milliseconds.
 
 ## License
 
-toml4j is copyright of Moandji Ezana and is licensed under the [MIT License](LICENSE)
+toml4j is copyright (c) 2013-2015 Moandji Ezana and is licensed under the [MIT License](LICENSE)
