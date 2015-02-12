@@ -16,9 +16,23 @@ class ValueConverters {
   
   static final ValueConverters CONVERTERS = new ValueConverters();
   
-  private static final ValueConverter[] PARSERS = { 
-    MULTILINE_STRING_PARSER, MULTILINE_LITERAL_STRING_CONVERTER, LITERAL_STRING_PARSER, STRING_PARSER, DATE_PARSER, NUMBER_PARSER, BOOLEAN_PARSER, ARRAY_PARSER, INLINE_TABLE_PARSER
-  };
+  static boolean isComment(String line) {
+    if (line == null || line.isEmpty()) {
+      return true;
+    }
+
+    char[] chars = line.toCharArray();
+
+    for (char c : chars) {
+      if (Character.isWhitespace(c)) {
+        continue;
+      }
+
+      return c == '#';
+    }
+
+    return false;
+  }
 
   Object convert(String value, AtomicInteger index, Context context) {
     String substring = value.substring(index.get());
@@ -34,4 +48,8 @@ class ValueConverters {
   }
   
   private ValueConverters() {}
+  
+  private static final ValueConverter[] PARSERS = { 
+    MULTILINE_STRING_PARSER, MULTILINE_LITERAL_STRING_CONVERTER, LITERAL_STRING_PARSER, STRING_PARSER, DATE_PARSER, NUMBER_PARSER, BOOLEAN_PARSER, ARRAY_PARSER, INLINE_TABLE_PARSER
+  };
 }
