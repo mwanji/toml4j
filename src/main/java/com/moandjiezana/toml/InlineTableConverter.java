@@ -19,7 +19,6 @@ class InlineTableConverter implements ValueConverter {
     AtomicInteger line = context.line;
     int startLine = line.get();
     int startIndex = sharedIndex.get();
-    char[] chars = s.toCharArray();
     boolean inKey = true;
     boolean inValue = false;
     boolean quoted = false;
@@ -28,8 +27,8 @@ class InlineTableConverter implements ValueConverter {
     HashMap<String, Object> results = new HashMap<String, Object>();
     Results.Errors errors = new Results.Errors();
     
-    for (int i = sharedIndex.incrementAndGet(); sharedIndex.get() < chars.length; i = sharedIndex.incrementAndGet()) {
-      char c = chars[i];
+    for (int i = sharedIndex.incrementAndGet(); sharedIndex.get() < s.length(); i = sharedIndex.incrementAndGet()) {
+      char c = s.charAt(i);
       
       if (c == '"' && inKey) {
         quoted = !quoted;

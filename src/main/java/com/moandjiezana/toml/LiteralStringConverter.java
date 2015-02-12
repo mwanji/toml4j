@@ -15,12 +15,11 @@ class LiteralStringConverter implements ValueConverter {
   @Override
   public Object convert(String s, AtomicInteger index, Context context) {
     int startLine = context.line.get();
-    char[] chars = s.toCharArray();
     boolean terminated = false;
     int startIndex = index.incrementAndGet();
     
-    for (int i = index.get(); i < chars.length; i = index.incrementAndGet()) {
-      char c = chars[i];
+    for (int i = index.get(); i < s.length(); i = index.incrementAndGet()) {
+      char c = s.charAt(i);
       
       if (c == '\'') {
         terminated = true;

@@ -93,13 +93,11 @@ class Identifier {
     }
     
     boolean quoted = false;
-    char[] chars = name.toCharArray();
-    
-    for (int i = 0; i < chars.length; i++) {
-      char c = chars[i];
+    for (int i = 0; i < name.length(); i++) {
+      char c = name.charAt(i);
       
-      if (c == '"' && (i == 0 || chars[i - 1] != '\\')) {
-        if (!quoted && i > 0 && chars [i - 1] != '.') {
+      if (c == '"' && (i == 0 || name.charAt(i - 1) != '\\')) {
+        if (!quoted && i > 0 && name.charAt(i - 1) != '.') {
           context.errors.invalidKey(name, context.line.get());
           return false;
         }
@@ -130,14 +128,13 @@ class Identifier {
       return false;
     }
     
-    char[] chars = trimmed.toCharArray();
     boolean quoted = false;
     boolean dotAllowed = false;
     boolean quoteAllowed = true;
     boolean charAllowed = true;
     
-    for (int i = 0; i < chars.length; i++) {
-      char c = chars[i];
+    for (int i = 0; i < trimmed.length(); i++) {
+      char c = trimmed.charAt(i);
       
       if (!valid) {
         break;
@@ -146,7 +143,7 @@ class Identifier {
       if (c == '"') {
         if (!quoteAllowed) {
           valid = false;
-        } else if (quoted && chars[i - 1] != '\\') {
+        } else if (quoted && trimmed.charAt(i - 1) != '\\') {
           charAllowed = false;
           dotAllowed = true;
           quoteAllowed = false;
@@ -166,7 +163,7 @@ class Identifier {
           return false;
         }
       } else if (Character.isWhitespace(c)) {
-        char prev = chars[i - 1];
+        char prev = trimmed.charAt(i - 1);
         if (!Character.isWhitespace(prev) && prev != '.' && prev != '"') {
           charAllowed = false;
           dotAllowed = true;
@@ -209,15 +206,13 @@ class Identifier {
       return false;
     }
 
-    
-    char[] chars = trimmed.toCharArray();
     boolean quoted = false;
     boolean dotAllowed = false;
     boolean quoteAllowed = true;
     boolean charAllowed = true;
     
-    for (int i = 0; i < chars.length; i++) {
-      char c = chars[i];
+    for (int i = 0; i < trimmed.length(); i++) {
+      char c = trimmed.charAt(i);
       
       if (!valid) {
         break;
@@ -226,7 +221,7 @@ class Identifier {
       if (c == '"') {
         if (!quoteAllowed) {
           valid = false;
-        } else if (quoted && chars[i - 1] != '\\') {
+        } else if (quoted && trimmed.charAt(i - 1) != '\\') {
           charAllowed = false;
           dotAllowed = true;
           quoteAllowed = false;
@@ -246,7 +241,7 @@ class Identifier {
           return false;
         }
       } else if (Character.isWhitespace(c)) {
-        char prev = chars[i - 1];
+        char prev = trimmed.charAt(i - 1);
         if (!Character.isWhitespace(prev) && prev != '.' && prev != '"') {
           charAllowed = false;
           dotAllowed = true;

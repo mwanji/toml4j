@@ -16,10 +16,8 @@ class DateConverter implements ValueConverter {
       return false;
     }
     
-    char[] chars = s.toCharArray();
-
     for (int i = 0; i < 5; i++) {
-      char c = chars[i];
+      char c = s.charAt(i);
       
       if (i < 4) {
         if (!Character.isDigit(c)) {

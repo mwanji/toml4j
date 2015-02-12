@@ -21,9 +21,8 @@ class ValueConverters {
       return true;
     }
 
-    char[] chars = line.toCharArray();
-
-    for (char c : chars) {
+    for (int i = 0; i < line.length(); i++) {
+      char c = line.charAt(i);
       if (Character.isWhitespace(c)) {
         continue;
       }

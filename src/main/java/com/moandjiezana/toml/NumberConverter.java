@@ -14,7 +14,6 @@ class NumberConverter implements ValueConverter {
 
   @Override
   public Object convert(String s, AtomicInteger index, Context context) {
-    char[] chars = s.toCharArray();
     boolean signable = true;
     boolean dottable = false;
     boolean exponentable = false;
@@ -22,8 +21,8 @@ class NumberConverter implements ValueConverter {
     String type = "";
     StringBuilder sb = new StringBuilder();
 
-    for (int i = index.get(); i < chars.length; i = index.incrementAndGet()) {
-      char c = chars[i];
+    for (int i = index.get(); i < s.length(); i = index.incrementAndGet()) {
+      char c = s.charAt(i);
 
       if (Character.isDigit(c)) {
         sb.append(c);
@@ -34,19 +33,19 @@ class NumberConverter implements ValueConverter {
           dottable = true;
         }
         exponentable = !type.equals("exponent");
-      } else if ((c == '+' || c == '-') && signable && chars.length > i + 1) {
+      } else if ((c == '+' || c == '-') && signable && s.length() > i + 1) {
         signable = false;
         terminatable = false;
         if (c == '-') {
           sb.append('-');
         }
-      } else if (c == '.' && dottable && chars.length > i + 1) {
+      } else if (c == '.' && dottable && s.length() > i + 1) {
         sb.append('.');
         type = "float";
         terminatable = false;
         dottable = false;
         exponentable = false;
-      } else if ((c == 'E' || c == 'e') && exponentable && chars.length > i + 1) {
+      } else if ((c == 'E' || c == 'e') && exponentable && s.length() > i + 1) {
         sb.append('E');
         type = "exponent";
         terminatable = false;

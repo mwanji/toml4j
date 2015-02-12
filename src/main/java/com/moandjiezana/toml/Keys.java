@@ -26,14 +26,13 @@ class Keys {
   static Keys.Key[] split(String key) {
     List<Key> splitKey = new ArrayList<Key>();
     StringBuilder current = new StringBuilder();
-    char[] chars = key.toCharArray();
     boolean quoted = false;
     boolean indexable = true;
     boolean inIndex = false;
     int index = -1;
     
-    for (int i = chars.length - 1; i > -1; i--) {
-      char c = chars[i];
+    for (int i = key.length() - 1; i > -1; i--) {
+      char c = key.charAt(i);
       if (c == ']' && indexable) {
         inIndex = true;
         continue;
@@ -45,7 +44,7 @@ class Keys {
         current = new StringBuilder();
         continue;
       }
-      if (c == '"' && (i == 0 || chars[i - 1] != '\\')) {
+      if (c == '"' && (i == 0 || key.charAt(i - 1) != '\\')) {
         quoted = !quoted;
         indexable = false;
       }

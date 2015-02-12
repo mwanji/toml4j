@@ -13,20 +13,19 @@ class TomlParser {
       return results;
     }
     
-    char[] chars = tomlString.toCharArray();
     AtomicInteger index = new AtomicInteger();
     boolean inComment = false;
     AtomicInteger line = new AtomicInteger(1);
     Identifier identifier = null;
     Object value = null;
     
-    for (int i = index.get(); i < chars.length; i = index.incrementAndGet()) {
-      char c = chars[i];
+    for (int i = index.get(); i < tomlString.length(); i = index.incrementAndGet()) {
+      char c = tomlString.charAt(i);
       
       if (c == '#' && !inComment) {
         inComment = true;
       } else if (!Character.isWhitespace(c) && !inComment && identifier == null) {
-        Identifier id = IDENTIFIER_CONVERTER.convert(chars, index, new Context(null, line, results.errors));
+        Identifier id = IDENTIFIER_CONVERTER.convert(tomlString, index, new Context(null, line, results.errors));
         
         if (id != Identifier.INVALID) {
           if (id.isKey()) {

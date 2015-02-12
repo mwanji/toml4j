@@ -20,15 +20,14 @@ class ArrayConverter implements ValueConverter {
     AtomicInteger line = context.line;
     int startLine = line.get();
     int startIndex = index.get();
-    char[] chars = s.toCharArray();
     List<Object> arrayItems = new ArrayList<Object>();
     boolean terminated = false;
     boolean inComment = false;
     Results.Errors errors = new Results.Errors();
     
-    for (int i = index.incrementAndGet(); i < chars.length; i = index.incrementAndGet()) {
+    for (int i = index.incrementAndGet(); i < s.length(); i = index.incrementAndGet()) {
 
-      char c = chars[i];
+      char c = s.charAt(i);
       
       if (c == '#' && !inComment) {
         inComment = true;

@@ -15,24 +15,23 @@ class MultilineLiteralStringConverter implements ValueConverter {
   public Object convert(String s, AtomicInteger index, Context context) {
     AtomicInteger line = context.line;
     int startLine = line.get();
-    char[] chars = s.toCharArray();
     int originalStartIndex = index.get();
     int startIndex = index.addAndGet(3);
     int endIndex = -1;
     
-    if (chars[startIndex] == '\n') {
+    if (s.charAt(startIndex) == '\n') {
       startIndex = index.incrementAndGet();
       line.incrementAndGet();
     }
     
-    for (int i = startIndex; i < chars.length; i = index.incrementAndGet()) {
-      char c = chars[i];
+    for (int i = startIndex; i < s.length(); i = index.incrementAndGet()) {
+      char c = s.charAt(i);
 
       if (c == '\n') {
         line.incrementAndGet();
       }
       
-      if (c == '\'' && chars.length > i + 2 && chars[i + 1] == '\'' && chars[i + 2] == '\'') {
+      if (c == '\'' && s.length() > i + 2 && s.charAt(i + 1) == '\'' && s.charAt(i + 2) == '\'') {
         endIndex = i;
         index.addAndGet(2);
         break;

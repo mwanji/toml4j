@@ -15,14 +15,13 @@ class StringConverter implements ValueConverter {
   }
 
   @Override
-  public Object convert(String value, AtomicInteger sharedIndex, Context context) {
-    int startIndex = sharedIndex.incrementAndGet();
+  public Object convert(String s, AtomicInteger index, Context context) {
+    int startIndex = index.incrementAndGet();
     int endIndex = -1;
-    char[] chars = value.toCharArray();
 
-    for (int i = sharedIndex.get(); i < chars.length; i = sharedIndex.incrementAndGet()) {
-      char ch = chars[i];
-      if (ch == '"' && chars[i - 1] != '\\') {
+    for (int i = index.get(); i < s.length(); i = index.incrementAndGet()) {
+      char ch = s.charAt(i);
+      if (ch == '"' && s.charAt(i - 1) != '\\') {
         endIndex = i;
         break;
       }
@@ -30,21 +29,21 @@ class StringConverter implements ValueConverter {
 
     if (endIndex == -1) {
       Results.Errors errors = new Results.Errors();
-      errors.unterminated(context.identifier.getName(), value.substring(startIndex - 1), context.line.get());
+      errors.unterminated(context.identifier.getName(), s.substring(startIndex - 1), context.line.get());
       return errors;
     }
     
-    String raw = value.substring(startIndex, endIndex);
-    value = replaceUnicodeCharacters(raw);
-    value = replaceSpecialCharacters(value);
+    String raw = s.substring(startIndex, endIndex);
+    s = replaceUnicodeCharacters(raw);
+    s = replaceSpecialCharacters(s);
     
-    if (value == null) {
+    if (s == null) {
       Results.Errors errors = new Results.Errors();
       errors.invalidValue(context.identifier.getName(), raw, context.line.get());
       return errors;
     }
 
-    return value;
+    return s;
   }
 
   String replaceUnicodeCharacters(String value) {
@@ -56,11 +55,10 @@ class StringConverter implements ValueConverter {
     return value;
   }
 
-  String replaceSpecialCharacters(String value) {
-    char[] chars = value.toCharArray();
-    for (int i = 0; i < chars.length - 1; i++) {
-      char ch = chars[i];
-      char next = chars[i + 1];
+  String replaceSpecialCharacters(String s) {
+    for (int i = 0; i < s.length() - 1; i++) {
+      char ch = s.charAt(i);
+      char next = s.charAt(i + 1);
 
       if (ch == '\\' && next == '\\') {
         i++;
@@ -69,7 +67,7 @@ class StringConverter implements ValueConverter {
       }
     }
 
-    return value.replace("\\n", "\n")
+    return s.replace("\\n", "\n")
       .replace("\\\"", "\"")
       .replace("\\t", "\t")
       .replace("\\r", "\r")
