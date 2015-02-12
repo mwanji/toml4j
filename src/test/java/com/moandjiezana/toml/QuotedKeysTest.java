@@ -1,7 +1,9 @@
 package com.moandjiezana.toml;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 import java.util.Map;
 
@@ -100,6 +102,15 @@ public class QuotedKeysTest {
     Toml toml = new Toml().parse("[  dog. \"type\". breed   ] \n  name = \"type0\"");
     
     assertEquals("type0", toml.getString("dog.\"type\".breed.name"));
+  }
+  
+  @Test
+  public void should_support_unicode() throws Exception {
+    Toml toml = new Toml().parse("[[\"\\u00B1\"]]\n  \"\\u00B1\" = \"a\"\n [\"\\u00B11\"]\n  \"±\" = 1");
+    
+    assertThat(toml.getTables("\"±\""), hasSize(1));
+    assertEquals("a", toml.getTables("\"±\"").get(0).getString("\"±\""));
+    assertEquals(1, toml.getTable("\"±1\"").getLong("\"±\"").intValue());
   }
   
   @Test(expected = IllegalStateException.class)
