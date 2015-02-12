@@ -45,6 +45,11 @@ public class BareKeysTest {
   public void should_fail_when_characters_outside_accept_range_are_used_in_table_name() throws Exception {
     new Toml().parse("[~]");
   }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_when_characters_outside_accept_range_are_used_in_table_array_name() throws Exception {
+    new Toml().parse("[[~]]");
+  }
   
   @Test(expected = IllegalStateException.class)
   public void should_fail_when_dots_in_key_name() throws Exception {
@@ -64,6 +69,16 @@ public class BareKeysTest {
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_spaces_in_table_name() throws Exception {
     new Toml().parse("[valid  key]");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_sharp_sign_in_table_array_name() throws Exception {
+    new Toml().parse("[[group#]]\nkey=1");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_spaces_in_table_array_name() throws Exception {
+    new Toml().parse("[[valid  key]]");
   }
 
   @Test(expected = IllegalStateException.class)
@@ -89,5 +104,20 @@ public class BareKeysTest {
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_nested_table_name_starting_with_empty_table_name() {
     new Toml().parse("[.b]");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_nested_table_array_name_ending_with_empty_table_name() {
+    new Toml().parse("[[a.]]");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_nested_table_array_name_containing_empty_table_name() {
+    new Toml().parse("[[a..b]]");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_nested_table_array_name_starting_with_empty_table_name() {
+    new Toml().parse("[[.b]]");
   }
 }

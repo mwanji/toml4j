@@ -162,7 +162,8 @@ class Results {
     }
   }
 
-  void startTableArray(String tableName) {
+  void startTableArray(Identifier identifier) {
+    String tableName = identifier.getBareName();
     while (stack.size() > 1) {
       stack.pop();
     }
@@ -201,15 +202,11 @@ class Results {
   }
 
   void startTables(Identifier id) {
-    String tableName = id.getName().substring(1, id.getName().length() - 1);
+    String tableName = id.getBareName();
     if (!tables.add(tableName)) {
       errors.duplicateTable(tableName, -1);
     }
     
-    if (tableName.endsWith(".")) {
-      errors.emptyImplicitTable(tableName, -1);
-    }
-
     while (stack.size() > 1) {
       stack.pop();
     }
@@ -219,7 +216,6 @@ class Results {
       String tablePart = tableParts[i].name;
       Container currentContainer = stack.peek();
       if (tablePart.isEmpty()) {
-        errors.emptyImplicitTable(tableName, -1);
       } else if (currentContainer.get(tablePart) instanceof Container) {
         Container nextTable = (Container) currentContainer.get(tablePart);
         stack.push(nextTable);

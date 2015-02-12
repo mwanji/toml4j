@@ -41,6 +41,18 @@ class Identifier {
     return name;
   }
   
+  String getBareName() {
+    if (isKey()) {
+      return name;
+    }
+    
+    if (isTable()) {
+      return name.substring(1, name.length() - 1);
+    }
+    
+    return name.substring(2, name.length() - 2);
+  }
+  
   boolean isKey() {
     return type == Type.KEY;
   }
@@ -71,7 +83,7 @@ class Identifier {
       }
     }
     
-    return sb.toString();
+    return StringConverter.STRING_PARSER.replaceUnicodeCharacters(sb.toString());
   }
   
   private static boolean isValidKey(String name, Context context) {
@@ -102,42 +114,72 @@ class Identifier {
   }
   
   private static boolean isValidTable(String name, Context context) {
+    boolean valid = true;
+    
     if (!name.endsWith("]")) {
+      valid = false;
+    }
+    
+    String trimmed = name.substring(1, name.length() - 1).trim();
+    if (trimmed.isEmpty() || trimmed.charAt(0) == '.' || trimmed.endsWith(".")) {
+      valid = false;
+    }
+    
+    if (!valid) {
       context.errors.invalidTable(name, context.line.get());
       return false;
     }
     
-    char[] chars = name.toCharArray();
+    char[] chars = trimmed.toCharArray();
     boolean quoted = false;
-    boolean terminated = false;
-    int endIndex = -1;
-    boolean preKey = true;
-    boolean valid = true;
+    boolean dotAllowed = false;
+    boolean quoteAllowed = true;
+    boolean charAllowed = true;
     
-    for (int i = 1; i < name.length() - 1; i++) {
-      char c = name.charAt(i);
-      if (c == '"' && chars[i - 1] != '\\') {
-        if (!quoted && i > 1 && chars [i - 1] != '.' && !Character.isWhitespace(chars[i - 1])) {
-          valid = false;
-          break;
-        }
-        quoted = !quoted;
-      } else if (!quoted && c == '.') {
-        preKey = true;
-      } else if (!quoted && Character.isWhitespace(c)) {
-        if (preKey && i > 1 && chars[i - 1] != '.' && !Character.isWhitespace(chars[i - 1])) {
-          valid = false;
-          break;
-        }
-        if (!preKey && chars.length > i + 1 && chars[i + 1] != '.' && chars[i + 1] != ']' && !Character.isWhitespace(chars[i + 1])) {
-          valid = false;
-          break;
-        }
-      } else if (!quoted && (ALLOWED_CHARS.indexOf(c) == -1)) {
-        valid = false;
+    for (int i = 0; i < chars.length; i++) {
+      char c = chars[i];
+      
+      if (!valid) {
         break;
-      } else if (!quoted) {
-        preKey = false;
+      }
+      
+      if (c == '"') {
+        if (!quoteAllowed) {
+          valid = false;
+        } else if (quoted && chars[i - 1] != '\\') {
+          charAllowed = false;
+          dotAllowed = true;
+          quoteAllowed = false;
+        } else if (!quoted) {
+          quoted = true;
+          quoteAllowed = true;
+        }
+      } else if (quoted) {
+        continue;
+      } else if (c == '.') {
+        if (dotAllowed) {
+          charAllowed = true;
+          dotAllowed = false;
+          quoteAllowed = true;
+        } else {
+          context.errors.emptyImplicitTable(name, context.line.get());
+          return false;
+        }
+      } else if (Character.isWhitespace(c)) {
+        char prev = chars[i - 1];
+        if (!Character.isWhitespace(prev) && prev != '.' && prev != '"') {
+          charAllowed = false;
+          dotAllowed = true;
+          quoteAllowed = true;
+        }
+      } else {
+        if (charAllowed && ALLOWED_CHARS_KEYS.indexOf(c) > -1) {
+          charAllowed = true;
+          dotAllowed = true;
+          quoteAllowed = false;
+        } else {
+          valid = false;
+        }
       }
     }
     
@@ -151,47 +193,81 @@ class Identifier {
   }
 
   private static boolean isValidTableArray(String line, Context context) {
-    if (!line.endsWith("]]") || line.substring(2, line.length() - 2).trim().isEmpty()) {
-      context.errors.invalidTableArray(line, context.line.get());
-      
-      return false;
-    }
-    
-    char[] chars = line.toCharArray();
-    boolean quoted = false;
-    boolean preKey = true;
     boolean valid = true;
     
-    for (int i = 2; i < line.length() - 2; i++) {
+    if (!line.endsWith("]]")) {
+      valid = false;
+    }
+    
+    String trimmed = line.substring(2, line.length() - 2).trim();
+    if (trimmed.isEmpty() || trimmed.charAt(0) == '.' || trimmed.endsWith(".")) {
+      valid = false;
+    }
+    
+    if (!valid) {
+      context.errors.invalidTableArray(line, context.line.get());
+      return false;
+    }
+
+    
+    char[] chars = trimmed.toCharArray();
+    boolean quoted = false;
+    boolean dotAllowed = false;
+    boolean quoteAllowed = true;
+    boolean charAllowed = true;
+    
+    for (int i = 0; i < chars.length; i++) {
       char c = chars[i];
-      if (c == '"' && chars[i - 1] != '\\') {
-        if (!quoted && i > 1 && chars [i - 1] != '.' && !Character.isWhitespace(chars[i - 1])) {
-          valid = false;
-        }
-        quoted = !quoted;
-      } else if (!quoted && c == '.') {
-        preKey = true;
-      } else if (!quoted && Character.isWhitespace(c)) {
-        if (preKey && i > 2 && chars[i - 1] != '.' && !Character.isWhitespace(chars[i - 1])) {
-          valid = false;
-        }
-        if (!preKey && chars.length > i + 1 && chars[i + 1] != '.' && chars[i + 1] != ']' && !Character.isWhitespace(chars[i + 1])) {
-          valid = false;
-          break;
-        }
-      } else if (!quoted && (ALLOWED_CHARS.indexOf(c) == -1)) {
-        valid = false;
-      } else if (!valid) {
+      
+      if (!valid) {
         break;
+      }
+      
+      if (c == '"') {
+        if (!quoteAllowed) {
+          valid = false;
+        } else if (quoted && chars[i - 1] != '\\') {
+          charAllowed = false;
+          dotAllowed = true;
+          quoteAllowed = false;
+        } else if (!quoted) {
+          quoted = true;
+          quoteAllowed = true;
+        }
+      } else if (quoted) {
+        continue;
+      } else if (c == '.') {
+        if (dotAllowed) {
+          charAllowed = true;
+          dotAllowed = false;
+          quoteAllowed = true;
+        } else {
+          context.errors.emptyImplicitTable(line, context.line.get());
+          return false;
+        }
+      } else if (Character.isWhitespace(c)) {
+        char prev = chars[i - 1];
+        if (!Character.isWhitespace(prev) && prev != '.' && prev != '"') {
+          charAllowed = false;
+          dotAllowed = true;
+          quoteAllowed = true;
+        }
       } else {
-        preKey = false;
+        if (charAllowed && ALLOWED_CHARS_KEYS.indexOf(c) > -1) {
+          charAllowed = true;
+          dotAllowed = true;
+          quoteAllowed = false;
+        } else {
+          valid = false;
+        }
       }
     }
     
     if (!valid) {
       context.errors.invalidTableArray(line, context.line.get());
+      return false;
     }
     
-    return valid;
+    return true;
   }
 }

@@ -34,7 +34,7 @@ class TomlParser {
           } else if (id.isTable()) {
             results.startTables(id);
           } else if (id.isTableArray()) {
-            results.startTableArray(Keys.getTableArrayName(id.getName()));
+            results.startTableArray(id);
           }
         }
       } else if (c == '\n') {
