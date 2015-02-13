@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 class TomlParser {
 
-  Results run(String tomlString) {
+  static Results run(String tomlString) {
     final Results results = new Results();
     
     if (tomlString.isEmpty()) {
@@ -57,4 +57,6 @@ class TomlParser {
 
     return results;
   }
+  
+  private TomlParser() {}
 }
