@@ -1,16 +1,16 @@
 package com.moandjiezana.toml;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Calendar;
-import java.util.Map;
 import java.util.TimeZone;
 
-import org.fest.reflect.core.Reflection;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -59,6 +59,17 @@ public class TomlTest {
     assertEquals(2, toml.getLong("a.d").intValue());
     assertEquals(1, toml.getTable("a.b").getLong("c").intValue());
   }
+  
+  @Test
+  public void should_handle_navigation_to_missing_value() throws Exception {
+    Toml toml = new Toml();
+    
+    assertNull(toml.getString("a.b"));
+    assertNull(toml.getString("a.b[0].c"));
+    assertThat(toml.getList("a.b"), hasSize(0));
+    assertTrue(toml.getTable("a.b").isEmpty());
+    assertTrue(toml.getTable("a.b[0]").isEmpty());
+  }
 
   @Test
   public void should_return_null_if_no_value_for_key() throws Exception {
@@ -79,14 +90,6 @@ public class TomlTest {
     Toml toml = new Toml().parse("");
 
     assertNull(toml.getString("group.key"));
-  }
-
-  @Test
-  public void should_return_empty_toml_when_no_value_for_table() throws Exception {
-    Toml toml = new Toml().parse("[a]").getTable("b");
-
-    assertTrue(Reflection.field("values").ofType(Map.class).in(toml).get().isEmpty());
-    assertNull(toml.getString("x"));
   }
 
   @Test
@@ -123,6 +126,15 @@ public class TomlTest {
     assertEquals("abc\nabc", toml.getString("j"));
   }
   
+  @Test
+  public void should_be_empty_if_no_values() throws Exception {
+    assertTrue(new Toml().isEmpty());
+    Toml toml = new Toml().parse("[a]");
+    assertTrue(toml.getTable("a").isEmpty());
+    assertTrue(toml.getTable("b").isEmpty());
+    assertFalse(toml.isEmpty());
+  }
+
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_empty_key_name() throws Exception {
     new Toml().parse(" = 1");

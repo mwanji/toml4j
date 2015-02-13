@@ -198,6 +198,10 @@ public class Toml {
     return tables;
   }
 
+  public boolean isEmpty() {
+    return values.isEmpty();
+  }
+
   /**
    * <p>
    *  Populates an instance of targetClass with the values of this Toml instance.

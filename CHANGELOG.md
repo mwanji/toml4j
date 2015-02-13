@@ -4,12 +4,13 @@
 
 ### Changed
 
-* __REAKING:__ Toml#getList(String) replaced Toml#getList(String, Class) 
+* __BREAKING:__ Toml#getList(String) replaced Toml#getList(String, Class) 
 * Dropped dependency on Parboiled and its significant transitive dependencies
 
 ### Added
 
 * Support for [TOML 0.4.0](https://github.com/toml-lang/toml/blob/master/versions/en/toml-v0.4.0.md)
+* Toml#isEmpty()
 * Line numbers included in error messages
 
 ### Fixed
