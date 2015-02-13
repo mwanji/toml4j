@@ -42,13 +42,12 @@ class TomlParser {
         value = null;
         line.incrementAndGet();
       } else if (!inComment && identifier != null && identifier.isKey() && value == null && !Character.isWhitespace(c)) {
-        Object converted = ValueConverters.CONVERTERS.convert(tomlString, index, new Context(identifier, line, results.errors));
-        value = converted;
+        value = ValueConverters.CONVERTERS.convert(tomlString, index, new Context(identifier, line, results.errors));
         
-        if (converted instanceof Results.Errors) {
-          results.errors.add((Results.Errors) converted);
+        if (value instanceof Results.Errors) {
+          results.errors.add((Results.Errors) value);
         } else {
-          results.addValue(identifier.getName(), converted);
+          results.addValue(identifier.getName(), value);
         }
       } else if (value != null && !inComment && !Character.isWhitespace(c)) {
         results.errors.invalidTextAfterIdentifier(identifier, c, line.get());

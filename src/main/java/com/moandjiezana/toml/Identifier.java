@@ -4,8 +4,7 @@ class Identifier {
   
   static final Identifier INVALID = new Identifier("", null);
   
-  private static final String ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_-.";
-  private static final String ALLOWED_CHARS_KEYS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_-";
+  private static final String ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_-";
 
   private final String name;
   private final Type type;
@@ -102,7 +101,7 @@ class Identifier {
           return false;
         }
         quoted = !quoted;
-      } else if (!quoted && (ALLOWED_CHARS_KEYS.indexOf(c) == -1)) {
+      } else if (!quoted && (ALLOWED_CHARS.indexOf(c) == -1)) {
         context.errors.invalidKey(name, context.line.get());
         return false;
       }
@@ -170,7 +169,7 @@ class Identifier {
           quoteAllowed = true;
         }
       } else {
-        if (charAllowed && ALLOWED_CHARS_KEYS.indexOf(c) > -1) {
+        if (charAllowed && ALLOWED_CHARS.indexOf(c) > -1) {
           charAllowed = true;
           dotAllowed = true;
           quoteAllowed = false;
@@ -185,7 +184,6 @@ class Identifier {
       return false;
     }
     
-//    return StringConverter.STRING_PARSER.replaceUnicodeCharacters(tableName);
     return true;
   }
 
@@ -248,7 +246,7 @@ class Identifier {
           quoteAllowed = true;
         }
       } else {
-        if (charAllowed && ALLOWED_CHARS_KEYS.indexOf(c) > -1) {
+        if (charAllowed && ALLOWED_CHARS.indexOf(c) > -1) {
           charAllowed = true;
           dotAllowed = true;
           quoteAllowed = false;

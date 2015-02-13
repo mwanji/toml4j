@@ -16,23 +16,6 @@ class ValueConverters {
   
   static final ValueConverters CONVERTERS = new ValueConverters();
   
-  static boolean isComment(String line) {
-    if (line == null || line.isEmpty()) {
-      return true;
-    }
-
-    for (int i = 0; i < line.length(); i++) {
-      char c = line.charAt(i);
-      if (Character.isWhitespace(c)) {
-        continue;
-      }
-
-      return c == '#';
-    }
-
-    return false;
-  }
-
   Object convert(String value, AtomicInteger index, Context context) {
     String substring = value.substring(index.get());
     for (ValueConverter valueParser : PARSERS) {
