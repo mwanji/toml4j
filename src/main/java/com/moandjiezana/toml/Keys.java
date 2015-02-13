@@ -5,8 +5,6 @@ import java.util.List;
 
 class Keys {
   
-  private static final String ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_-.";
-  
   static class Key {
     final String name;
     final int index;
