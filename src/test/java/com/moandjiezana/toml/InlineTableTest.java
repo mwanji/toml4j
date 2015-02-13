@@ -12,11 +12,16 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class InlineTableTest {
 
   private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
+  
+  @Rule
+  public ExpectedException e = ExpectedException.none();
 
   @Test
   public void should_read_empty_inline_table() throws Exception {
@@ -124,5 +129,20 @@ public class InlineTableTest {
     assertEquals("ab]\"c", strings.getString("literal"));
     assertEquals("de]\"f", strings.getString("multiline"));
     assertEquals("gh]\"i", strings.getString("multiline_literal"));
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_invalid_key() throws Exception {
+    new Toml().parse("tbl = { a. = 1 }");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_when_unterminated() throws Exception {
+    new Toml().parse("tbl = { a = 1 ");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_invalid_value() throws Exception {
+    new Toml().parse("tbl = { a = abc }");
   }
 }

@@ -68,21 +68,12 @@ abstract class Container {
 
     @Override
     void put(String key, Object value) {
-      if (value instanceof Container.Table) {
-        values.add((Container.Table) value);
-        return;
-      }
-
-      getCurrent().put(key, value);
+      values.add((Container.Table) value);
     }
 
     @Override
     Object get(String key) {
-      if (values.isEmpty()) {
-        return null;
-      }
-
-      return getCurrent().get(key);
+      throw new UnsupportedOperationException();
     }
 
     List<Map<String, Object>> getValues() {

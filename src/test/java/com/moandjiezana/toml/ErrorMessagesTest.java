@@ -80,6 +80,13 @@ public class ErrorMessagesTest {
   }
   
   @Test
+  public void should_message_unterminated_inline_table() throws Exception {
+    e.expectMessage("Unterminated value on line 1: k = { a = \"abc\"");
+    
+    new Toml().parse("k = { a = \"abc\"");
+  }
+  
+  @Test
   public void should_message_key_without_equals() throws Exception {
     e.expectMessage("Key is not followed by an equals sign on line 2: k");
     

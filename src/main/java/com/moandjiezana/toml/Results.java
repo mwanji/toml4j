@@ -19,45 +19,23 @@ class Results {
     }
     
     void emptyImplicitTable(String table, int line) {
-      sb.append("Invalid table definition due to empty implicit table name: ");
-      if (!table.startsWith("[")) {
-        sb.append('[');
-      }
-      sb.append(table);
-      if (!table.endsWith("]")) {
-        sb.append(']');
-      }
-      sb.append("\n");
+      sb.append("Invalid table definition due to empty implicit table name: ")
+        .append(table)
+        .append("\n");
     }
     
     void invalidTable(String table, int line) {
       sb.append("Invalid table definition on line ")
         .append(line)
-        .append(": ");
-      if (!table.startsWith("[")) {
-        sb.append('[');
-      }
-      sb.append(table);
-      if (!table.endsWith("]")) {
-        sb.append(']');
-      }
-      sb.append("]\n");
+        .append(": ")
+        .append(table)
+        .append("]\n");
     }
     
     void duplicateKey(String key, int line) {
       sb.append("Duplicate key: ")
         .append(key)
         .append('\n');
-    }
-    
-    void invalidIdentifier(Identifier identifier, int line) {
-      if (identifier.isKey()) {
-        invalidKey(identifier.getName(), line);
-      } else if (identifier.isTable()) {
-        invalidTable(identifier.getName(), line);
-      } else if (identifier.isTableArray()) {
-        invalidTableArray(identifier.getName(), line);
-      }
     }
     
     void invalidTextAfterIdentifier(Identifier identifier, char text, int line) {
@@ -70,12 +48,9 @@ class Results {
     }
     
     void invalidKey(String key, int line) {
-      sb.append("Invalid key");
-      if (line > -1) {
-        sb.append(" on line ")
-          .append(line);
-      }
-      sb.append(": ")
+      sb.append("Invalid key on line ")
+        .append(line)
+        .append(": ")
         .append(key)
         .append('\n');
     }
@@ -100,10 +75,10 @@ class Results {
     
     void unterminatedKey(String key, int line) {
       sb.append("Key is not followed by an equals sign on line ")
-      .append(line)
-      .append(": ")
-      .append(key)
-      .append('\n');
+        .append(line)
+        .append(": ")
+        .append(key)
+        .append('\n');
     }
     
     void unterminated(String key, String value, int line) {
@@ -215,8 +190,7 @@ class Results {
     for (int i = 0; i < tableParts.length; i++) {
       String tablePart = tableParts[i].name;
       Container currentContainer = stack.peek();
-      if (tablePart.isEmpty()) {
-      } else if (currentContainer.get(tablePart) instanceof Container) {
+      if (currentContainer.get(tablePart) instanceof Container) {
         Container nextTable = (Container) currentContainer.get(tablePart);
         stack.push(nextTable);
         if (stack.peek() instanceof Container.TableArray) {

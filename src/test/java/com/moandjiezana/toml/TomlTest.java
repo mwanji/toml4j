@@ -169,8 +169,4 @@ public class TomlTest {
   public void should_fail_when_illegal_characters_after_table() throws Exception {
     new Toml().parse("[error]   if you didn't catch this, your parser is broken");
   }
-
-  private File file(String file) {
-    return new File(getClass().getResource(file + ".toml").getFile());
-  }
 }
