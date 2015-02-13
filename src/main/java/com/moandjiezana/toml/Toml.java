@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -28,6 +25,8 @@ import com.google.gson.JsonElement;
  * <p>All getters can fall back to default values if they have been provided as a constructor argument.
  * Getters for simple values (String, Date, etc.) will return null if no matching key exists.
  * {@link #getList(String)}, {@link #getTable(String)} and {@link #getTables(String)} return empty values if there is no matching key.</p>
+ * 
+ * <p>All parse methods throw an {@link IllegalStateException} if the TOML is incorrect.</p>
  *
  * <p>Example usage:</p>
  * <pre><code>
@@ -141,6 +140,11 @@ public class Toml {
     return (Long) get(key);
   }
 
+  /**
+   * @param key a TOML key
+   * @param <T> type of list items
+   * @return an empty {@link List} is the key is not found
+   */
   public <T> List<T> getList(String key) {
     @SuppressWarnings("unchecked")
     List<T> list = (List<T>) get(key);
@@ -175,7 +179,7 @@ public class Toml {
 
   /**
    * @param key Name of array of tables, not including square brackets.
-   * @return An empty List if no value is found for key.
+   * @return An empty {@link List} if no value is found for key.
    */
   @SuppressWarnings("unchecked")
   public List<Toml> getTables(String key) {
@@ -195,18 +199,24 @@ public class Toml {
   }
 
   /**
-   * <p>Populates an instance of targetClass with the values of this Toml instance.
-   * The target's field names must match keys or tables.
-   * Keys not present in targetClass will be ignored.</p>
+   * <p>
+   *  Populates an instance of targetClass with the values of this Toml instance.
+   *  The target's field names must match keys or tables.
+   *  Keys not present in targetClass will be ignored.
+   * </p>
    *
    * <p>Tables are recursively converted to custom classes or to {@link Map Map&lt;String, Object&gt;}.</p>
    *
    * <p>In addition to straight-forward conversion of TOML primitives, the following are also available:</p>
    *
    * <ul>
-   *  <li>TOML string to {@link Character}, {@link URL} or enum</li>
-   *  <li>TOML number to any primitive (or wrapper), {@link BigInteger} or {@link BigDecimal}</li>
-   *  <li>TOML array to {@link Set}</li>
+   *  <li>Integer -&gt; int, long (or wrapper), {@link java.math.BigInteger}</li>
+   *  <li>Float -&gt; float, double (or wrapper), {@link java.math.BigDecimal}</li>
+   *  <li>One-letter String -&gt; char, {@link Character}</li>
+   *  <li>String -&gt; {@link String}, enum, {@link java.net.URI}, {@link java.net.URL}</li>
+   *  <li>Multiline and Literal Strings -&gt; {@link String}</li>
+   *  <li>Array -&gt; {@link List}, {@link Set}, array. The generic type can be anything that can be converted.</li>
+   *  <li>Table -&gt; Custom class, {@link Map Map&lt;String, Object&gt;}</li>
    * </ul>
    *
    * @param targetClass Class to deserialize TOML to.
