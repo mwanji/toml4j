@@ -128,7 +128,11 @@ class Results {
     Container currentTable = stack.peek();
     
     if (value instanceof Map) {
-      startTable(key);
+      if (stack.size() == 1) {
+        startTables(Identifier.from(key, null));
+      } else {
+        startTable(key);
+      }
       @SuppressWarnings("unchecked")
       Map<String, Object> valueMap = (Map<String, Object>) value;
       for (Map.Entry<String, Object> entry : valueMap.entrySet()) {

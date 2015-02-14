@@ -115,11 +115,11 @@ public class InlineTableTest {
   
   @Test
   public void should_read_nested_inline_tables() throws Exception {
-    Toml tables = new Toml().parse("tables = { t1 = { t1_1 = 1, t1_2 = 2}, t2 = { t2_1 = \"a\"} }").getTable("tables");
+    Toml tables = new Toml().parse("tables = { t1 = { t1_1 = 1, t1_2 = 2}, t2 = { t2_1 = { t2_1_1 = \"a\" }} }").getTable("tables");
     
     assertEquals(1L, tables.getLong("t1.t1_1").longValue());
     assertEquals(2L, tables.getLong("t1.t1_2").longValue());
-    assertEquals("a", tables.getString("t2.t2_1"));
+    assertEquals("a", tables.getString("t2.t2_1.t2_1_1"));
   }
   
   @Test
@@ -136,6 +136,32 @@ public class InlineTableTest {
     Toml toml = new Toml().parse("[tbl]\n tbl = { tbl = 1 }");
     
     assertEquals(1, toml.getLong("tbl.tbl.tbl").intValue());
+  }
+  
+  @Test
+  public void should_mix_with_tables() throws Exception {
+    Toml toml = new Toml().parse("t = { k = 1 }\n  [b]\n  k = 2\n  t = { k = 3}");
+    
+    assertEquals(1, toml.getLong("t.k").intValue());
+    assertEquals(2, toml.getLong("b.k").intValue());
+    assertEquals(3, toml.getLong("b.t.k").intValue());
+  }
+  
+  @Test
+  public void should_add_properties_to_existing_inline_table() throws Exception {
+    Toml toml = new Toml().parse("[a]\n  b = {k = 1}\n  [a.b.c]\n k = 2");
+    
+    assertEquals(1, toml.getLong("a.b.k").intValue());
+    assertEquals(2, toml.getLong("a.b.c.k").intValue());
+  }
+  
+  @Test
+  public void should_mix_with_table_arrays() throws Exception {
+    Toml toml = new Toml().parse("t = { k = 1 }\n  [[b]]\n  t = { k = 2 }\n [[b]]\n  t = { k = 3 }");
+    
+    assertEquals(1, toml.getLong("t.k").intValue());
+    assertEquals(2, toml.getLong("b[0].t.k").intValue());
+    assertEquals(3, toml.getLong("b[1].t.k").intValue());
   }
   
   @Test(expected = IllegalStateException.class)
@@ -162,10 +188,42 @@ public class InlineTableTest {
   }
   
   @Test
-  public void should_fail_when_key_duplicated_by_other_key() throws Exception {
+  public void should_fail_when_duplicated_by_other_key() throws Exception {
     e.expect(IllegalStateException.class);
     e.expectMessage("Duplicate key: tbl");
     
     new Toml().parse("tbl = { a = 1 }\n tbl = 1");
+  }
+  
+  @Test
+  public void should_fail_when_duplicated_by_other_inline_table() throws Exception {
+    e.expect(IllegalStateException.class);
+    e.expectMessage("Duplicate table definition: [tbl]");
+    
+    new Toml().parse("tbl = { a = 1 }\n tbl = {}");
+  }
+  
+  @Test
+  public void should_fail_when_duplicated_by_top_level_table() throws Exception {
+    e.expect(IllegalStateException.class);
+    e.expectMessage("Duplicate table definition: [tbl]");
+    
+    new Toml().parse("tbl = {}\n [tbl]");
+  }
+  
+  @Test
+  public void should_fail_when_duplicates_second_level_table() throws Exception {
+    e.expect(IllegalStateException.class);
+    e.expectMessage("Duplicate key: b");
+    
+    new Toml().parse("[a.b]\n  [a]\n b = {}");
+  }
+  
+  @Test
+  public void should_fail_when_inline_table_duplicates_table() throws Exception {
+    e.expect(IllegalStateException.class);
+    e.expectMessage("Duplicate key: b");
+    
+    new Toml().parse("[a.b]\n [a]\n b = {}");
   }
 }
