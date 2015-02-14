@@ -22,6 +22,10 @@ class TomlParser {
     for (int i = index.get(); i < tomlString.length(); i = index.incrementAndGet()) {
       char c = tomlString.charAt(i);
       
+      if (results.errors.hasErrors()) {
+        break;
+      }
+
       if (c == '#' && !inComment) {
         inComment = true;
       } else if (!Character.isWhitespace(c) && !inComment && identifier == null) {

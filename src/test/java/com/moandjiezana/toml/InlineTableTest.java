@@ -131,6 +131,13 @@ public class InlineTableTest {
     assertEquals("gh]\"i", strings.getString("multiline_literal"));
   }
   
+  @Test
+  public void should_read_inline_table_in_regular_table() throws Exception {
+    Toml toml = new Toml().parse("[tbl]\n tbl = { tbl = 1 }");
+    
+    assertEquals(1, toml.getLong("tbl.tbl.tbl").intValue());
+  }
+  
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_invalid_key() throws Exception {
     new Toml().parse("tbl = { a. = 1 }");
@@ -144,5 +151,21 @@ public class InlineTableTest {
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_invalid_value() throws Exception {
     new Toml().parse("tbl = { a = abc }");
+  }
+  
+  @Test
+  public void should_fail_when_key_duplicated_inside_inline_table() throws Exception {
+    e.expect(IllegalStateException.class);
+    e.expectMessage("Duplicate key on line 1: a");
+    
+    new Toml().parse("tbl = { a = 1, a = 2 }");
+  }
+  
+  @Test
+  public void should_fail_when_key_duplicated_by_other_key() throws Exception {
+    e.expect(IllegalStateException.class);
+    e.expectMessage("Duplicate key: tbl");
+    
+    new Toml().parse("tbl = { a = 1 }\n tbl = 1");
   }
 }

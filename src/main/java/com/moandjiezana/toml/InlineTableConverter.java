@@ -37,7 +37,14 @@ class InlineTableConverter implements ValueConverter {
           return errors;
         }
         
-        results.put(currentKey.toString().trim(), converted);
+        String currentKeyTrimmed = currentKey.toString().trim();
+        Object previous = results.put(currentKeyTrimmed, converted);
+        
+        if (previous != null) {
+          errors.duplicateKey(currentKeyTrimmed, context.line.get());
+          return errors;
+        }
+        
         currentKey = new StringBuilder();
         inValue = false;
       } else if (c == ',') {
