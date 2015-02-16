@@ -1,9 +1,7 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,47 +12,73 @@ class DateConverter implements ValueConverter {
 
   @Override
   public boolean canConvert(String s) {
-    Matcher matcher = DATE_REGEX.matcher(s);
+    if (s.length() < 5) {
+      return false;
+    }
+    
+    for (int i = 0; i < 5; i++) {
+      char c = s.charAt(i);
+      
+      if (i < 4) {
+        if (!Character.isDigit(c)) {
+          return false;
+        }
+      } else if (c != '-') {
+        return false;
+      }
+    }
 
-    return matcher.matches() && ValueConverterUtils.isComment(matcher.group(4));
+    return true;
   }
 
   @Override
-  public Object convert(String s) {
+  public Object convert(String original, AtomicInteger index, Context context) {
+    StringBuilder sb = new StringBuilder();
+    
+    for (int i = index.get(); i < original.length(); i = index.incrementAndGet()) {
+      char c = original.charAt(i);
+      if (Character.isDigit(c) || c == '-' || c == ':' || c == '.' || c == 'T' || c == 'Z') {
+        sb.append(c);
+      } else {
+        index.decrementAndGet();
+        break;
+      }
+    }
+    
+    String s = sb.toString();
     Matcher matcher = DATE_REGEX.matcher(s);
-    matcher.matches();
-    s = matcher.group(1);
+    
+    if (!matcher.matches()) {
+      Results.Errors errors = new Results.Errors();
+      errors.invalidValue(context.identifier.getName(), s, context.line.get());
+      return errors;
+    }
+    
+    String dateString = matcher.group(1);
     String zone = matcher.group(3);
     String fractionalSeconds = matcher.group(2);
     String format = "yyyy-MM-dd'T'HH:mm:ss";
     if (fractionalSeconds != null && !fractionalSeconds.isEmpty()) {
       format += ".SSS";
-      s += fractionalSeconds;
+      dateString += fractionalSeconds;
     }
     format += "Z";
     if ("Z".equals(zone)) {
-      s += "+0000";
-//      s = s.substring(0, 22) + s.substring(23);
+      dateString += "+0000";
     } else if (zone.contains(":")) {
-      s += zone.replace(":", "");
+      dateString += zone.replace(":", "");
     }
+
     try {
       SimpleDateFormat dateFormat = new SimpleDateFormat(format);
       dateFormat.setLenient(false);
-      return dateFormat.parse(s);
+      return dateFormat.parse(dateString);
     } catch (Exception e) {
-      return INVALID;
+      Results.Errors errors = new Results.Errors();
+      errors.invalidValue(context.identifier.getName(), s, context.line.get());
+      return errors;
     }
   }
   
   private DateConverter() {}
-  
-  public static void main(String[] args) throws ParseException {
-    Pattern DATE_REGEX = Pattern.compile("(\\d{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](?:\\.\\d*)?)(Z|(?:[+\\-]\\d{2}:\\d{2}))(.*)");
-    Pattern DATE_REGEX2 = Pattern.compile("(\\d{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9])(Z|(?:[+\\-]\\d{2}:\\d{2}))");
-    
-    System.out.println(DATE_REGEX.matcher("2011-11-11T12:32:00.999-07:00").matches());
-    
-    System.out.println(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").parse("1979-05-27T00:32:00+0000"));
-  }
 }

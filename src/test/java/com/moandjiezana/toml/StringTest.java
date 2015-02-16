@@ -69,7 +69,7 @@ public class StringTest {
   public void should_support_special_characters_in_strings() {
     Toml toml = new Toml().parse(new File(getClass().getResource("should_support_special_characters_in_strings.toml").getFile()));
 
-    assertEquals("\" \t \n \r \\ / \b \f", toml.getString("key"));
+    assertEquals("\" \t \n \r \\ \b \f", toml.getString("key"));
   }
 
   @Test
@@ -86,6 +86,11 @@ public class StringTest {
   }
 
   @Test(expected = IllegalStateException.class)
+  public void should_fail_on_escaped_slash() throws Exception {
+    new Toml().parse("key=\"\\/\"");
+  }
+
+  @Test(expected = IllegalStateException.class)
   public void should_fail_on_text_after_literal_string() {
     new Toml().parse("a = ' ' jdkf");
   }
@@ -96,8 +101,13 @@ public class StringTest {
   }
   
   @Test(expected = IllegalStateException.class)
-  public void should_fail_on_unterminated_multiline_literal_string() throws Exception {
+  public void should_fail_on_multiline_literal_string_with_malformed_comment() throws Exception {
     new Toml().parse("a = '''some\n text\n''\nb = '''1'''");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_unterminated_multiline_literal_string() throws Exception {
+    new Toml().parse("a = '''some\n text\n''");
   }
   
   @Test(expected = IllegalStateException.class)

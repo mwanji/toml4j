@@ -1,5 +1,23 @@
 # toml4j Changelog
 
+## 0.4.0
+
+### Changed
+
+* __BREAKING:__ Toml#getList(String) replaced Toml#getList(String, Class) 
+* Dropped dependency on Parboiled and its significant transitive dependencies
+
+### Added
+
+* Support for [TOML 0.4.0](https://github.com/toml-lang/toml/blob/master/versions/en/toml-v0.4.0.md)
+* Toml#isEmpty()
+* Line numbers included in error messages
+
+### Fixed
+
+* Short-form Unicode escape handling
+* Exponent handling
+
 ## 0.3.1 / 2014-12-16
 * Support for [TOML 0.3.1](https://github.com/toml-lang/toml/tree/v0.3.1) spec
 * Pass TOML validator (https://github.com/BurntSushi/toml-test), which uncovered many bugs.

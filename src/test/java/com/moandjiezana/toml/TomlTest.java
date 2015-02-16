@@ -1,17 +1,16 @@
 package com.moandjiezana.toml;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Calendar;
-import java.util.Map;
 import java.util.TimeZone;
 
-import org.fest.reflect.core.Reflection;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -60,6 +59,17 @@ public class TomlTest {
     assertEquals(2, toml.getLong("a.d").intValue());
     assertEquals(1, toml.getTable("a.b").getLong("c").intValue());
   }
+  
+  @Test
+  public void should_handle_navigation_to_missing_value() throws Exception {
+    Toml toml = new Toml();
+    
+    assertNull(toml.getString("a.b"));
+    assertNull(toml.getString("a.b[0].c"));
+    assertThat(toml.getList("a.b"), hasSize(0));
+    assertTrue(toml.getTable("a.b").isEmpty());
+    assertTrue(toml.getTable("a.b[0]").isEmpty());
+  }
 
   @Test
   public void should_return_null_if_no_value_for_key() throws Exception {
@@ -72,7 +82,7 @@ public class TomlTest {
   public void should_return_empty_list_if_no_value_for_key() throws Exception {
     Toml toml = new Toml().parse("");
 
-    assertTrue(toml.getList("a", String.class).isEmpty());
+    assertTrue(toml.<String>getList("a").isEmpty());
   }
 
   @Test
@@ -83,82 +93,10 @@ public class TomlTest {
   }
 
   @Test
-  public void should_return_empty_toml_when_no_value_for_table() throws Exception {
-    Toml toml = new Toml().parse("[a]").getTable("b");
-
-    assertTrue(Reflection.field("values").ofType(Map.class).in(toml).get().isEmpty());
-    assertNull(toml.getString("x"));
-  }
-
-  @Test
   public void should_load_from_file() throws Exception {
     Toml toml = new Toml().parse(new File(getClass().getResource("should_load_from_file.toml").getFile()));
 
     assertEquals("value", toml.getString("key"));
-  }
-
-  @Test
-  public void should_support_numbers_in_key_names() throws Exception {
-    Toml toml = new Toml().parse("a1 = 1");
-
-    assertEquals(1, toml.getLong("a1").intValue());
-  }
-
-  @Test
-  public void should_support_numbers_in_table_names() throws Exception {
-    Toml toml = new Toml().parse("[group1]\na = 1");
-
-    assertEquals(1, toml.getLong("group1.a").intValue());
-  }
-
-  @Test
-  public void should_support_underscores_in_key_names() throws Exception {
-    Toml toml = new Toml().parse("a_a = 1");
-
-    assertEquals(1, toml.getLong("a_a").intValue());
-  }
-
-  @Test
-  public void should_support_question_marks_in_key_names() throws Exception {
-    Toml toml = new Toml().parse("key?=true");
-
-    assertTrue(toml.getBoolean("key?"));
-  }
-  
-  @Test
-  public void should_support_dots_in_key_names() throws Exception {
-    Toml toml = new Toml().parse(file("should_support_dots_in_key_names"));
-    
-    assertEquals(1, toml.getLong("a").intValue());
-    assertEquals(2, toml.getLong("b.c").intValue());
-    assertEquals(3, toml.getTable("b").getLong("c").intValue());
-    assertEquals(4, toml.getLong("b.a.b").intValue());
-    assertEquals(5, toml.getLong("d.e.a").intValue());
-    assertEquals(6, toml.getLong("d.e.a.b.c").intValue());
-    assertEquals(6, toml.getTable("d.e").getLong("a.b.c").intValue());
-    assertEquals(7, toml.getTables("f").get(0).getLong("a.b").intValue());
-    assertEquals(8, toml.getLong("f[1].a.b").intValue());
-  }
-
-  @Test
-  public void should_support_underscores_in_table_names() throws Exception {
-    Toml toml = new Toml().parse("[group_a]\na = 1");
-
-    assertEquals(1, toml.getLong("group_a.a").intValue());
-  }
-
-  @Test
-  public void should_support_sharp_sign_in_table_names() throws Exception {
-    Toml toml = new Toml().parse("[group#]\nkey=1");
-
-    assertEquals(1, toml.getLong("group#.key").intValue());
-  }
-  
-  @Test
-  public void should_support_spaces_in_table_names() throws Exception {
-    Toml toml = new Toml().parse("[valid  key]");
-    
-    assertNotNull(toml.getTable("valid  key"));
   }
 
   @Test
@@ -180,7 +118,7 @@ public class TomlTest {
     cal.set(Calendar.MILLISECOND, 0);
     cal.setTimeZone(TimeZone.getTimeZone("UTC"));
     assertEquals(cal.getTime(), toml.getDate("d"));
-    assertThat(toml.getList("e", String.class), Matchers.contains("a", "b"));
+    assertThat(toml.<String>getList("e"), Matchers.contains("a", "b"));
     assertTrue(toml.getBoolean("f"));
     assertEquals("abc", toml.getString("g"));
     assertEquals("abc", toml.getString("h"));
@@ -188,6 +126,15 @@ public class TomlTest {
     assertEquals("abc\nabc", toml.getString("j"));
   }
   
+  @Test
+  public void should_be_empty_if_no_values() throws Exception {
+    assertTrue(new Toml().isEmpty());
+    Toml toml = new Toml().parse("[a]");
+    assertTrue(toml.getTable("a").isEmpty());
+    assertTrue(toml.getTable("b").isEmpty());
+    assertFalse(toml.isEmpty());
+  }
+
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_empty_key_name() throws Exception {
     new Toml().parse(" = 1");
@@ -221,29 +168,5 @@ public class TomlTest {
   @Test(expected = IllegalStateException.class)
   public void should_fail_when_illegal_characters_after_table() throws Exception {
     new Toml().parse("[error]   if you didn't catch this, your parser is broken");
-  }
-  
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_empty_table_name() {
-    new Toml().parse("[]");
-  }
-  
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_compound_table_name_ending_with_empty_table_name() {
-    new Toml().parse("[a.]");
-  }
-  
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_compound_table_name_containing_empty_table_name() {
-    new Toml().parse("[a..b]");
-  }
-  
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_compound_table_name_starting_with_empty_table_name() {
-    new Toml().parse("[.b]");
-  }
-
-  private File file(String file) {
-    return new File(getClass().getResource(file + ".toml").getFile());
   }
 }

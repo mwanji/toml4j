@@ -13,6 +13,15 @@ abstract class Container {
 
   static class Table extends Container {
     private final Map<String, Object> values = new HashMap<String, Object>();
+    final String name;
+
+    Table() {
+      this.name = null;
+    }
+    
+    public Table(String name) {
+      this.name = name;
+    }
 
     @Override
     boolean accepts(String key) {
@@ -68,21 +77,12 @@ abstract class Container {
 
     @Override
     void put(String key, Object value) {
-      if (value instanceof Container.Table) {
-        values.add((Container.Table) value);
-        return;
-      }
-
-      getCurrent().put(key, value);
+      values.add((Container.Table) value);
     }
 
     @Override
     Object get(String key) {
-      if (values.isEmpty()) {
-        return null;
-      }
-
-      return getCurrent().get(key);
+      throw new UnsupportedOperationException();
     }
 
     List<Map<String, Object>> getValues() {

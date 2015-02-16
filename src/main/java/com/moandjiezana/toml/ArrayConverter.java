@@ -1,18 +1,14 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
-import static com.moandjiezana.toml.ValueConverterUtils.parse;
-import static com.moandjiezana.toml.ValueConverterUtils.parser;
+import static com.moandjiezana.toml.ValueConverters.CONVERTERS;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 class ArrayConverter implements ValueConverter {
 
   static final ArrayConverter ARRAY_PARSER = new ArrayConverter();
-
-  private static final List<Object> INVALID_ARRAY = new ArrayList<Object>();
-  private static final ValueConverters VALUE_ANALYSIS = new ValueConverters();
 
   @Override
   public boolean canConvert(String s) {
@@ -20,48 +16,65 @@ class ArrayConverter implements ValueConverter {
   }
 
   @Override
-  public Object convert(String s) {
-    List<Object> tokens = parse(parser().Array(), s);
-    List<Object> values = convertList(tokens);
+  public Object convert(String s, AtomicInteger index, Context context) {
+    AtomicInteger line = context.line;
+    int startLine = line.get();
+    int startIndex = index.get();
+    List<Object> arrayItems = new ArrayList<Object>();
+    boolean terminated = false;
+    boolean inComment = false;
+    Results.Errors errors = new Results.Errors();
+    
+    for (int i = index.incrementAndGet(); i < s.length(); i = index.incrementAndGet()) {
 
-    if (values == INVALID_ARRAY) {
-      return INVALID;
-    }
-
-    return values;
-  }
-
-  private List<Object> convertList(List<Object> tokens) {
-    ArrayList<Object> nestedList = new ArrayList<Object>();
-
-    for (Object token : tokens) {
-      if (token instanceof String) {
-        Object converted = VALUE_ANALYSIS.convert(((String) token).trim());
-        if (converted == INVALID) {
-          return INVALID_ARRAY;
-        }
-        if (isHomogenousArray(converted, nestedList)) {
-          nestedList.add(converted);
+      char c = s.charAt(i);
+      
+      if (c == '#' && !inComment) {
+        inComment = true;
+      } else if (c == '\n') {
+        inComment = false;
+        line.incrementAndGet();
+      } else if (inComment || Character.isWhitespace(c) || c == ',') {
+        continue;
+      } else if (c == '[') {
+        Object converted = convert(s, index, context);
+        if (converted instanceof Results.Errors) {
+          errors.add((Results.Errors) converted);
+        } else if (!isHomogenousArray(converted, arrayItems)) {
+          errors.heterogenous(context.identifier.getName(), line.get());
         } else {
-          return INVALID_ARRAY;
+          arrayItems.add(converted);
         }
-      } else if (token instanceof List) {
-        @SuppressWarnings("unchecked")
-        List<Object> convertedList = convertList((List<Object>) token);
-        if (convertedList != INVALID_ARRAY && isHomogenousArray(convertedList, nestedList)) {
-          nestedList.add(convertedList);
+        continue;
+      } else if (c == ']') {
+        terminated = true;
+        break;
+      } else {
+        Object converted = CONVERTERS.convert(s, index, context);
+        if (converted instanceof Results.Errors) {
+          errors.add((Results.Errors) converted);
+        } else if (!isHomogenousArray(converted, arrayItems)) {
+          errors.heterogenous(context.identifier.getName(), line.get());
         } else {
-          return INVALID_ARRAY;
+          arrayItems.add(converted);
         }
       }
     }
-
-    return nestedList;
+    
+    if (!terminated) {
+      errors.unterminated(context.identifier.getName(), s.substring(startIndex, s.length()), startLine);
+    }
+    
+    if (errors.hasErrors()) {
+      return errors;
+    }
+    
+    return arrayItems;
   }
 
   private boolean isHomogenousArray(Object o, List<?> values) {
     return values.isEmpty() || values.get(0).getClass().isAssignableFrom(o.getClass()) || o.getClass().isAssignableFrom(values.get(0).getClass());
   }
-
+  
   private ArrayConverter() {}
 }

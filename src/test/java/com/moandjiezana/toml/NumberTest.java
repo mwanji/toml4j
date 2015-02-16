@@ -51,14 +51,14 @@ public class NumberTest {
   public void should_get_exponent() throws Exception {
     Toml toml = new Toml().parse("lower_case = 1e6\nupper_case = 2E6\nwith_plus = 5e+22\nboth_plus = +5E+22\nnegative = -2E-2\nfractional = 6.626e-34");
 
-    assertEquals(Math.pow(1, 6), toml.getDouble("lower_case"), 0.0);
-    assertEquals(Math.pow(2, 6), toml.getDouble("upper_case"), 0.0);
-    assertEquals(Math.pow(5, 22), toml.getDouble("with_plus"), 0.0);
-    assertEquals(Math.pow(5, 22), toml.getDouble("both_plus"), 0.0);
-    assertEquals(Math.pow(-2, -2), toml.getDouble("negative"), 0.0);
-    assertEquals(Math.pow(6.626D, -34), toml.getDouble("fractional"), 0.0);
+    assertEquals(1e6, toml.getDouble("lower_case"), 0.0);
+    assertEquals(2E6, toml.getDouble("upper_case"), 0.0);
+    assertEquals(5e22, toml.getDouble("with_plus"), 0.0);
+    assertEquals(5e22, toml.getDouble("both_plus"), 0.0);
+    assertEquals(-2e-2, toml.getDouble("negative"), 0.0);
+    assertEquals(6.626D * Math.pow(10, -34), toml.getDouble("fractional"), 0.0);
   }
-
+  
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_invalid_number() throws Exception {
     new Toml().parse("a = 200-");
@@ -85,6 +85,12 @@ public class NumberTest {
   }
   
   @Test(expected = IllegalStateException.class)
+  public void should_fail_on_float_with_sign_after_dot() {
+    new Toml().parse("answer = 1.-1");
+    new Toml().parse("answer = 1.+1");
+  }
+  
+  @Test(expected = IllegalStateException.class)
   public void should_fail_on_float_without_digits_after_dot() {
     new Toml().parse("answer = 1.");
   }
@@ -92,5 +98,35 @@ public class NumberTest {
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_negative_float_without_digits_after_dot() {
     new Toml().parse("answer = -1.");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_exponent_without_digits_after_dot() {
+    new Toml().parse("answer = 1.E1");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_negative_exponent_without_digits_after_dot() {
+    new Toml().parse("answer = -1.E1");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_exponent_with_dot_in_exponent_part() {
+    new Toml().parse("answer = -1E1.0");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_exponent_without_numbers_after_E() {
+    new Toml().parse("answer = -1E");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_exponent_with_two_E() {
+    new Toml().parse("answer = -1E1E1");
+  }
+  
+  @Test(expected = IllegalStateException.class)
+  public void should_fail_on_float_with_two_dots() {
+    new Toml().parse("answer = 1.1.1");
   }
 }

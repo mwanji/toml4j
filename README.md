@@ -1,8 +1,8 @@
 # toml4j
 
-toml4j is a [TOML 0.3.1](https://github.com/toml-lang/toml/tree/v0.3.1) parser for Java.
+toml4j is a [TOML 0.4.0](https://github.com/toml-lang/toml/blob/master/versions/en/toml-v0.4.0.md) parser for Java.
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.moandjiezana.toml/toml4j.svg)](https://search.maven.org/#search|gav|1|g%3A%22com.moandjiezana.toml%22%20AND%20a%3A%22toml4j%22) [![Build Status](https://img.shields.io/travis/mwanji/toml4j.svg)](https://travis-ci.org/mwanji/toml4j) [![Coverage Status](https://img.shields.io/coveralls/mwanji/toml4j.svg)](https://coveralls.io/r/mwanji/toml4j)
+[![Maven Central](https://img.shields.io/maven-central/v/com.moandjiezana.toml/toml4j.svg)](https://search.maven.org/#search|gav|1|g%3A%22com.moandjiezana.toml%22%20AND%20a%3A%22toml4j%22) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Build Status](https://img.shields.io/travis/mwanji/toml4j/wip.svg)](https://travis-ci.org/mwanji/toml4j) [![Coverage Status](https://img.shields.io/coveralls/mwanji/toml4j.svg)](https://coveralls.io/r/mwanji/toml4j)
 
 For the bleeding-edge version integrating the latest specs, see the [work-in-progress branch](https://github.com/mwanji/toml4j/tree/wip).
 
@@ -14,7 +14,7 @@ Add the following dependency to your POM (or equivalent for other dependency man
 <dependency>
   <groupId>com.moandjiezana.toml</groupId>
   <artifactId>toml4j</artifactId>
-  <version>0.3.1</version>
+  <version>0.4.0</version>
 </dependency>
 ```
 
@@ -51,6 +51,9 @@ name = "Mwanji Ezana"
 [address]
   street = "123 A Street"
   city = "AnyVille"
+  
+[contacts]
+  "email address" = me@example.com
 ```
 
 ```java
@@ -62,6 +65,7 @@ class Address {
 class User {
   String name;
   Address address;
+  Map<String, Object> contacts;
 }
 ```
 
@@ -70,18 +74,24 @@ User user = new Toml().parse(tomlFile).to(User.class);
 
 assert user.name.equals("Mwanji Ezana");
 assert user.address.street.equals("123 A Street");
+assert user.contacts.get("\"email address\"").equals("me@example.com");
 ```
 
 Any keys not found in both the TOML and the class are ignored. Fields may be private.
 
-All TOML primitives can be mapped, as well as a number of Java-specific types:
+Quoted keys cannot be mapped directly to a Java object, but they can be used as keys within a `Map`.
 
-* A TOML Number can be converted to any primitive type (or the wrapper equivalent), `BigInteger` or `BigDecimal`
-* A TOML string can be converted to a `String`, enum, `java.net.URI` or `java.net.URL`
-* A single-letter TOML string can be converted to a `char` or `Character`
-* Multiline and literal TOML strings can be converted to `String`
-* A TOML array can be converted to a `List`, `Set` or array. The generic type can be anything that can be converted.
-* A TOML table can be converted to a custom class or to a `Map<String, Object>`. The generic type of the value can be anything that can be converted.
+TOML primitives can be mapped to a number of Java types:
+
+TOML | Java
+---- | ----
+Integer | `int`, `long` (or wrapper), `java.math.BigInteger`
+Float | `float`, `double` (or wrapper), `java.math.BigDecimal`
+String | `String`, enum, `java.net.URI`, `java.net.URL`
+One-letter String | `char`, `Character`
+Multiline and Literal Strings | `String`
+Array | `List`, `Set`, array. The generic type can be anything that can be converted.
+Table | Custom class, `Map<String, Object>`
 
 Custom classes, Maps and collections thereof can be nested to any level. See [TomlToClassTest#should_convert_fruit_table_array()](src/test/java/com/moandjiezana/toml/TomlToClassTest.java) for an example.
 
@@ -94,7 +104,7 @@ Use the getters to retrieve the data:
 * `getBoolean(String)`
 * `getLong(String)`
 * `getDouble(String)`
-* `getList(String, Class<T>)`
+* `getList(String)`
 * `getTable(String)` returns a new Toml instance containing only the keys in that table.
 * `getTables(String)`, for table arrays, returns `List<Toml>`. 
 
@@ -102,8 +112,11 @@ You can also navigate values within a table with a compound key of the form `tab
 
 Non-existent keys return null.
 
+When retrieving quoted keys, the quotes must be used and the key must be spelled exactly the same way, including quotes and whitespace. The only exceptions are Unicode escapes: `"\u00B1" = "value"` would be retrieved with `toml.getString("\"±\"")`.
+
 ```toml
 title = "TOML Example"
+"sub title" = "Now with quoted keys"
 
 [database]
   ports = [ 8001, 8001, 8002 ]
@@ -136,8 +149,9 @@ title = "TOML Example"
 Toml toml = new Toml().parse(getTomlFile());
 
 String title = toml.getString("title");
+String subTitle = toml.getString("\"sub title\"");
 Boolean enabled = toml.getBoolean("database.enabled");
-List<Long> ports = toml.getList("database.ports", Long.class);
+List<Long> ports = toml.getList("database.ports");
 String password = toml.getString("database.credentials.password");
 
 Toml servers = toml.getTable("servers");
@@ -192,4 +206,4 @@ Date precision is limited to milliseconds.
 
 ## License
 
-toml4j is copyright of Moandji Ezana and is licensed under the [MIT License](LICENSE)
+toml4j is copyright (c) 2013-2015 Moandji Ezana and is licensed under the [MIT License](LICENSE)

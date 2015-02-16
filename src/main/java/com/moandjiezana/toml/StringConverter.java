@@ -1,15 +1,13 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
-import static com.moandjiezana.toml.ValueConverterUtils.isComment;
-
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class StringConverter implements ValueConverter {
   
   static final StringConverter STRING_PARSER = new StringConverter();
-  private static final Pattern UNICODE_REGEX = Pattern.compile("\\\\[uU](.*)");
+  private static final Pattern UNICODE_REGEX = Pattern.compile("\\\\[uU](.{4})");
 
   @Override
   public boolean canConvert(String s) {
@@ -17,43 +15,38 @@ class StringConverter implements ValueConverter {
   }
 
   @Override
-  public Object convert(String value) {
-    int stringTerminator = -1;
-    char[] chars = value.toCharArray();
+  public Object convert(String s, AtomicInteger index, Context context) {
+    int startIndex = index.incrementAndGet();
+    int endIndex = -1;
 
-    for (int i = 1; i < chars.length; i++) {
-      char ch = chars[i];
-      if (ch == '"' && chars[i - 1] != '\\') {
-        stringTerminator = i;
+    for (int i = index.get(); i < s.length(); i = index.incrementAndGet()) {
+      char ch = s.charAt(i);
+      if (ch == '"' && s.charAt(i - 1) != '\\') {
+        endIndex = i;
         break;
       }
     }
 
-    if (stringTerminator == -1 || !isComment(value.substring(stringTerminator + 1))) {
-      return INVALID;
+    if (endIndex == -1) {
+      Results.Errors errors = new Results.Errors();
+      errors.unterminated(context.identifier.getName(), s.substring(startIndex - 1), context.line.get());
+      return errors;
     }
     
-    value = value.substring(1, stringTerminator);
-    value = replaceUnicodeCharacters(value);
-
-    chars = value.toCharArray();
-    for (int i = 0; i < chars.length - 1; i++) {
-      char ch = chars[i];
-      char next = chars[i + 1];
-
-      if (ch == '\\' && next == '\\') {
-        i++;
-      } else if (ch == '\\' && !(next == 'b' || next == 'f' || next == 'n' || next == 't' || next == 'r' || next == '"' || next == '/' || next == '\\')) {
-        return INVALID;
-      }
+    String raw = s.substring(startIndex, endIndex);
+    s = replaceUnicodeCharacters(raw);
+    s = replaceSpecialCharacters(s);
+    
+    if (s == null) {
+      Results.Errors errors = new Results.Errors();
+      errors.invalidValue(context.identifier.getName(), raw, context.line.get());
+      return errors;
     }
 
-    value = replaceSpecialCharacters(value);
-
-    return value;
+    return s;
   }
 
-  private String replaceUnicodeCharacters(String value) {
+  String replaceUnicodeCharacters(String value) {
     Matcher unicodeMatcher = UNICODE_REGEX.matcher(value);
 
     while (unicodeMatcher.find()) {
@@ -62,8 +55,19 @@ class StringConverter implements ValueConverter {
     return value;
   }
 
-  private String replaceSpecialCharacters(String value) {
-    return value.replace("\\n", "\n")
+  String replaceSpecialCharacters(String s) {
+    for (int i = 0; i < s.length() - 1; i++) {
+      char ch = s.charAt(i);
+      char next = s.charAt(i + 1);
+
+      if (ch == '\\' && next == '\\') {
+        i++;
+      } else if (ch == '\\' && !(next == 'b' || next == 'f' || next == 'n' || next == 't' || next == 'r' || next == '"' || next == '\\')) {
+        return null;
+      }
+    }
+
+    return s.replace("\\n", "\n")
       .replace("\\\"", "\"")
       .replace("\\t", "\t")
       .replace("\\r", "\r")

@@ -1,30 +1,9 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueConverterUtils.INVALID;
-import static com.moandjiezana.toml.ValueConverterUtils.parse;
-import static com.moandjiezana.toml.ValueConverterUtils.parser;
-
-import java.util.List;
-
-import org.parboiled.errors.ParseError;
-import org.parboiled.parserunners.RecoveringParseRunner;
-import org.parboiled.support.ParseTreeUtils;
-import org.parboiled.support.ParsingResult;
+import java.util.concurrent.atomic.AtomicInteger;
 
 class MultilineLiteralStringConverter implements ValueConverter {
   
-  public static void main(String[] args) {
-    ParsingResult<List<java.lang.String>> parsingResult = new RecoveringParseRunner<List<String>>(ValueConverterUtils.parser().MultilineLiteralString()).run("'''abc''' # comment");
-    
-    if (parsingResult.hasErrors()) {
-      for (ParseError parseError : parsingResult.parseErrors) {
-        System.out.println(parseError.getInputBuffer().extract(0, 1000));
-      }
-    }
-    
-    System.out.println(ParseTreeUtils.printNodeTree(parsingResult));
-  }
-
   static final MultilineLiteralStringConverter MULTILINE_LITERAL_STRING_CONVERTER = new MultilineLiteralStringConverter(); 
   
   @Override
@@ -33,14 +12,39 @@ class MultilineLiteralStringConverter implements ValueConverter {
   }
 
   @Override
-  public Object convert(String s) {
-    List<String> result = parse(parser().MultilineLiteralString(), s);
+  public Object convert(String s, AtomicInteger index, Context context) {
+    AtomicInteger line = context.line;
+    int startLine = line.get();
+    int originalStartIndex = index.get();
+    int startIndex = index.addAndGet(3);
+    int endIndex = -1;
     
-    if (result == null) {
-      return INVALID;
+    if (s.charAt(startIndex) == '\n') {
+      startIndex = index.incrementAndGet();
+      line.incrementAndGet();
     }
     
-    return result.get(0);
+    for (int i = startIndex; i < s.length(); i = index.incrementAndGet()) {
+      char c = s.charAt(i);
+
+      if (c == '\n') {
+        line.incrementAndGet();
+      }
+      
+      if (c == '\'' && s.length() > i + 2 && s.charAt(i + 1) == '\'' && s.charAt(i + 2) == '\'') {
+        endIndex = i;
+        index.addAndGet(2);
+        break;
+      }
+    }
+    
+    if (endIndex == -1) {
+      Results.Errors errors = new Results.Errors();
+      errors.unterminated(context.identifier.getName(), s.substring(originalStartIndex), startLine);
+      return errors;
+    }
+
+    return s.substring(startIndex, endIndex);
   }
 
   private MultilineLiteralStringConverter() {}
