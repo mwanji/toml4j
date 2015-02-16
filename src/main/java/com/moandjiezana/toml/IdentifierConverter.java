@@ -20,6 +20,7 @@ class IdentifierConverter {
         quoted = !quoted;
         name.append('"');
       } else if (c == '\n') {
+        index.decrementAndGet();
         break;
       } else if (quoted) {
         name.append(c);

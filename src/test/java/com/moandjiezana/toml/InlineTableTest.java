@@ -190,7 +190,7 @@ public class InlineTableTest {
   @Test
   public void should_fail_when_duplicated_by_other_key() throws Exception {
     e.expect(IllegalStateException.class);
-    e.expectMessage("Duplicate key: tbl");
+    e.expectMessage("Duplicate key on line 2: tbl");
     
     new Toml().parse("tbl = { a = 1 }\n tbl = 1");
   }
@@ -198,7 +198,7 @@ public class InlineTableTest {
   @Test
   public void should_fail_when_duplicated_by_other_inline_table() throws Exception {
     e.expect(IllegalStateException.class);
-    e.expectMessage("Duplicate table definition: [tbl]");
+    e.expectMessage("Duplicate table definition on line 2: [tbl]");
     
     new Toml().parse("tbl = { a = 1 }\n tbl = {}");
   }
@@ -206,7 +206,7 @@ public class InlineTableTest {
   @Test
   public void should_fail_when_duplicated_by_top_level_table() throws Exception {
     e.expect(IllegalStateException.class);
-    e.expectMessage("Duplicate table definition: [tbl]");
+    e.expectMessage("Duplicate table definition on line 2: [tbl]");
     
     new Toml().parse("tbl = {}\n [tbl]");
   }
@@ -214,7 +214,7 @@ public class InlineTableTest {
   @Test
   public void should_fail_when_duplicates_second_level_table() throws Exception {
     e.expect(IllegalStateException.class);
-    e.expectMessage("Duplicate key: b");
+    e.expectMessage("Duplicate table definition on line 3: [a.b]");
     
     new Toml().parse("[a.b]\n  [a]\n b = {}");
   }
@@ -222,8 +222,16 @@ public class InlineTableTest {
   @Test
   public void should_fail_when_inline_table_duplicates_table() throws Exception {
     e.expect(IllegalStateException.class);
-    e.expectMessage("Duplicate key: b");
+    e.expectMessage("Duplicate table definition on line 3: [a.b]");
     
     new Toml().parse("[a.b]\n [a]\n b = {}");
+  }
+  
+  @Test
+  public void should_fail_when_second_level_table_duplicates_inline_table() throws Exception {
+    e.expect(IllegalStateException.class);
+    e.expectMessage("Duplicate table definition on line 3: [a.b]");
+    
+    new Toml().parse("[a]\n b = {}\n  [a.b]");
   }
 }

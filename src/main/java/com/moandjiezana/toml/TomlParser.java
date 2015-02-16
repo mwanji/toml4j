@@ -35,9 +35,9 @@ class TomlParser {
           if (id.isKey()) {
             identifier = id;
           } else if (id.isTable()) {
-            results.startTables(id);
+            results.startTables(id, line);
           } else if (id.isTableArray()) {
-            results.startTableArray(id);
+            results.startTableArray(id, line);
           }
         }
       } else if (c == '\n') {
@@ -51,7 +51,7 @@ class TomlParser {
         if (value instanceof Results.Errors) {
           results.errors.add((Results.Errors) value);
         } else {
-          results.addValue(identifier.getName(), value);
+          results.addValue(identifier.getName(), value, line);
         }
       } else if (value != null && !inComment && !Character.isWhitespace(c)) {
         results.errors.invalidTextAfterIdentifier(identifier, c, line.get());

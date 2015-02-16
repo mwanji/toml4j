@@ -3,8 +3,10 @@ package com.moandjiezana.toml;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 class Results {
   
@@ -13,7 +15,9 @@ class Results {
     private final StringBuilder sb = new StringBuilder();
     
     void duplicateTable(String table, int line) {
-      sb.append("Duplicate table definition: [")
+      sb.append("Duplicate table definition on line ")
+        .append(line)
+        .append(": [")
         .append(table)
         .append("]\n");
     }
@@ -116,37 +120,41 @@ class Results {
       sb.append(other.sb);
     }
   }
-    Set<String> tables = new HashSet<String>();
+  
   final Errors errors = new Errors();
-  private Deque<Container> stack = new ArrayDeque<Container>();
+  private final Set<String> tables = new HashSet<String>();
+  private final Deque<Container> stack = new ArrayDeque<Container>();
 
   Results() {
-    stack.push(new Container.Table());
+    stack.push(new Container.Table(""));
   }
 
-  void addValue(String key, Object value) {
+  void addValue(String key, Object value, AtomicInteger line) {
     Container currentTable = stack.peek();
     
     if (value instanceof Map) {
-      if (stack.size() == 1) {
-        startTables(Identifier.from(key, null));
+      String path = getInlineTablePath(key);
+      if (path == null) {
+        startTable(key, line);
+      } else if (path.isEmpty()) {
+        startTables(Identifier.from(key, null), line);
       } else {
-        startTable(key);
+        startTables(Identifier.from(path, null), line);
       }
       @SuppressWarnings("unchecked")
       Map<String, Object> valueMap = (Map<String, Object>) value;
       for (Map.Entry<String, Object> entry : valueMap.entrySet()) {
-        addValue(entry.getKey(), entry.getValue());
+        addValue(entry.getKey(), entry.getValue(), line);
       }
       stack.pop();
     } else if (currentTable.accepts(key)) {
       currentTable.put(key, value);
     } else {
-      errors.duplicateKey(key, -1);
+      errors.duplicateKey(key, line != null ? line.get() : -1);
     }
   }
 
-  void startTableArray(Identifier identifier) {
+  void startTableArray(Identifier identifier, AtomicInteger line) {
     String tableName = identifier.getBareName();
     while (stack.size() > 1) {
       stack.pop();
@@ -172,23 +180,23 @@ class Results {
         stack.push(nextTable);
       } else if (currentContainer.accepts(tablePart)) {
         Container newContainer = i == tableParts.length - 1 ? new Container.TableArray() : new Container.Table();
-        addValue(tablePart, newContainer);
+        addValue(tablePart, newContainer, line);
         stack.push(newContainer);
 
         if (newContainer instanceof Container.TableArray) {
           stack.push(((Container.TableArray) newContainer).getCurrent());
         }
       } else {
-        errors.duplicateTable(tableName, -1);
+        errors.duplicateTable(tableName, line.get());
         break;
       }
     }
   }
 
-  void startTables(Identifier id) {
+  void startTables(Identifier id, AtomicInteger line) {
     String tableName = id.getBareName();
     if (!tables.add(tableName)) {
-      errors.duplicateTable(tableName, -1);
+      errors.duplicateTable(tableName, line.get());
     }
     
     while (stack.size() > 1) {
@@ -206,7 +214,7 @@ class Results {
           stack.push(((Container.TableArray) stack.peek()).getCurrent());
         }
       } else if (currentContainer.accepts(tablePart)) {
-        startTable(tablePart);
+        startTable(tablePart, line);
       } else {
         errors.duplicateTable(tableName, -1);
         break;
@@ -224,11 +232,45 @@ class Results {
     return ((Container.Table) values).consume();
   }
 
-  private Container startTable(String tableName) {
-    Container newTable = new Container.Table();
-    addValue(tableName, newTable);
+  private Container startTable(String tableName, AtomicInteger line) {
+    Container newTable = new Container.Table(tableName);
+    addValue(tableName, newTable, line);
     stack.push(newTable);
 
     return newTable;
+  }
+  
+  private String getInlineTablePath(String key) {
+    Iterator<Container> descendingIterator = stack.descendingIterator();
+    StringBuilder sb = new StringBuilder();
+    
+    while (descendingIterator.hasNext()) {
+      Container next = descendingIterator.next();
+      if (next instanceof Container.TableArray) {
+        return null;
+      }
+      
+      Container.Table table = (Container.Table) next;
+      
+      if (table.name == null) {
+        break;
+      }
+      
+      if (sb.length() > 0) {
+        sb.append('.');
+      }
+      
+      sb.append(table.name);
+    }
+    
+    if (sb.length() > 0) {
+      sb.append('.');
+    }
+
+    sb.append(key)
+      .insert(0, '[')
+      .append(']');
+    
+    return sb.toString();
   }
 }

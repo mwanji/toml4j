@@ -13,6 +13,15 @@ abstract class Container {
 
   static class Table extends Container {
     private final Map<String, Object> values = new HashMap<String, Object>();
+    final String name;
+
+    Table() {
+      this.name = null;
+    }
+    
+    public Table(String name) {
+      this.name = name;
+    }
 
     @Override
     boolean accepts(String key) {

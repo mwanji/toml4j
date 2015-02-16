@@ -18,7 +18,7 @@ public class ErrorMessagesTest {
   
   @Test
   public void should_message_duplicate_table() throws Exception {
-    e.expectMessage("Duplicate table definition: [again]");
+    e.expectMessage("Duplicate table definition on line 2: [again]");
     
     new Toml().parse("[again]\n[again]");
   }
@@ -32,7 +32,7 @@ public class ErrorMessagesTest {
   
   @Test
   public void should_message_duplicate_key() throws Exception {
-    e.expectMessage("Duplicate key: k");
+    e.expectMessage("Duplicate key on line 2: k");
     
     new Toml().parse("k = 1\n  k = 2");
   }
@@ -95,21 +95,21 @@ public class ErrorMessagesTest {
   
   @Test
   public void should_display_correct_line_number_with_literal_multiline_string() throws Exception {
-    e.expectMessage("on line 7");
+    e.expectMessage("on line 8");
     
     new Toml().parse("[table]\n\n k = '''abc\n\ndef\n'''\n # comment \n j = 4.\n l = 5");
   }
   
   @Test
   public void should_display_correct_line_number_with_multiline_string() throws Exception {
-    e.expectMessage("on line 8");
+    e.expectMessage("on line 9");
     
     new Toml().parse("[table]\n\n k = \"\"\"\nabc\n\ndef\n\"\"\"\n # comment \n j = 4.\n l = 5");
   }
   
   @Test
   public void should_display_correct_line_number_with_array() throws Exception {
-    e.expectMessage("on line 9");
+    e.expectMessage("on line 10");
     
     new Toml().parse("[table]\n\n k = [\"\"\"\nabc\n\ndef\n\"\"\"\n, \n # comment \n j = 4.,\n l = 5\n]");
   }
