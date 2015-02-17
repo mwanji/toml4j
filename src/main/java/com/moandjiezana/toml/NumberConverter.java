@@ -48,6 +48,7 @@ class NumberConverter implements ValueConverter {
         terminatable = false;
         dottable = false;
         exponentable = false;
+        underscorable = false;
       } else if ((c == 'E' || c == 'e') && exponentable && notLastChar) {
         sb.append('E');
         type = "exponent";
