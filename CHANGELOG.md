@@ -1,6 +1,6 @@
 # toml4j Changelog
 
-## 0.4.0
+## 0.4.0 / 2015-02-16
 
 ### Changed
 
@@ -11,7 +11,7 @@
 
 * Support for [TOML 0.4.0](https://github.com/toml-lang/toml/blob/master/versions/en/toml-v0.4.0.md)
 * Toml#isEmpty()
-* Line numbers included in error messages
+* More detailed error messages, including line numbers
 
 ### Fixed
 
