@@ -18,11 +18,13 @@ class NumberConverter implements ValueConverter {
     boolean dottable = false;
     boolean exponentable = false;
     boolean terminatable = false;
+    boolean underscorable = false;
     String type = "";
     StringBuilder sb = new StringBuilder();
 
     for (int i = index.get(); i < s.length(); i = index.incrementAndGet()) {
       char c = s.charAt(i);
+      boolean notLastChar = s.length() > i + 1;
 
       if (Character.isDigit(c)) {
         sb.append(c);
@@ -32,26 +34,30 @@ class NumberConverter implements ValueConverter {
           type = "integer";
           dottable = true;
         }
+        underscorable = notLastChar;
         exponentable = !type.equals("exponent");
-      } else if ((c == '+' || c == '-') && signable && s.length() > i + 1) {
+      } else if ((c == '+' || c == '-') && signable && notLastChar) {
         signable = false;
         terminatable = false;
         if (c == '-') {
           sb.append('-');
         }
-      } else if (c == '.' && dottable && s.length() > i + 1) {
+      } else if (c == '.' && dottable && notLastChar) {
         sb.append('.');
         type = "float";
         terminatable = false;
         dottable = false;
         exponentable = false;
-      } else if ((c == 'E' || c == 'e') && exponentable && s.length() > i + 1) {
+      } else if ((c == 'E' || c == 'e') && exponentable && notLastChar) {
         sb.append('E');
         type = "exponent";
         terminatable = false;
         signable = true;
         dottable = false;
         exponentable = false;
+        underscorable = false;
+      } else if (c == '_' && underscorable && notLastChar && Character.isDigit(s.charAt(i + 1))) {
+        underscorable = false;
       } else {
         if (!terminatable) {
           type = "";
