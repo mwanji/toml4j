@@ -1,5 +1,11 @@
 # toml4j Changelog
 
+## UNRELEASED
+
+### Added
+
+* Support for underscores in numbers (the feature branch had accidentally not been merged! :( )
+
 ## 0.4.0 / 2015-02-16
 
 ### Changed
