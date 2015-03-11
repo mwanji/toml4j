@@ -53,7 +53,7 @@ name = "Mwanji Ezana"
   city = "AnyVille"
   
 [contacts]
-  "email address" = me@example.com
+  "email address" = "me@example.com"
 ```
 
 ```java
