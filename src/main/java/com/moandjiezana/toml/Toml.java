@@ -136,8 +136,18 @@ public class Toml {
     return (String) get(key);
   }
 
+  public String getString(String key, String defaultValue) {
+    Object val = get(key);
+    return val == null ? defaultValue : (String) val;
+  }
+
   public Long getLong(String key) {
     return (Long) get(key);
+  }
+
+  public Long getLong(String key, Long defaultValue) {
+    Object val = get(key);
+    return val == null ? defaultValue : (Long) val;
   }
 
   /**
@@ -160,12 +170,27 @@ public class Toml {
     return (Boolean) get(key);
   }
 
+  public Boolean getBoolean(String key, Boolean defaultValue) {
+    Object val = get(key);
+    return val == null ? defaultValue : (Boolean) val;
+  }
+
   public Date getDate(String key) {
     return (Date) get(key);
   }
 
+  public Date getDate(String key, Date defaultValue) {
+    Object val = get(key);
+    return val == null ? defaultValue : (Date) val;
+  }
+
   public Double getDouble(String key) {
     return (Double) get(key);
+  }
+
+  public Double getDouble(String key, Double defaultValue) {
+    Object val = get(key);
+    return val == null ? defaultValue : (Double) val;
   }
 
   /**
