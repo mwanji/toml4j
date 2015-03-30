@@ -1,9 +1,11 @@
 package com.moandjiezana.toml;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -87,6 +89,28 @@ public class DefaultValueTest {
   }
   
   @Test
+  public void should_get_array() throws Exception {
+    Toml toml = new Toml().parse("a = [1, 2, 3]\n  b = []");
+    
+    assertEquals(asList(1L, 2L, 3L), toml.getList("a", asList(3L, 2L, 1L)));
+    assertEquals(Collections.emptyList(), toml.getList("b", asList(3L, 2L, 1L)));
+  }
+  
+  @Test
+  public void should_get_empty_array() throws Exception {
+    Toml toml = new Toml().parse("a = []");
+    
+    assertEquals(Collections.emptyList(), toml.getList("a", asList(3L, 2L, 1L)));
+  }
+  
+  @Test
+  public void should_get_array_default_value() throws Exception {
+    Toml toml = new Toml();
+    
+    assertEquals(asList(3L, 2L, 1L), toml.getList("a", asList(3L, 2L, 1L)));
+  }
+  
+  @Test
   public void should_prefer_default_from_constructor() throws Exception {
     Toml defaults = new Toml().parse("n = 1\n d = 1.1\n  b = true\n  date = 2011-11-10T13:12:00Z\n  s = 'a'\n  a = [1, 2, 3]");
     Toml toml = new Toml(defaults).parse("");
@@ -96,5 +120,6 @@ public class DefaultValueTest {
     assertTrue(toml.getBoolean("b", false));
     assertEquals(_2011_11_10, toml.getDate("date", _2012_11_10));
     assertEquals("a", toml.getString("s", "b"));
+    assertEquals(asList(1L, 2L, 3L), toml.getList("a", asList(3L, 2L, 1L)));
   }
 }
