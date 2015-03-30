@@ -1,10 +1,11 @@
 package com.moandjiezana.toml;
 
-import java.util.Calendar;
-import java.util.TimeZone;
-import java.util.Date;
-
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 import org.junit.Test;
 
@@ -81,5 +82,23 @@ public class DefaultValueTest {
     calendar.set(Calendar.MILLISECOND, 0);
     Date defaultValue = calendar.getTime();
     assertEquals(defaultValue, toml.getDate("d", defaultValue));
+  }
+  
+  @Test
+  public void should_prefer_default_from_constructor() throws Exception {
+    Toml defaults = new Toml().parse("n = 1\n d = 1.1\n  b = true\n  date = 2011-11-10T13:12:00Z\n  s = 'a'\n  a = [1, 2, 3]");
+    Toml toml = new Toml(defaults).parse("");
+    
+    assertEquals(1, toml.getLong("n", 2L).intValue());
+    assertEquals(1.1, toml.getDouble("d", 2.2), 0);
+    assertTrue(toml.getBoolean("b", false));
+    Calendar calendar = Calendar.getInstance(UTC);
+    calendar.set(2011, Calendar.NOVEMBER, 10, 13, 12, 00);
+    calendar.set(Calendar.MILLISECOND, 0);
+    Date expected = calendar.getTime();
+    calendar.set(Calendar.YEAR, 2012);
+    Date defaultValue = calendar.getTime();
+    assertEquals(expected, toml.getDate("date", defaultValue));
+    assertEquals("a", toml.getString("s", "b"));
   }
 }
