@@ -153,7 +153,7 @@ public class Toml {
   /**
    * @param key a TOML key
    * @param <T> type of list items
-   * @return an empty {@link List} is the key is not found
+   * @return an empty {@link List} if the key is not found
    */
   public <T> List<T> getList(String key) {
     @SuppressWarnings("unchecked")
