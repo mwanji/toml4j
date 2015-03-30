@@ -11,6 +11,18 @@ import org.junit.Test;
 
 public class DefaultValueTest {
   private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
+  
+  private static final Calendar CALENDAR = Calendar.getInstance(UTC);
+  private static final Date _2011_11_10;
+  private static final Date _2012_11_10;
+  
+  static {
+    CALENDAR.set(2011, Calendar.NOVEMBER, 10, 13, 12, 00);
+    CALENDAR.set(Calendar.MILLISECOND, 0);
+    _2011_11_10 = CALENDAR.getTime();
+    CALENDAR.set(Calendar.YEAR, 2012);
+    _2012_11_10 = CALENDAR.getTime();
+  }
 
   @Test
   public void should_get_string() throws Exception {
@@ -64,24 +76,14 @@ public class DefaultValueTest {
   public void should_get_date() throws Exception {
     Toml toml = new Toml().parse("d = 2011-11-10T13:12:00Z");
 
-    Calendar calendar = Calendar.getInstance(UTC);
-    calendar.set(2011, Calendar.NOVEMBER, 10, 13, 12, 00);
-    calendar.set(Calendar.MILLISECOND, 0);
-    Date expected = calendar.getTime();
-    calendar.set(2012, Calendar.NOVEMBER, 10, 13, 12, 00);
-    Date defaultValue = calendar.getTime();
-    assertEquals(expected, toml.getDate("d", defaultValue));
+    assertEquals(_2011_11_10, toml.getDate("d", _2012_11_10));
   }
 
   @Test
   public void should_get_date_default_value() throws Exception {
     Toml toml = new Toml().parse("");
 
-    Calendar calendar = Calendar.getInstance(UTC);
-    calendar.set(2012, Calendar.NOVEMBER, 10, 13, 12, 00);
-    calendar.set(Calendar.MILLISECOND, 0);
-    Date defaultValue = calendar.getTime();
-    assertEquals(defaultValue, toml.getDate("d", defaultValue));
+    assertEquals(_2012_11_10, toml.getDate("d", _2012_11_10));
   }
   
   @Test
@@ -92,13 +94,7 @@ public class DefaultValueTest {
     assertEquals(1, toml.getLong("n", 2L).intValue());
     assertEquals(1.1, toml.getDouble("d", 2.2), 0);
     assertTrue(toml.getBoolean("b", false));
-    Calendar calendar = Calendar.getInstance(UTC);
-    calendar.set(2011, Calendar.NOVEMBER, 10, 13, 12, 00);
-    calendar.set(Calendar.MILLISECOND, 0);
-    Date expected = calendar.getTime();
-    calendar.set(Calendar.YEAR, 2012);
-    Date defaultValue = calendar.getTime();
-    assertEquals(expected, toml.getDate("date", defaultValue));
+    assertEquals(_2011_11_10, toml.getDate("date", _2012_11_10));
     assertEquals("a", toml.getString("s", "b"));
   }
 }
