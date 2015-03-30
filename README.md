@@ -168,6 +168,8 @@ String network3Operator2Location = toml.getString("networks[2].operators[1].loca
 
 The constructor can be given a set of default values that will be used as fallbacks. For tables and table arrays, a shallow merge is performed.
 
+You can also call an overloaded version of the getters that take a default value. Note that the default value provided in the constructor take precedence over the one provided by the getter.
+
 ```toml
 # defaults
 a = 2
@@ -193,10 +195,12 @@ Toml defaults = new Toml().parse(getDefaultsFile());
 Toml toml = new Toml(defaults).parse(getTomlFile());
 
 Long a = toml.getLong("a"); // returns 1, not 2
-Long b = toml.getLong("b"); // returns 3
+Long b = toml.getLong("b"); // returns 3, taken from defaults provided to constructor
+Long bPrefersConstructor = toml.getLong("b", 5); // returns 3, not 5
 Long c = toml.getLong("c"); // returns null
+Long cWithDefault = toml.getLong("c", 5); // returns 5
 Long tableC = toml.getLong("table.c"); // returns 2, not 4
-Long tableD = toml.getLong("table.d"); // returns null, not 5
+Long tableD = toml.getLong("table.d"); // returns null, not 5, because of shallow merge
 Long arrayD = toml.getLong("array[0].d"); // returns 3
 ```
 
