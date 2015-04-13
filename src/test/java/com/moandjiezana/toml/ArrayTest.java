@@ -25,6 +25,13 @@ public class ArrayTest {
   }
 
   @Test
+  public void should_return_empty_list_if_no_value_for_key() throws Exception {
+    Toml toml = new Toml().parse("");
+
+    assertTrue(toml.<String>getList("a").isEmpty());
+  }
+
+  @Test
   public void should_allow_multiline_array() throws Exception {
     Toml toml = new Toml().parse(file("should_allow_multiline_array"));
 
@@ -55,13 +62,6 @@ public class ArrayTest {
     Toml clients = new Toml().parse("data = [[\"gamma\", \"delta\"], [1, 2]] # just an update to make sure parsers support it");
 
     assertEquals(asList(asList("gamma", "delta"), asList(1L, 2L)), clients.<String>getList("data"));
-  }
-
-  @Test
-  public void should_return_empty_list_when_no_value_for_table_array() throws Exception {
-    List<Toml> tomls = new Toml().parse("[a]").getTables("b");
-
-    assertTrue(tomls.isEmpty());
   }
 
   @Test

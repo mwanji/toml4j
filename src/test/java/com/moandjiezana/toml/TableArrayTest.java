@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.List;
@@ -72,6 +73,13 @@ public class TableArrayTest {
     Toml toml = new Toml().parse("[[a.b.c]]\n id=3");
 
     assertEquals(3, toml.getTable("a").getTable("b").getTables("c").get(0).getLong("id").intValue());
+  }
+
+  @Test
+  public void should_return_empty_list_when_no_value_for_table_array() throws Exception {
+    List<Toml> tomls = new Toml().parse("[a]").getTables("b");
+
+    assertTrue(tomls.isEmpty());
   }
 
   @Test
