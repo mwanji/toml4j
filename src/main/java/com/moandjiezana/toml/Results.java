@@ -21,6 +21,14 @@ class Results {
         .append(table)
         .append("]\n");
     }
+
+    public void tableDuplicatesKey(String table, AtomicInteger line) {
+      sb.append("Key already exists for table definition on line ")
+        .append(line.get())
+        .append(": [")
+        .append(table)
+        .append("]\n");
+    }
     
     void emptyImplicitTable(String table, int line) {
       sb.append("Invalid table definition due to empty implicit table name: ")
@@ -216,7 +224,11 @@ class Results {
       } else if (currentContainer.accepts(tablePart)) {
         startTable(tablePart, line);
       } else {
-        errors.duplicateTable(tableName, -1);
+        if (currentContainer.get(tablePart) instanceof Container) {
+          errors.duplicateTable(tableName, line.get());
+        } else {
+          errors.tableDuplicatesKey(tablePart, line);
+        }
         break;
       }
     }
