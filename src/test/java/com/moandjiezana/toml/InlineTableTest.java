@@ -190,7 +190,7 @@ public class InlineTableTest {
   @Test
   public void should_fail_when_duplicated_by_other_key() throws Exception {
     e.expect(IllegalStateException.class);
-    e.expectMessage("Duplicate key on line 2: tbl");
+    e.expectMessage("Table already exists for key defined on line 2: tbl");
     
     new Toml().parse("tbl = { a = 1 }\n tbl = 1");
   }

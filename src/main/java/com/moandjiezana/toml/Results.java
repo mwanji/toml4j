@@ -23,11 +23,19 @@ class Results {
     }
 
     public void tableDuplicatesKey(String table, AtomicInteger line) {
-      sb.append("Key already exists for table definition on line ")
+      sb.append("Key already exists for table defined on line ")
         .append(line.get())
         .append(": [")
         .append(table)
         .append("]\n");
+    }
+
+    public void keyDuplicatesTable(String key, AtomicInteger line) {
+      sb.append("Table already exists for key defined on line ")
+        .append(line.get())
+        .append(": ")
+        .append(key)
+        .append('\n');
     }
     
     void emptyImplicitTable(String table, int line) {
@@ -158,7 +166,11 @@ class Results {
     } else if (currentTable.accepts(key)) {
       currentTable.put(key, value);
     } else {
-      errors.duplicateKey(key, line != null ? line.get() : -1);
+      if (currentTable.get(key) instanceof Container) {
+        errors.keyDuplicatesTable(key, line);
+      } else {
+        errors.duplicateKey(key, line != null ? line.get() : -1);
+      }
     }
   }
 
@@ -224,11 +236,7 @@ class Results {
       } else if (currentContainer.accepts(tablePart)) {
         startTable(tablePart, line);
       } else {
-        if (currentContainer.get(tablePart) instanceof Container) {
-          errors.duplicateTable(tableName, line.get());
-        } else {
-          errors.tableDuplicatesKey(tablePart, line);
-        }
+        errors.tableDuplicatesKey(tablePart, line);
         break;
       }
     }

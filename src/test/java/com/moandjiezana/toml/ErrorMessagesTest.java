@@ -122,9 +122,16 @@ public class ErrorMessagesTest {
   }
   
   @Test
-  public void should_fail_when_key_itn_root_is_overwritten_by_table() throws Exception {
-    e.expectMessage("Key already exists for table definition on line 2: [a]");
+  public void should_message_key_in_root_is_overwritten_by_table() throws Exception {
+    e.expectMessage("Key already exists for table defined on line 2: [a]");
     
     new Toml().parse("a=1\n  [a]");
+  }
+  
+  @Test
+  public void should_message_table_is_overwritten_by_key() throws Exception {
+    e.expectMessage("Table already exists for key defined on line 3: b");
+    
+    new Toml().parse("[a.b]\n  [a]\n  b=1");
   }
 }
