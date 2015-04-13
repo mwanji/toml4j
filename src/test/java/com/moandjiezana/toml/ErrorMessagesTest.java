@@ -10,87 +10,108 @@ public class ErrorMessagesTest {
   public final ExpectedException e = ExpectedException.none();
   
   @Test
-  public void should_message_invalid_table() throws Exception {
+  public void invalid_table() throws Exception {
     e.expectMessage("Invalid table definition on line 1: [in valid]");
     
     new Toml().parse("[in valid]");
   }
   
   @Test
-  public void should_message_duplicate_table() throws Exception {
+  public void duplicate_table() throws Exception {
     e.expectMessage("Duplicate table definition on line 2: [again]");
     
     new Toml().parse("[again]\n[again]");
   }
   
   @Test
-  public void should_message_empty_implicit_table_name() throws Exception {
+  public void empty_implicit_table_name() throws Exception {
     e.expectMessage("Invalid table definition due to empty implicit table name: [a..b]");
     
     new Toml().parse("[a..b]");
   }
   
   @Test
-  public void should_message_duplicate_key() throws Exception {
+  public void duplicate_key() throws Exception {
     e.expectMessage("Duplicate key on line 2: k");
     
     new Toml().parse("k = 1\n  k = 2");
   }
   
   @Test
-  public void should_message_invalid_key() throws Exception {
+  public void invalid_key() throws Exception {
     e.expectMessage("Key is not followed by an equals sign on line 1: k\" = 1");
     
     new Toml().parse("k\" = 1");
   }
   
   @Test
-  public void should_message_invalid_table_array() throws Exception {
+  public void invalid_table_array() throws Exception {
     e.expectMessage("Invalid table array definition on line 1: [[in valid]]");
     
     new Toml().parse("[[in valid]]");
   }
   
   @Test
-  public void should_message_invalid_value() throws Exception {
+  public void invalid_value() throws Exception {
     e.expectMessage("Invalid text after key k on line 1");
     
     new Toml().parse("k = 1 t");
   }
   
   @Test
-  public void should_message_unterminated_multiline_literal_string() throws Exception {
+  public void unterminated_multiline_literal_string() throws Exception {
     e.expectMessage("Unterminated value on line 1: k = '''abc");
     
     new Toml().parse("k = '''abc");
   }
   
   @Test
-  public void should_message_unterminated_multiline_string() throws Exception {
+  public void unterminated_multiline_string() throws Exception {
     e.expectMessage("Unterminated value on line 1: k = \"\"\"abc\"\"");
     
     new Toml().parse("k = \"\"\"abc\"\"");
   }
   
   @Test
-  public void should_message_unterminated_array() throws Exception {
+  public void unterminated_array() throws Exception {
     e.expectMessage("Unterminated value on line 1: k = [\"abc\"");
     
     new Toml().parse("k = [\"abc\"");
   }
   
   @Test
-  public void should_message_unterminated_inline_table() throws Exception {
+  public void unterminated_inline_table() throws Exception {
     e.expectMessage("Unterminated value on line 1: k = { a = \"abc\"");
     
     new Toml().parse("k = { a = \"abc\"");
   }
   
   @Test
-  public void should_message_key_without_equals() throws Exception {
+  public void key_without_equals() throws Exception {
     e.expectMessage("Key is not followed by an equals sign on line 2: k");
     
     new Toml().parse("\nk\n=3");
+  }
+  
+  @Test
+  public void heterogeneous_array() throws Exception {
+    e.expectMessage("k becomes a heterogeneous array on line 2");
+    
+    new Toml().parse("k = [ 1,\n  1.1 ]");
+  }
+  
+  @Test
+  public void key_in_root_is_overwritten_by_table() throws Exception {
+    e.expectMessage("Key already exists for table defined on line 2: [a]");
+    
+    new Toml().parse("a=1\n  [a]");
+  }
+  
+  @Test
+  public void table_is_overwritten_by_key() throws Exception {
+    e.expectMessage("Table already exists for key defined on line 3: b");
+    
+    new Toml().parse("[a.b]\n  [a]\n  b=1");
   }
   
   @Test
@@ -112,26 +133,5 @@ public class ErrorMessagesTest {
     e.expectMessage("on line 10");
     
     new Toml().parse("[table]\n\n k = [\"\"\"\nabc\n\ndef\n\"\"\"\n, \n # comment \n j = 4.,\n l = 5\n]");
-  }
-  
-  @Test
-  public void should_message_heterogeneous_array() throws Exception {
-    e.expectMessage("k becomes a heterogeneous array on line 2");
-    
-    new Toml().parse("k = [ 1,\n  1.1 ]");
-  }
-  
-  @Test
-  public void should_message_key_in_root_is_overwritten_by_table() throws Exception {
-    e.expectMessage("Key already exists for table defined on line 2: [a]");
-    
-    new Toml().parse("a=1\n  [a]");
-  }
-  
-  @Test
-  public void should_message_table_is_overwritten_by_key() throws Exception {
-    e.expectMessage("Table already exists for key defined on line 3: b");
-    
-    new Toml().parse("[a.b]\n  [a]\n  b=1");
   }
 }
