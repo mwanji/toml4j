@@ -284,7 +284,7 @@ public class Toml {
   }
   
   /**
-   * @return a {@link Set} of Toml.Entry instances, each exposing a name and a deserialised value.
+   * @return a {@link Set} of Toml.Entry instances, each exposing a name and a deserialised value. Modifications to this {@link Set} are not reflected in this Toml instance.
    */
   public Set<Toml.Entry> entrySet() {
     Set<Toml.Entry> entries = new LinkedHashSet<Toml.Entry>();
