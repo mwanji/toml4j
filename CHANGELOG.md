@@ -9,6 +9,7 @@
 ### Added
 
 * Support for underscores in numbers (the feature branch had accidentally not been merged! :( )
+* Toml#entrySet()
 * Overloaded getters that take a default value. Thanks to __[udiabon](https://github.com/udiabon)__.
 
 ## 0.4.0 / 2015-02-16

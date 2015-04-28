@@ -283,6 +283,9 @@ public class Toml {
     return DEFAULT_GSON.fromJson(json, targetClass);
   }
   
+  /**
+   * @return a {@link Set} of Toml.Entry instances, each exposing a name and a deserialised value.
+   */
   public Set<Toml.Entry> entrySet() {
     Set<Toml.Entry> entries = new LinkedHashSet<Toml.Entry>();
     

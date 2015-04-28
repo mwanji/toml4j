@@ -204,6 +204,17 @@ Long tableD = toml.getLong("table.d"); // returns null, not 5, because of shallo
 Long arrayD = toml.getLong("array[0].d"); // returns 3
 ```
 
+### Reflection
+
+`Toml#entrySet()` returns a Set of Toml.Entry instances exposing the name and value of each entry.
+
+You can also convert a Toml instance to a `Map<String, Object>`:
+
+```java
+Toml toml = new Toml().parse("a = 1");
+Map<String, Object> map = toml.to(Map.class);
+```
+
 ### Limitations
 
 Date precision is limited to milliseconds.
