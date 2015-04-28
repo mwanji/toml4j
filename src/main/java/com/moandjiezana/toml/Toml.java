@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,7 +40,7 @@ import com.google.gson.JsonElement;
  *
  */
 public class Toml {
-
+  
   private static final Gson DEFAULT_GSON = new Gson();
 
   private Map<String, Object> values = new HashMap<String, Object>();
@@ -281,6 +282,50 @@ public class Toml {
     
     return DEFAULT_GSON.fromJson(json, targetClass);
   }
+  
+  public Set<Toml.Entry> entrySet() {
+    Set<Toml.Entry> entries = new LinkedHashSet<Toml.Entry>();
+    
+    for (Map.Entry<String, Object> entry : values.entrySet()) {
+      Class<? extends Object> entryClass = entry.getValue().getClass();
+      
+      if (Map.class.isAssignableFrom(entryClass)) {
+        entries.add(new Toml.Entry(entry.getKey(), getTable(entry.getKey())));
+      } else if (List.class.isAssignableFrom(entryClass)) {
+        List<?> value = (List<?>) entry.getValue();
+        if (value.isEmpty()) {
+          entries.add(new Toml.Entry(entry.getKey(), Collections.emptyList()));
+        } else if (value.get(0) instanceof Map) {
+          entries.add(new Toml.Entry(entry.getKey(), getTables(entry.getKey())));
+        } else {
+          entries.add(new Toml.Entry(entry.getKey(), entry.getValue()));
+        }
+      } else {
+        entries.add(new Toml.Entry(entry.getKey(), entry.getValue()));
+      }
+    }
+    
+    return entries;
+  }
+
+  public static class Entry {
+    
+    private final String key;
+    private final Object value;
+
+    public String getKey() {
+      return key;
+    }
+    
+    public Object getValue() {
+      return value;
+    }
+    
+    private Entry(String key, Object value) {
+      this.key = key;
+      this.value = value;
+    }
+  }
 
   @SuppressWarnings("unchecked")
   private Object get(String key) {
@@ -314,7 +359,7 @@ public class Toml {
     
     return current;
   }
-
+  
   private Toml(Toml defaults, Map<String, Object> values) {
     this.values = values != null ? values : Collections.<String, Object>emptyMap();
     this.defaults = defaults;
