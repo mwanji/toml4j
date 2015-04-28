@@ -15,16 +15,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import com.moandjiezana.toml.testutils.Utils;
 
 public class IteratorTest {
+  
+  @Rule
+  public final ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void should_iterate_over_primitive() throws Exception {
     Toml toml = new Toml().parse(file("long"));
-    Toml.Entry entry = toml.entrySet().iterator().next();
+    Map.Entry<String, Object> entry = toml.entrySet().iterator().next();
     
     assertEquals("long", entry.getKey());
     assertEquals(2L, entry.getValue());
@@ -34,8 +39,7 @@ public class IteratorTest {
   @SuppressWarnings("unchecked")
   public void should_iterate_over_list() throws Exception {
     Toml toml = new Toml().parse(file("list"));
-    
-    Toml.Entry entry = toml.entrySet().iterator().next();
+    Map.Entry<String, Object> entry = toml.entrySet().iterator().next();
     
     assertEquals("list", entry.getKey());
     assertThat((List<String>) entry.getValue(), contains("a", "b", "c"));
@@ -44,7 +48,7 @@ public class IteratorTest {
   @Test
   public void should_iterate_over_table() throws Exception {
     Toml toml = new Toml().parse(file("table"));
-    Toml.Entry entry = toml.entrySet().iterator().next();
+    Map.Entry<String, Object> entry = toml.entrySet().iterator().next();
     
     assertEquals("table", entry.getKey());
     assertEquals("a", ((Toml) entry.getValue()).getString("a"));
@@ -55,7 +59,7 @@ public class IteratorTest {
   public void should_iterate_over_table_array() throws Exception {
     Toml toml = new Toml().parse(file("table_array"));
     
-    Toml.Entry entry = toml.entrySet().iterator().next();
+    Map.Entry<String, Object> entry = toml.entrySet().iterator().next();
     List<Toml> tableArray = (List<Toml>) entry.getValue();
     
     assertEquals("table_array", entry.getKey());
@@ -68,7 +72,7 @@ public class IteratorTest {
     Toml toml = new Toml().parse(file("multiple"));
 
     Map<String, Object> entries = new HashMap<String, Object>();
-    for (Toml.Entry entry : toml.entrySet()) {
+    for (Map.Entry<String, Object> entry : toml.entrySet()) {
       entries.put(entry.getKey(), entry.getValue());
     }
     
@@ -77,6 +81,14 @@ public class IteratorTest {
     assertThat(entries, hasEntry("b", (Object) asList(1L, 2L, 3L)));
     assertTrue(((Toml) entries.get("c")).getBoolean("d"));
     assertThat(((List<Toml>) entries.get("e")), hasSize(1));
+  }
+  
+  @Test
+  public void should_not_support_setValue_method() throws Exception {
+    Map.Entry<String, Object> entry = new Toml().parse("a = 1").entrySet().iterator().next();
+    
+    expectedException.expect(UnsupportedOperationException.class);
+    entry.setValue(2L);
   }
   
   private File file(String name) {

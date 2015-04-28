@@ -284,10 +284,10 @@ public class Toml {
   }
   
   /**
-   * @return a {@link Set} of Toml.Entry instances, each exposing a name and a deserialised value. Modifications to this {@link Set} are not reflected in this Toml instance.
+   * @return a {@link Set} of Map.Entry instances. Modifications to the {@link Set} are not reflected in this Toml instance. Entries are immutable, so {@link Map.Entry#setValue(Object)} throws an UnsupportedOperationException.
    */
-  public Set<Toml.Entry> entrySet() {
-    Set<Toml.Entry> entries = new LinkedHashSet<Toml.Entry>();
+  public Set<Map.Entry<String,Object>> entrySet() {
+    Set<Map.Entry<String, Object>> entries = new LinkedHashSet<Map.Entry<String, Object>>();
     
     for (Map.Entry<String, Object> entry : values.entrySet()) {
       Class<? extends Object> entryClass = entry.getValue().getClass();
@@ -311,17 +311,24 @@ public class Toml {
     return entries;
   }
 
-  public static class Entry {
+  private class Entry implements Map.Entry<String, Object> {
     
     private final String key;
     private final Object value;
 
+    @Override
     public String getKey() {
       return key;
     }
-    
+
+    @Override
     public Object getValue() {
       return value;
+    }
+
+    @Override
+    public Object setValue(Object value) {
+      throw new UnsupportedOperationException("TOML entry values cannot be changed.");
     }
     
     private Entry(String key, Object value) {
