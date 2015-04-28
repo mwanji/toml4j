@@ -266,15 +266,8 @@ public class Toml {
    * @return A new instance of targetClass.
    */
   public <T> T to(Class<T> targetClass) {
-    return to(targetClass, DEFAULT_GSON);
-  }
-
-  /*
-   * Should not be used directly, except for testing purposes
-   */
-  <T> T to(Class<T> targetClass, Gson gson) {
     HashMap<String, Object> valuesCopy = new HashMap<String, Object>(values);
-
+    
     if (defaults != null) {
       for (Map.Entry<String, Object> entry : defaults.values.entrySet()) {
         if (!valuesCopy.containsKey(entry.getKey())) {
@@ -282,14 +275,14 @@ public class Toml {
         }
       }
     }
-
-    JsonElement json = gson.toJsonTree(valuesCopy);
-
+    
+    JsonElement json = DEFAULT_GSON.toJsonTree(valuesCopy);
+    
     if (targetClass == JsonElement.class) {
       return targetClass.cast(json);
     }
-
-    return gson.fromJson(json, targetClass);
+    
+    return DEFAULT_GSON.fromJson(json, targetClass);
   }
 
   @SuppressWarnings("unchecked")

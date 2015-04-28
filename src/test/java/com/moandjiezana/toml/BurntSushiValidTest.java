@@ -1,8 +1,11 @@
 package com.moandjiezana.toml;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -12,8 +15,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.junit.After;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -244,46 +245,37 @@ public class BurntSushiValidTest {
     run("unicode-literal");
   }
 
-  @After
-  public void after() throws IOException {
-    inputToml.close();
-    if (expectedJsonReader != null) {
-      expectedJsonReader.close();
-    }
-  }
-
   private void run(String testName) {
-    inputToml = getClass().getResourceAsStream("burntsushi/valid/" + testName + ".toml");
-    expectedJsonReader = new InputStreamReader(getClass().getResourceAsStream("burntsushi/valid/" + testName + ".json"));
-    JsonElement expectedJson = new Gson().fromJson(expectedJsonReader, JsonElement.class);
+    InputStream inputToml = getClass().getResourceAsStream("burntsushi/valid/" + testName + ".toml");
+    Reader expectedJsonReader = new InputStreamReader(getClass().getResourceAsStream("burntsushi/valid/" + testName + ".json"));
+    JsonElement expectedJson = GSON.fromJson(expectedJsonReader, JsonElement.class);
 
     Toml toml = new Toml().parse(inputToml);
-    JsonElement actual = toml.to(JsonElement.class, TEST_GSON);
+    JsonElement actual = TEST_GSON.toJsonTree(toml).getAsJsonObject().get("values");
 
-    Assert.assertEquals(expectedJson, actual);
+    assertEquals(expectedJson, actual);
+    
+    try {
+      inputToml.close();
+    } catch (IOException e) {}
+    
+    try {
+      expectedJsonReader.close();
+    } catch (IOException e) {}
   }
-
-  private InputStream inputToml;
-  private InputStreamReader expectedJsonReader;
-
+  
+  private static final Gson GSON = new Gson();
   private static final Gson TEST_GSON = new GsonBuilder()
     .registerTypeAdapter(Boolean.class, serialize(Boolean.class))
     .registerTypeAdapter(String.class, serialize(String.class))
+    .registerTypeAdapter(Long.class, serialize(Long.class))
+    .registerTypeAdapter(Double.class, serialize(Double.class))
     .registerTypeAdapter(Date.class, new JsonSerializer<Date>() {
       @Override
       public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
         DateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
         iso8601Format.setTimeZone(TimeZone.getTimeZone("UTC"));
         return context.serialize(new Value("datetime", iso8601Format.format(src)));
-      }
-    })
-    .registerTypeHierarchyAdapter(Number.class, new JsonSerializer<Number>() {
-      @Override
-      public JsonElement serialize(Number src, Type typeOfSrc, JsonSerializationContext context) {
-        String number = src.toString();
-        String type = number.contains(".") ? "float" : "integer";
-
-        return context.serialize(new Value(type, number));
       }
     })
     .registerTypeHierarchyAdapter(List.class, new JsonSerializer<List<?>>() {
@@ -341,11 +333,11 @@ public class BurntSushiValidTest {
       return "string";
     }
 
-    if (aClass == Float.class || aClass == Double.class) {
+    if (aClass == Double.class) {
       return "float";
     }
 
-    if (Number.class.isAssignableFrom(aClass)) {
+    if (aClass == Long.class) {
       return "integer";
     }
 
