@@ -4,8 +4,8 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Arrays;
@@ -25,10 +25,10 @@ public class ArrayTest {
   }
 
   @Test
-  public void should_return_empty_list_if_no_value_for_key() throws Exception {
+  public void should_return_null_if_no_value_for_key() throws Exception {
     Toml toml = new Toml().parse("");
 
-    assertTrue(toml.<String>getList("a").isEmpty());
+    assertNull(toml.getList("a"));
   }
 
   @Test

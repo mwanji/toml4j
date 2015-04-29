@@ -153,16 +153,12 @@ public class Toml {
   /**
    * @param key a TOML key
    * @param <T> type of list items
-   * @return an empty {@link List} if the key is not found
+   * @return <code>null</code> if the key is not found
    */
   public <T> List<T> getList(String key) {
     @SuppressWarnings("unchecked")
     List<T> list = (List<T>) get(key);
-
-    if (list == null) {
-      return Collections.emptyList();
-    }
-
+    
     return list;
   }
 
@@ -170,13 +166,12 @@ public class Toml {
    * @param key a TOML key
    * @param defaultValue a list of default values
    * @param <T> type of list items
-   * @return an empty {@link List} is the key is not found
+   * @return <code>null</code> is the key is not found
    */
   public <T> List<T> getList(String key, List<T> defaultValue) {
-    @SuppressWarnings("unchecked")
-    List<T> val = (List<T>) get(key);
+    List<T> list = getList(key);
     
-    return val != null ? val : defaultValue;
+    return list != null ? list : defaultValue;
   }
 
   public Boolean getBoolean(String key) {

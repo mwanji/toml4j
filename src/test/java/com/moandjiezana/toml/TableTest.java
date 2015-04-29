@@ -1,9 +1,7 @@
 package com.moandjiezana.toml;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -61,7 +59,7 @@ public class TableTest {
     
     assertNull(toml.getString("a.b"));
     assertNull(toml.getString("a.b[0].c"));
-    assertThat(toml.getList("a.b"), hasSize(0));
+    assertNull(toml.getList("a.b"));
     assertTrue(toml.getTable("a.b").isEmpty());
     assertTrue(toml.getTable("a.b[0]").isEmpty());
   }
