@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+### Changed
+
+* __BREAKING:__ Toml#getList(String), Toml#getTable(String) and Toml#getTables(String) return null when key is not found
+
 ### Added
 
 * Support for underscores in numbers (the feature branch had accidentally not been merged! :( )
