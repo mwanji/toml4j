@@ -69,10 +69,8 @@ public class TableTest {
     Toml toml = new Toml();
     
     assertNull(toml.getString("a.b"));
-    assertNull(toml.getString("a.b[0].c"));
     assertNull(toml.getList("a.b"));
     assertNull(toml.getTable("a.b"));
-    assertNull(toml.getTable("a.b[0]"));
   }
 
   @Test

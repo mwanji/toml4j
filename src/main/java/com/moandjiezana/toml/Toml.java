@@ -300,6 +300,10 @@ public class Toml {
       current = ((Map<String, Object>) current).get(k.name);
 
       if (k.index > -1 && current != null) {
+        if (k.index >= ((List<?>) current).size()) {
+          return null;
+        }
+        
         current = ((List<?>) current).get(k.index);
       }
 

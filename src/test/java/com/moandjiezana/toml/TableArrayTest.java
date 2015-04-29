@@ -75,13 +75,6 @@ public class TableArrayTest {
   }
 
   @Test
-  public void should_return_null_for_missing_table_array() throws Exception {
-    List<Toml> tomls = new Toml().parse("[a]").getTables("b");
-
-    assertNull(tomls);
-  }
-
-  @Test
   public void should_navigate_array_with_compound_key() throws Exception {
     Toml toml = new Toml().parse(file("fruit_table_array"));
 
@@ -93,6 +86,28 @@ public class TableArrayTest {
     assertEquals("red delicious", appleVarieties.get(0).getString("name"));
     assertEquals("granny smith", appleVariety.getString("name"));
     assertEquals("plantain", bananaVariety);
+  }
+
+  @Test
+  public void should_return_null_for_missing_table_array() throws Exception {
+    Toml toml = new Toml().parse("[a]");
+    
+    assertNull(toml.getTables("b"));
+  }
+
+  @Test
+  public void should_return_null_for_missing_table_array_with_index() throws Exception {
+    Toml toml = new Toml();
+    
+    assertNull(toml.getTable("a[0]"));
+    assertNull(toml.getString("a[0].c"));
+  }
+
+  @Test
+  public void should_return_null_for_index_out_of_bounds() throws Exception {
+    Toml toml = new Toml().parse("[[a]]\n  c = 1");
+    
+    assertNull(toml.getTable("a[1]"));
   }
   
   @Test(expected = IllegalStateException.class)
