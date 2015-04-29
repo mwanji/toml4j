@@ -203,23 +203,25 @@ public class Toml {
 
   /**
    * @param key A table name, not including square brackets.
-   * @return A new Toml instance. Empty if no value is found for key.
+   * @return A new Toml instance or <code>null</code> if no value is found for key.
    */
   @SuppressWarnings("unchecked")
   public Toml getTable(String key) {
-    return new Toml(null, (Map<String, Object>) get(key));
+    Map<String, Object> map = (Map<String, Object>) get(key);
+    
+    return map != null ? new Toml(null, map) : null;
   }
 
   /**
    * @param key Name of array of tables, not including square brackets.
-   * @return An empty {@link List} if no value is found for key.
+   * @return A {@link List} of Toml instances or <code>null</code> if no value is found for key.
    */
   @SuppressWarnings("unchecked")
   public List<Toml> getTables(String key) {
     List<Map<String, Object>> tableArray = (List<Map<String, Object>>) get(key);
 
     if (tableArray == null) {
-      return Collections.emptyList();
+      return null;
     }
 
     ArrayList<Toml> tables = new ArrayList<Toml>();

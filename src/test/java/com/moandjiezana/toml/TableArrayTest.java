@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.List;
@@ -76,10 +75,10 @@ public class TableArrayTest {
   }
 
   @Test
-  public void should_return_empty_list_when_no_value_for_table_array() throws Exception {
+  public void should_return_null_for_missing_table_array() throws Exception {
     List<Toml> tomls = new Toml().parse("[a]").getTables("b");
 
-    assertTrue(tomls.isEmpty());
+    assertNull(tomls);
   }
 
   @Test

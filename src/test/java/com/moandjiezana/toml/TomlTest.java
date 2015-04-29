@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -64,10 +65,7 @@ public class TomlTest {
   @Test
   public void should_be_empty_if_no_values() throws Exception {
     assertTrue(new Toml().isEmpty());
-    Toml toml = new Toml().parse("[a]");
-    assertTrue(toml.getTable("a").isEmpty());
-    assertTrue(toml.getTable("b").isEmpty());
-    assertFalse(toml.isEmpty());
+    assertFalse(new Toml().parse("a = 1").isEmpty());
   }
 
   @Test(expected = IllegalStateException.class)

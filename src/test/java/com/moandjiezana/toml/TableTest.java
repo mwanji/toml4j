@@ -54,14 +54,25 @@ public class TableTest {
   }
   
   @Test
-  public void should_handle_navigation_to_missing_value() throws Exception {
+  public void should_get_empty_table() throws Exception {
+    Toml toml = new Toml().parse("[a]");
+    assertTrue(toml.getTable("a").isEmpty());
+  }
+  
+  @Test
+  public void should_return_null_for_missing_table() throws Exception {
+    assertNull(new Toml().getTable("a"));
+  }
+  
+  @Test
+  public void should_return_null_when_navigating_to_missing_value() throws Exception {
     Toml toml = new Toml();
     
     assertNull(toml.getString("a.b"));
     assertNull(toml.getString("a.b[0].c"));
     assertNull(toml.getList("a.b"));
-    assertTrue(toml.getTable("a.b").isEmpty());
-    assertTrue(toml.getTable("a.b[0]").isEmpty());
+    assertNull(toml.getTable("a.b"));
+    assertNull(toml.getTable("a.b[0]"));
   }
 
   @Test
