@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -27,7 +26,7 @@ public class InlineTableTest {
   public void should_read_empty_inline_table() throws Exception {
     Toml toml = new Toml().parse("key = {}");
     
-    assertNotNull(toml.getTable("key"));
+    assertTrue(toml.getTable("key").isEmpty());
   }
   
   @Test
