@@ -1,23 +1,10 @@
 package com.moandjiezana.toml;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+
+import java.io.*;
+import java.util.*;
 
 /**
  * <p>Provides access to the keys and tables in a TOML data source.</p>
@@ -280,6 +267,29 @@ public class Toml {
     }
     
     return DEFAULT_GSON.fromJson(json, targetClass);
+  }
+
+  /**
+   * Serializes the values of this Toml instance into TOML.
+   *
+   * @return a string containing the TOML representation of this Toml instance.
+   */
+  public String serialize() {
+    return Serializers.serialize(values);
+  }
+
+  /**
+   * Serializes an Object into TOML.
+   *
+   * The input can comprise arbitrarily nested combinations of Java primitive types,
+   * other {@link Object}s, {@link Map}s, {@link List}s, and Arrays. {@link Object}s and {@link Map}s
+   * are serialized to TOML tables, and {@link List}s and Array to TOML arrays.
+   *
+   * @param from the object to be serialized
+   * @return a string containing the TOML representation of the given Object
+   */
+  public static String serializeFrom(Object from) {
+    return Serializers.serialize(from);
   }
 
   @SuppressWarnings("unchecked")

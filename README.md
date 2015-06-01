@@ -204,6 +204,34 @@ Long tableD = toml.getLong("table.d"); // returns null, not 5, because of shallo
 Long arrayD = toml.getLong("array[0].d"); // returns 3
 ```
 
+### Serialization
+
+You can serialize a `Toml` or any arbitrary object to a TOML string.
+
+Once you have populated a `Toml` via `Toml.parse()`, you can serialize it back to TOML.
+
+```java
+Toml toml = new Toml().parse("a=1");
+String tomlString = toml.serialize();
+```
+
+Or you can serialize any object.
+
+```java
+class AClass {
+  int anInt = 1;
+  int[] anArray = { 2, 3 };
+}
+
+String tomlString = Toml.serializeFrom(new AClass());
+
+/*
+yields:
+anInt = 1
+anArray = [ 2, 3 ]
+*/
+```
+
 ### Limitations
 
 Date precision is limited to milliseconds.
