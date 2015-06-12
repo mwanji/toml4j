@@ -206,7 +206,13 @@ Long arrayD = toml.getLong("array[0].d"); // returns 3
 
 ### Reflection
 
-`Toml#entrySet()` returns a Set of Toml.Entry instances exposing the name and value of each entry.
+`Toml#entrySet()` returns a Set of [Map.Entry](http://docs.oracle.com/javase/6/docs/api/java/util/Map.Entry.html) instances. Modifications to the returned Set are not reflected in the Toml instance. Note that Map.Entry#setValue() will throw an UnsupportedOperationException.
+
+```java
+for (Map.Entry<String, Object> entry : myToml.entrySet()) {
+  System.out.println(entry.getKey() + " " + entry.getValue());
+}
+```
 
 You can also convert a Toml instance to a `Map<String, Object>`:
 
