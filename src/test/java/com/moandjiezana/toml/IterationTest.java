@@ -21,7 +21,7 @@ import org.junit.rules.ExpectedException;
 
 import com.moandjiezana.toml.testutils.Utils;
 
-public class IteratorTest {
+public class IterationTest {
   
   @Rule
   public final ExpectedException expectedException = ExpectedException.none();
