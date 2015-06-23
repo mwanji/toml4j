@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -234,6 +233,44 @@ public class Toml {
     return tables;
   }
 
+  /**
+   * @param key a key name, can be compound (eg. a.b.c)
+   * @return true if key is present
+   */
+  public boolean contains(String key) {
+    return get(key) != null;
+  }
+
+  /**
+   * @param key a key name, can be compound (eg. a.b.c)
+   * @return true if key is present and is a primitive
+   */
+  public boolean containsKey(String key) {
+    Object object = get(key);
+    
+    return object != null && !(object instanceof Map) && !(object instanceof List);
+  }
+
+  /**
+   * @param key a key name, can be compound (eg. a.b.c)
+   * @return true if key is present and is a table
+   */
+  public boolean containsTable(String key) {
+    Object object = get(key);
+    
+    return object != null && (object instanceof Map);
+  }
+
+  /**
+   * @param key a key name, can be compound (eg. a.b.c)
+   * @return true if key is present and is a table array
+   */
+  public boolean containsTableArray(String key) {
+    Object object = get(key);
+    
+    return object != null && (object instanceof List);
+  }
+
   public boolean isEmpty() {
     return values.isEmpty();
   }
@@ -296,12 +333,10 @@ public class Toml {
         entries.add(new Toml.Entry(entry.getKey(), getTable(entry.getKey())));
       } else if (List.class.isAssignableFrom(entryClass)) {
         List<?> value = (List<?>) entry.getValue();
-        if (value.isEmpty()) {
-          entries.add(new Toml.Entry(entry.getKey(), Collections.emptyList()));
-        } else if (value.get(0) instanceof Map) {
+        if (!value.isEmpty() && value.get(0) instanceof Map) {
           entries.add(new Toml.Entry(entry.getKey(), getTables(entry.getKey())));
         } else {
-          entries.add(new Toml.Entry(entry.getKey(), entry.getValue()));
+          entries.add(new Toml.Entry(entry.getKey(), value));
         }
       } else {
         entries.add(new Toml.Entry(entry.getKey(), entry.getValue()));
@@ -371,7 +406,7 @@ public class Toml {
   }
   
   private Toml(Toml defaults, Map<String, Object> values) {
-    this.values = values != null ? values : Collections.<String, Object>emptyMap();
+    this.values = values;
     this.defaults = defaults;
   }
 }
