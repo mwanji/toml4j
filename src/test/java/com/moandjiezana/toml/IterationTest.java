@@ -3,6 +3,7 @@ package com.moandjiezana.toml;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
@@ -43,6 +44,16 @@ public class IterationTest {
     
     assertEquals("list", entry.getKey());
     assertThat((List<String>) entry.getValue(), contains("a", "b", "c"));
+  }
+  
+  @Test
+  @SuppressWarnings("unchecked")
+  public void should_iterate_over_empty_list() throws Exception {
+    Toml toml = new Toml().parse("list = []");
+    Map.Entry<String, Object> entry = toml.entrySet().iterator().next();
+    
+    assertEquals("list", entry.getKey());
+    assertThat((List<String>) entry.getValue(), empty());
   }
   
   @Test
@@ -89,6 +100,13 @@ public class IterationTest {
     
     expectedException.expect(UnsupportedOperationException.class);
     entry.setValue(2L);
+  }
+  
+  @Test
+  public void should_not_iterate_over_empty_toml() throws Exception {
+    Toml toml = new Toml().parse("");
+    
+    assertThat(toml.entrySet(), empty());
   }
   
   private File file(String name) {
