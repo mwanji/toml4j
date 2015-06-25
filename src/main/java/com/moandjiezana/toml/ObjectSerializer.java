@@ -3,7 +3,6 @@ package com.moandjiezana.toml;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.function.Predicate;
 
 import static com.moandjiezana.toml.MapSerializer.MAP_SERIALIZER;
 
@@ -42,14 +41,14 @@ class ObjectSerializer implements Serializer {
         getSuperClassFields(cls.getSuperclass(), fields);
 
         // Skip final fields
-        fields.removeIf(new Predicate<Field>() {
-            @Override
-            public boolean test(Field field) {
-                return Modifier.isFinal(field.getModifiers());
+        Set<Field> prunedFields = new LinkedHashSet<Field>();
+        for (Field field : fields) {
+            if (!Modifier.isFinal(field.getModifiers())) {
+                prunedFields.add(field);
             }
-        });
+        }
 
-        return fields;
+        return prunedFields;
     }
 
     static private void getSuperClassFields(Class cls, Set<Field> fields) {
