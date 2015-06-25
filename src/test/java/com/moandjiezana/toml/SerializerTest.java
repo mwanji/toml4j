@@ -3,6 +3,7 @@ package com.moandjiezana.toml;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
@@ -27,9 +28,8 @@ public class SerializerTest {
     o.aDouble = -5.43;
     o.aBoolean = false;
 
-    String theDate = "2015-05-31T08:44:03-07:00";
-    Toml dateToml = new Toml().parse("a_date = " + theDate);
-    o.aDate = dateToml.getDate("a_date");
+    o.aDate = new Date();
+    String theDate = formatDate(o.aDate);
 
     String serialized = Toml.serializeFrom(o);
     String expected = "aString = \"hello\"\n" +
@@ -40,6 +40,18 @@ public class SerializerTest {
         "aDate = " + theDate + "\n";
 
     assertEquals(expected, serialized);
+  }
+
+  private String formatDate(Date date) {
+    // Copying the date formatting code from DateSerializer isn't optimal, but
+    // I can't see any other way to check date serialization - the test gets
+    // run in multiple time zones, so we can't just hard-code a time zone.
+    String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:m:ss").format(date);
+    Calendar calendar = new GregorianCalendar();
+    int tzOffset = (calendar.get(Calendar.ZONE_OFFSET) + calendar.get(Calendar.DST_OFFSET)) / (60 * 1000);
+    dateString += String.format("%+03d:%02d", tzOffset / 60, tzOffset % 60);
+
+    return dateString;
   }
 
   @Test
