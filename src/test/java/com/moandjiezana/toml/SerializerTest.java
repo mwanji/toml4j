@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 
 public class SerializerTest {
   @Test
-  public void serializesPrimitiveTypes() {
+  public void should_serialize_primitive_types() {
     class TestClass {
       public String aString;
       int anInt;
@@ -55,7 +55,7 @@ public class SerializerTest {
   }
 
   @Test
-  public void serializesNestedMap() {
+  public void should_serialize_nested_map() {
     class SubChild {
       int anInt;
     }
@@ -94,7 +94,7 @@ public class SerializerTest {
   }
 
   @Test
-  public void serializesArrayOfPrimitive() {
+  public void should_serialize_array_of_primitive() {
     class ArrayTest {
       int[] array = {1, 2, 3};
     }
@@ -106,7 +106,7 @@ public class SerializerTest {
   }
 
   @Test
-  public void serializesArrayOfTables() {
+  public void should_serialize_array_of_tables() {
     class Table {
       int anInt;
 
@@ -129,7 +129,7 @@ public class SerializerTest {
   }
 
   @Test
-  public void serializesArrayOfArray() {
+  public void should_serialize_array_of_array() {
     class ArrayTest {
       int[][] array = {{1, 2, 3}, {4, 5, 6}};
     }
@@ -141,7 +141,7 @@ public class SerializerTest {
   }
 
   @Test
-  public void serializesList() {
+  public void should_serialize_list() {
     class ListTest {
       List<Integer> aList = new LinkedList<Integer>();
     }
@@ -153,7 +153,7 @@ public class SerializerTest {
   }
 
   @Test
-  public void handlesZeroLengthArraysAndLists() {
+  public void should_handle_zero_length_arrays_and_lists() {
     class TestClass {
       List<Integer> aList = new LinkedList<Integer>();
       Float[] anArray = new Float[0];
@@ -162,7 +162,7 @@ public class SerializerTest {
   }
 
   @Test
-  public void elidesEmptyIntermediateTables() {
+  public void should_elide_empty_intermediate_tables() {
     class C {
       int anInt = 1;
     }
@@ -177,7 +177,7 @@ public class SerializerTest {
   }
 
   @Test
-  public void serializesNestedArraysOfTables() {
+  public void should_serialize_nested_arrays_of_tables() {
     class Physical {
       String color;
       String shape;
@@ -240,7 +240,7 @@ public class SerializerTest {
   }
 
   @Test
-  public void serializesClassesWithInheritance() {
+  public void should_serialize_classes_with_inheritance() {
     class Parent {
       protected int anInt = 2;
     }
@@ -254,13 +254,13 @@ public class SerializerTest {
   }
 
   @Test
-  public void emptyTomlSerializesToEmptyString() {
+  public void should_serialize_empty_toml_to_empty_string() {
     Toml toml = new Toml();
     assertEquals("", toml.serialize());
   }
 
   @Test
-  public void serializesStringsToTomlUtf8() throws UnsupportedEncodingException {
+  public void should_serialize_strings_to_toml_utf8() throws UnsupportedEncodingException {
     String input = " é foo € \b \t \n \f \r \" \\ ";
     assertEquals("\" \\u00E9 foo \\u20AC \\b \\t \\n \\f \\r \\\" \\ \"", Toml.serializeFrom(input));
 
@@ -270,7 +270,7 @@ public class SerializerTest {
   }
 
   @Test
-  public void quotesKeys() {
+  public void should_quote_keys() {
     Map<String, Integer> aMap = new LinkedHashMap<String, Integer>();
     aMap.put("a.b", 1);
     aMap.put("5€", 2);
@@ -285,7 +285,7 @@ public class SerializerTest {
   }
 
   @Test
-  public void serializesFromToml() {
+  public void should_serialize_from_toml() {
     String tomlString = "a = 1\n";
     Toml toml = new Toml().parse(tomlString);
     assertEquals(tomlString, toml.serialize());
