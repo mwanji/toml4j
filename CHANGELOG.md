@@ -9,6 +9,7 @@
 
 ### Added
 
+* Serialization of objects and Toml instances to TOML.
 * Support for underscores in numbers (the feature branch had accidentally not been merged! :( )
 * Set<Map.Entry> Toml#entrySet() cf. Reflection section in README
 * Overloaded getters that take a default value. Thanks to __[udiabon](https://github.com/udiabon)__.
