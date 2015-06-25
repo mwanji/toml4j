@@ -19,7 +19,7 @@ class Results {
         .append(line)
         .append(": [")
         .append(table)
-        .append("]\n");
+        .append("]");
     }
 
     public void tableDuplicatesKey(String table, AtomicInteger line) {
@@ -27,21 +27,19 @@ class Results {
         .append(line.get())
         .append(": [")
         .append(table)
-        .append("]\n");
+        .append("]");
     }
 
     public void keyDuplicatesTable(String key, AtomicInteger line) {
       sb.append("Table already exists for key defined on line ")
         .append(line.get())
         .append(": ")
-        .append(key)
-        .append('\n');
+        .append(key);
     }
     
     void emptyImplicitTable(String table, int line) {
       sb.append("Invalid table definition due to empty implicit table name: ")
-        .append(table)
-        .append("\n");
+        .append(table);
     }
     
     void invalidTable(String table, int line) {
@@ -49,7 +47,7 @@ class Results {
         .append(line)
         .append(": ")
         .append(table)
-        .append("]\n");
+        .append("]");
     }
     
     void duplicateKey(String key, int line) {
@@ -59,8 +57,7 @@ class Results {
           .append(line);
       }
       sb.append(": ")
-        .append(key)
-        .append('\n');
+        .append(key);
     }
     
     void invalidTextAfterIdentifier(Identifier identifier, char text, int line) {
@@ -68,24 +65,21 @@ class Results {
         .append(identifier.getName())
         .append(" on line ")
         .append(line)
-        .append(". Make sure to terminate the value or add a comment (#).")
-        .append('\n');
+        .append(". Make sure to terminate the value or add a comment (#).");
     }
     
     void invalidKey(String key, int line) {
       sb.append("Invalid key on line ")
         .append(line)
         .append(": ")
-        .append(key)
-        .append('\n');
+        .append(key);
     }
     
     void invalidTableArray(String tableArray, int line) {
       sb.append("Invalid table array definition on line ")
         .append(line)
         .append(": ")
-        .append(tableArray)
-        .append('\n');
+        .append(tableArray);
     }
     
     void invalidValue(String key, String value, int line) {
@@ -94,16 +88,14 @@ class Results {
         .append(": ")
         .append(key)
         .append(" = ")
-        .append(value)
-        .append('\n');
+        .append(value);
     }
     
     void unterminatedKey(String key, int line) {
       sb.append("Key is not followed by an equals sign on line ")
         .append(line)
         .append(": ")
-        .append(key)
-        .append('\n');
+        .append(key);
     }
     
     void unterminated(String key, String value, int line) {
@@ -112,15 +104,13 @@ class Results {
         .append(": ")
         .append(key)
         .append(" = ")
-        .append(value.trim())
-        .append('\n');
+        .append(value.trim());
     }
 
     public void heterogenous(String key, int line) {
       sb.append(key)
         .append(" becomes a heterogeneous array on line ")
-        .append(line)
-        .append('\n');
+        .append(line);
     }
     
     boolean hasErrors() {

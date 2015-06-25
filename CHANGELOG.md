@@ -5,10 +5,12 @@
 ### Changed
 
 * __BREAKING:__ Toml#getList(String), Toml#getTable(String) and Toml#getTables(String) return null when key is not found
+* Removed trailing newline from error messages
 
 ### Added
 
 * Support for underscores in numbers (the feature branch had accidentally not been merged! :( )
+* Set<Map.Entry> Toml#entrySet() cf. Reflection section in README
 * Overloaded getters that take a default value. Thanks to __[udiabon](https://github.com/udiabon)__.
 
 ## 0.4.0 / 2015-02-16

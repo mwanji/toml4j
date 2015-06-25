@@ -1,10 +1,23 @@
 package com.moandjiezana.toml;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-
-import java.io.*;
-import java.util.*;
 
 /**
  * <p>Provides access to the keys and tables in a TOML data source.</p>
@@ -26,7 +39,7 @@ import java.util.*;
  *
  */
 public class Toml {
-
+  
   private static final Gson DEFAULT_GSON = new Gson();
 
   private Map<String, Object> values = new HashMap<String, Object>();
@@ -220,6 +233,44 @@ public class Toml {
     return tables;
   }
 
+  /**
+   * @param key a key name, can be compound (eg. a.b.c)
+   * @return true if key is present
+   */
+  public boolean contains(String key) {
+    return get(key) != null;
+  }
+
+  /**
+   * @param key a key name, can be compound (eg. a.b.c)
+   * @return true if key is present and is a primitive
+   */
+  public boolean containsKey(String key) {
+    Object object = get(key);
+    
+    return object != null && !(object instanceof Map) && !(object instanceof List);
+  }
+
+  /**
+   * @param key a key name, can be compound (eg. a.b.c)
+   * @return true if key is present and is a table
+   */
+  public boolean containsTable(String key) {
+    Object object = get(key);
+    
+    return object != null && (object instanceof Map);
+  }
+
+  /**
+   * @param key a key name, can be compound (eg. a.b.c)
+   * @return true if key is present and is a table array
+   */
+  public boolean containsTableArray(String key) {
+    Object object = get(key);
+    
+    return object != null && (object instanceof List);
+  }
+
   public boolean isEmpty() {
     return values.isEmpty();
   }
@@ -267,6 +318,58 @@ public class Toml {
     }
     
     return DEFAULT_GSON.fromJson(json, targetClass);
+  }
+  
+  /**
+   * @return a {@link Set} of Map.Entry instances. Modifications to the {@link Set} are not reflected in this Toml instance. Entries are immutable, so {@link Map.Entry#setValue(Object)} throws an UnsupportedOperationException.
+   */
+  public Set<Map.Entry<String,Object>> entrySet() {
+    Set<Map.Entry<String, Object>> entries = new LinkedHashSet<Map.Entry<String, Object>>();
+    
+    for (Map.Entry<String, Object> entry : values.entrySet()) {
+      Class<? extends Object> entryClass = entry.getValue().getClass();
+      
+      if (Map.class.isAssignableFrom(entryClass)) {
+        entries.add(new Toml.Entry(entry.getKey(), getTable(entry.getKey())));
+      } else if (List.class.isAssignableFrom(entryClass)) {
+        List<?> value = (List<?>) entry.getValue();
+        if (!value.isEmpty() && value.get(0) instanceof Map) {
+          entries.add(new Toml.Entry(entry.getKey(), getTables(entry.getKey())));
+        } else {
+          entries.add(new Toml.Entry(entry.getKey(), value));
+        }
+      } else {
+        entries.add(new Toml.Entry(entry.getKey(), entry.getValue()));
+      }
+    }
+    
+    return entries;
+  }
+
+  private class Entry implements Map.Entry<String, Object> {
+    
+    private final String key;
+    private final Object value;
+
+    @Override
+    public String getKey() {
+      return key;
+    }
+
+    @Override
+    public Object getValue() {
+      return value;
+    }
+
+    @Override
+    public Object setValue(Object value) {
+      throw new UnsupportedOperationException("TOML entry values cannot be changed.");
+    }
+    
+    private Entry(String key, Object value) {
+      this.key = key;
+      this.value = value;
+    }
   }
 
   /**
@@ -324,9 +427,9 @@ public class Toml {
     
     return current;
   }
-
+  
   private Toml(Toml defaults, Map<String, Object> values) {
-    this.values = values != null ? values : Collections.<String, Object>emptyMap();
+    this.values = values;
     this.defaults = defaults;
   }
 }

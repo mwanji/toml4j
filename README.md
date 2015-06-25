@@ -204,6 +204,35 @@ Long tableD = toml.getLong("table.d"); // returns null, not 5, because of shallo
 Long arrayD = toml.getLong("array[0].d"); // returns 3
 ```
 
+### Reflection
+
+`Toml#entrySet()` returns a Set of [Map.Entry](http://docs.oracle.com/javase/6/docs/api/java/util/Map.Entry.html) instances. Modifications to the returned Set are not reflected in the Toml instance. Note that Map.Entry#setValue() will throw an UnsupportedOperationException.
+
+```java
+for (Map.Entry<String, Object> entry : myToml.entrySet()) {
+  System.out.println(entry.getKey() + " " + entry.getValue());
+}
+```
+
+You can also convert a Toml instance to a `Map<String, Object>`:
+
+```java
+Toml toml = new Toml().parse("a = 1");
+Map<String, Object> map = toml.to(Map.class);
+```
+
+`Toml#contains(String)` verifies that the instance contains a key of any type (primitive, table or array of tables) of the given  name. `Toml#containsKey(String)`, `Toml#containsTable(String)` and `Toml#containsTableArray(String)` return true only if a key exists and is a primitive, table or array of tables, respectively. Compound keys can be used to check existence at any depth.
+
+
+```java
+Toml toml = new Toml().parse("a = 1");
+
+toml.contains("a"); // true
+toml.conatinsKey("a"); // true
+toml.containsTable("a"); // false
+toml.containsTableArray("a"); // false
+```
+
 ### Serialization
 
 You can serialize a `Toml` or any arbitrary object to a TOML string.
