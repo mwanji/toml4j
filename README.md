@@ -233,18 +233,9 @@ toml.containsTable("a"); // false
 toml.containsTableArray("a"); // false
 ```
 
-### Serialization
+### Converting Objects To TOML
 
-You can serialize a `Toml` or any arbitrary object to a TOML string.
-
-Once you have populated a `Toml` via `Toml.parse()`, you can serialize it back to TOML.
-
-```java
-Toml toml = new Toml().parse("a=1");
-String tomlString = toml.serialize();
-```
-
-Or you can serialize any object.
+You can write any arbitrary object to a TOML `String`, `File`, `Writer`, or `OutputStream`.
 
 ```java
 class AClass {
@@ -252,7 +243,7 @@ class AClass {
   int[] anArray = { 2, 3 };
 }
 
-String tomlString = Toml.serializeFrom(new AClass());
+String tomlString = new TomlWriter().write(new AClass());
 
 /*
 yields:
@@ -260,6 +251,8 @@ anInt = 1
 anArray = [ 2, 3 ]
 */
 ```
+
+See the `TomlWriter` class for more details.
 
 ### Limitations
 
