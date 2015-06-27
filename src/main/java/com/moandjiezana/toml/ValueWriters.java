@@ -11,7 +11,9 @@ import static com.moandjiezana.toml.TableArrayValueWriter.TABLE_ARRAY_VALUE_WRIT
 
 class ValueWriters {
 
-  static ValueWriter findWriterFor(Object value) {
+  static final ValueWriters WRITERS = new ValueWriters();
+
+  ValueWriter findWriterFor(Object value) {
     for (ValueWriter valueWriter : VALUE_WRITERs) {
       if (valueWriter.canWrite(value)) {
         return valueWriter;
@@ -21,14 +23,14 @@ class ValueWriters {
     return OBJECT_VALUE_WRITER;
   }
 
-  static String write(Object value) {
+  String write(Object value) {
     WriterContext context = new WriterContext();
     write(value, context);
 
     return context.output.toString();
   }
 
-  static void write(Object value, WriterContext context) {
+  void write(Object value, WriterContext context) {
     findWriterFor(value).write(value, context);
   }
 

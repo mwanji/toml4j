@@ -4,6 +4,8 @@ import java.io.*;
 import java.util.List;
 import java.util.Map;
 
+import static com.moandjiezana.toml.ValueWriters.WRITERS;
+
 /**
  * <p>Converts Objects to TOML</p>
  *
@@ -34,7 +36,7 @@ public class TomlWriter {
    * @return a string containing the TOML representation of the given Object
    */
   public String write(Object from) {
-    return ValueWriters.write(from);
+    return WRITERS.write(from);
   }
 
   /**

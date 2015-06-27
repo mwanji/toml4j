@@ -5,6 +5,8 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static com.moandjiezana.toml.ValueWriters.WRITERS;
+
 abstract class ArrayValueWriter implements ValueWriter {
   static protected boolean isArrayish(Object value) {
     return value instanceof Collection || value.getClass().isArray();
@@ -23,7 +25,7 @@ abstract class ArrayValueWriter implements ValueWriter {
   static boolean isArrayOfPrimitive(Object array) {
     Object first = peek(array);
     if (first != null) {
-      ValueWriter valueWriter = ValueWriters.findWriterFor(first);
+      ValueWriter valueWriter = WRITERS.findWriterFor(first);
       return valueWriter.isPrimitiveType() || isArrayish(first);
     }
 

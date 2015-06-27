@@ -20,9 +20,11 @@ class PrimitiveArrayValueWriter extends ArrayValueWriter {
       if (!first) {
         context.output.append(", ");
       }
-      ValueWriters.write(elem, context);
+      ValueWriters.WRITERS.write(elem, context);
       first = false;
     }
     context.output.append(" ]");
   }
+
+  private PrimitiveArrayValueWriter() {}
 }

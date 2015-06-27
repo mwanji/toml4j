@@ -72,4 +72,6 @@ class ObjectValueWriter implements ValueWriter {
 
     return value;
   }
+
+  private ObjectValueWriter() {}
 }

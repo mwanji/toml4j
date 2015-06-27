@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import static com.moandjiezana.toml.PrimitiveArrayValueWriter.PRIMITIVE_ARRAY_VALUE_WRITER;
 import static com.moandjiezana.toml.TableArrayValueWriter.TABLE_ARRAY_VALUE_WRITER;
+import static com.moandjiezana.toml.ValueWriters.WRITERS;
 
 class MapValueWriter implements ValueWriter {
   static final ValueWriter MAP_VALUE_WRITER = new MapValueWriter();
@@ -33,7 +34,7 @@ class MapValueWriter implements ValueWriter {
         continue;
       }
 
-      ValueWriter valueWriter = ValueWriters.findWriterFor(fromValue);
+      ValueWriter valueWriter = WRITERS.findWriterFor(fromValue);
       if (valueWriter.isPrimitiveType()) {
         context.indent();
         context.output.append(quoteKey(key)).append(" = ");
@@ -53,7 +54,7 @@ class MapValueWriter implements ValueWriter {
         continue;
       }
 
-      ValueWriter valueWriter = ValueWriters.findWriterFor(fromValue);
+      ValueWriter valueWriter = WRITERS.findWriterFor(fromValue);
       if (valueWriter.isTable() || valueWriter == TABLE_ARRAY_VALUE_WRITER) {
         valueWriter.write(fromValue, context.extend(quoteKey(key)));
       }
@@ -87,7 +88,7 @@ class MapValueWriter implements ValueWriter {
         continue;
       }
 
-      ValueWriter valueWriter = ValueWriters.findWriterFor(fromValue);
+      ValueWriter valueWriter = WRITERS.findWriterFor(fromValue);
       if (valueWriter.isPrimitiveType() || valueWriter == PRIMITIVE_ARRAY_VALUE_WRITER) {
         return true;
       }
@@ -95,4 +96,6 @@ class MapValueWriter implements ValueWriter {
 
     return false;
   }
+
+  private MapValueWriter() {}
 }
