@@ -1,14 +1,20 @@
 package com.moandjiezana.toml;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
 public class ValueWriterTest {
+
+  @Rule
+  public TemporaryFolder testDirectory = new TemporaryFolder();
+
   @Test
   public void should_write_primitive_types() {
     class TestClass {
@@ -31,7 +37,7 @@ public class ValueWriterTest {
     o.aDate = new Date();
     String theDate = formatDate(o.aDate);
 
-    String output = Toml.write(o);
+    String output = new TomlWriter().write(o);
     String expected = "aString = \"hello\"\n" +
         "anInt = 4\n" +
         "aFloat = 1.23\n" +
@@ -80,7 +86,7 @@ public class ValueWriterTest {
     parent.child.subChild.anInt = 4;
     parent.aBoolean = true;
 
-    String output = Toml.write(parent);
+    String output = new TomlWriter().write(parent);
     String expected = "aBoolean = true\n\n" +
         "[aMap]\n" +
         "  foo = 1\n" +
@@ -100,7 +106,7 @@ public class ValueWriterTest {
     }
 
     ArrayTest arrayTest = new ArrayTest();
-    String output = Toml.write(arrayTest);
+    String output = new TomlWriter().write(arrayTest);
     String expected = "array = [ 1, 2, 3 ]\n";
     assertEquals(expected, output);
   }
@@ -120,7 +126,7 @@ public class ValueWriterTest {
     Config config = new Config();
     config.table = new Table[]{new Table(1), new Table(2)};
 
-    String output = Toml.write(config);
+    String output = new TomlWriter().write(config);
     String expected = "[[table]]\n" +
         "  anInt = 1\n\n" +
         "[[table]]\n" +
@@ -135,7 +141,7 @@ public class ValueWriterTest {
     }
     ArrayTest arrayTest = new ArrayTest();
 
-    String output = Toml.write(arrayTest);
+    String output = new TomlWriter().write(arrayTest);
     String expected = "array = [ [ 1, 2, 3 ], [ 4, 5, 6 ] ]\n";
     assertEquals(expected, output);
   }
@@ -149,7 +155,7 @@ public class ValueWriterTest {
     o.aList.add(1);
     o.aList.add(2);
 
-    assertEquals("aList = [ 1, 2 ]\n", Toml.write(o));
+    assertEquals("aList = [ 1, 2 ]\n", new TomlWriter().write(o));
   }
 
   @Test
@@ -158,7 +164,7 @@ public class ValueWriterTest {
       List<Integer> aList = new LinkedList<Integer>();
       Float[] anArray = new Float[0];
     }
-    assertEquals("", Toml.write(new TestClass()));
+    assertEquals("", new TomlWriter().write(new TestClass()));
   }
 
   @Test
@@ -173,7 +179,7 @@ public class ValueWriterTest {
       B b = new B();
     }
 
-    assertEquals("[b.c]\n  anInt = 1\n", Toml.write(new A()));
+    assertEquals("[b.c]\n  anInt = 1\n", new TomlWriter().write(new A()));
   }
 
   @Test
@@ -235,7 +241,7 @@ public class ValueWriterTest {
         "\n";
 
 
-    String output = Toml.write(basket);
+    String output = new TomlWriter().write(basket);
     assertEquals(expected, output);
   }
 
@@ -250,17 +256,17 @@ public class ValueWriterTest {
 
     Child child = new Child();
     String expected = "aBoolean = true\nanInt = 2\n";
-    assertEquals(expected, Toml.write(child));
+    assertEquals(expected, new TomlWriter().write(child));
   }
 
   @Test
   public void should_write_strings_to_toml_utf8() throws UnsupportedEncodingException {
     String input = " é foo € \b \t \n \f \r \" \\ ";
-    assertEquals("\" \\u00E9 foo \\u20AC \\b \\t \\n \\f \\r \\\" \\ \"", Toml.write(input));
+    assertEquals("\" \\u00E9 foo \\u20AC \\b \\t \\n \\f \\r \\\" \\ \"", new TomlWriter().write(input));
 
     // Check unicode code points greater than 0XFFFF
     input = " \uD801\uDC28 \uD840\uDC0B ";
-    assertEquals("\" \\U00010428 \\U0002000B \"", Toml.write(input));
+    assertEquals("\" \\U00010428 \\U0002000B \"", new TomlWriter().write(input));
   }
 
   @Test
@@ -275,6 +281,47 @@ public class ValueWriterTest {
         "\"5€\" = 2\n" +
         "\"c$d\" = 3\n" +
         "\"e/f\" = 4\n";
-    assertEquals(expected, Toml.write(aMap));
+    assertEquals(expected, new TomlWriter().write(aMap));
+  }
+
+  private static class SimpleTestClass {
+    int a = 1;
+  }
+
+  @Test
+  public void should_write_to_writer() throws IOException {
+    StringWriter output = new StringWriter();
+    new TomlWriter().write(new SimpleTestClass(), output);
+
+    assertEquals("a = 1\n", output.toString());
+  }
+
+  @Test
+  public void should_write_to_outputstream() throws IOException {
+    ByteArrayOutputStream output = new ByteArrayOutputStream();
+    new TomlWriter().write(new SimpleTestClass(), output);
+
+    assertEquals("a = 1\n", output.toString());
+  }
+
+  @Test
+  public void should_write_to_file() throws IOException {
+    File output = testDirectory.newFile();
+    new TomlWriter().write(new SimpleTestClass(), output);
+
+    assertEquals("a = 1\n", readFile(output));
+  }
+
+  private String readFile(File input) throws IOException {
+    BufferedReader bufferedReader = new BufferedReader(new FileReader(input));
+
+    StringBuilder w = new StringBuilder();
+    String line = bufferedReader.readLine();
+    while (line != null) {
+      w.append(line).append('\n');
+      line = bufferedReader.readLine();
+    }
+
+    return w.toString();
   }
 }

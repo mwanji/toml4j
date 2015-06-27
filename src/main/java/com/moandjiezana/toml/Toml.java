@@ -359,20 +359,6 @@ public class Toml {
     }
   }
 
-  /**
-   * Serializes an Object into TOML.
-   *
-   * The input can comprise arbitrarily nested combinations of Java primitive types,
-   * other {@link Object}s, {@link Map}s, {@link List}s, and Arrays. {@link Object}s and {@link Map}s
-   * are output to TOML tables, and {@link List}s and Array to TOML arrays.
-   *
-   * @param from the object to be written
-   * @return a string containing the TOML representation of the given Object
-   */
-  public static String write(Object from) {
-    return ValueWriters.write(from);
-  }
-
   @SuppressWarnings("unchecked")
   private Object get(String key) {
     if (values.containsKey(key)) {
