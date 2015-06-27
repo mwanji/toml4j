@@ -360,15 +360,6 @@ public class Toml {
   }
 
   /**
-   * Serializes the values of this Toml instance into TOML.
-   *
-   * @return a string containing the TOML representation of this Toml instance.
-   */
-  public String serialize() {
-    return ValueWriters.write(values);
-  }
-
-  /**
    * Serializes an Object into TOML.
    *
    * The input can comprise arbitrarily nested combinations of Java primitive types,

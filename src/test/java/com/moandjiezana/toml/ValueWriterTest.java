@@ -254,12 +254,6 @@ public class ValueWriterTest {
   }
 
   @Test
-  public void should_write_empty_toml_to_empty_string() {
-    Toml toml = new Toml();
-    assertEquals("", toml.serialize());
-  }
-
-  @Test
   public void should_write_strings_to_toml_utf8() throws UnsupportedEncodingException {
     String input = " é foo € \b \t \n \f \r \" \\ ";
     assertEquals("\" \\u00E9 foo \\u20AC \\b \\t \\n \\f \\r \\\" \\ \"", Toml.write(input));
@@ -282,12 +276,5 @@ public class ValueWriterTest {
         "\"c$d\" = 3\n" +
         "\"e/f\" = 4\n";
     assertEquals(expected, Toml.write(aMap));
-  }
-
-  @Test
-  public void should_write_from_toml() {
-    String tomlString = "a = 1\n";
-    Toml toml = new Toml().parse(tomlString);
-    assertEquals(tomlString, toml.serialize());
   }
 }
