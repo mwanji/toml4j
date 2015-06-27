@@ -8,9 +8,9 @@ import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
-public class SerializerTest {
+public class ValueWriterTest {
   @Test
-  public void should_serialize_primitive_types() {
+  public void should_write_primitive_types() {
     class TestClass {
       public String aString;
       int anInt;
@@ -31,7 +31,7 @@ public class SerializerTest {
     o.aDate = new Date();
     String theDate = formatDate(o.aDate);
 
-    String serialized = Toml.serializeFrom(o);
+    String output = Toml.write(o);
     String expected = "aString = \"hello\"\n" +
         "anInt = 4\n" +
         "aFloat = 1.23\n" +
@@ -39,12 +39,12 @@ public class SerializerTest {
         "aBoolean = false\n" +
         "aDate = " + theDate + "\n";
 
-    assertEquals(expected, serialized);
+    assertEquals(expected, output);
   }
 
   private String formatDate(Date date) {
-    // Copying the date formatting code from DateSerializer isn't optimal, but
-    // I can't see any other way to check date serialization - the test gets
+    // Copying the date formatting code from DateValueWriter isn't optimal, but
+    // I can't see any other way to check date formatting - the test gets
     // run in multiple time zones, so we can't just hard-code a time zone.
     String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:m:ss").format(date);
     Calendar calendar = new GregorianCalendar();
@@ -55,7 +55,7 @@ public class SerializerTest {
   }
 
   @Test
-  public void should_serialize_nested_map() {
+  public void should_write_nested_map() {
     class SubChild {
       int anInt;
     }
@@ -80,7 +80,7 @@ public class SerializerTest {
     parent.child.subChild.anInt = 4;
     parent.aBoolean = true;
 
-    String serialized = Toml.serializeFrom(parent);
+    String output = Toml.write(parent);
     String expected = "aBoolean = true\n\n" +
         "[aMap]\n" +
         "  foo = 1\n" +
@@ -90,23 +90,23 @@ public class SerializerTest {
         "  anInt = 2\n\n" +
         "[child.subChild]\n" +
         "  anInt = 4\n";
-    assertEquals(expected, serialized);
+    assertEquals(expected, output);
   }
 
   @Test
-  public void should_serialize_array_of_primitive() {
+  public void should_write_array_of_primitive() {
     class ArrayTest {
       int[] array = {1, 2, 3};
     }
 
     ArrayTest arrayTest = new ArrayTest();
-    String serialized = Toml.serializeFrom(arrayTest);
+    String output = Toml.write(arrayTest);
     String expected = "array = [ 1, 2, 3 ]\n";
-    assertEquals(expected, serialized);
+    assertEquals(expected, output);
   }
 
   @Test
-  public void should_serialize_array_of_tables() {
+  public void should_write_array_of_tables() {
     class Table {
       int anInt;
 
@@ -120,28 +120,28 @@ public class SerializerTest {
     Config config = new Config();
     config.table = new Table[]{new Table(1), new Table(2)};
 
-    String serialized = Toml.serializeFrom(config);
+    String output = Toml.write(config);
     String expected = "[[table]]\n" +
         "  anInt = 1\n\n" +
         "[[table]]\n" +
         "  anInt = 2\n";
-    assertEquals(expected, serialized);
+    assertEquals(expected, output);
   }
 
   @Test
-  public void should_serialize_array_of_array() {
+  public void should_write_array_of_array() {
     class ArrayTest {
       int[][] array = {{1, 2, 3}, {4, 5, 6}};
     }
     ArrayTest arrayTest = new ArrayTest();
 
-    String serialized = Toml.serializeFrom(arrayTest);
+    String output = Toml.write(arrayTest);
     String expected = "array = [ [ 1, 2, 3 ], [ 4, 5, 6 ] ]\n";
-    assertEquals(expected, serialized);
+    assertEquals(expected, output);
   }
 
   @Test
-  public void should_serialize_list() {
+  public void should_write_list() {
     class ListTest {
       List<Integer> aList = new LinkedList<Integer>();
     }
@@ -149,7 +149,7 @@ public class SerializerTest {
     o.aList.add(1);
     o.aList.add(2);
 
-    assertEquals("aList = [ 1, 2 ]\n", Toml.serializeFrom(o));
+    assertEquals("aList = [ 1, 2 ]\n", Toml.write(o));
   }
 
   @Test
@@ -158,7 +158,7 @@ public class SerializerTest {
       List<Integer> aList = new LinkedList<Integer>();
       Float[] anArray = new Float[0];
     }
-    assertEquals("", Toml.serializeFrom(new TestClass()));
+    assertEquals("", Toml.write(new TestClass()));
   }
 
   @Test
@@ -173,11 +173,11 @@ public class SerializerTest {
       B b = new B();
     }
 
-    assertEquals("[b.c]\n  anInt = 1\n", Toml.serializeFrom(new A()));
+    assertEquals("[b.c]\n  anInt = 1\n", Toml.write(new A()));
   }
 
   @Test
-  public void should_serialize_nested_arrays_of_tables() {
+  public void should_write_nested_arrays_of_tables() {
     class Physical {
       String color;
       String shape;
@@ -235,12 +235,12 @@ public class SerializerTest {
         "\n";
 
 
-    String serialized = Toml.serializeFrom(basket);
-    assertEquals(expected, serialized);
+    String output = Toml.write(basket);
+    assertEquals(expected, output);
   }
 
   @Test
-  public void should_serialize_classes_with_inheritance() {
+  public void should_write_classes_with_inheritance() {
     class Parent {
       protected int anInt = 2;
     }
@@ -250,23 +250,23 @@ public class SerializerTest {
 
     Child child = new Child();
     String expected = "aBoolean = true\nanInt = 2\n";
-    assertEquals(expected, Toml.serializeFrom(child));
+    assertEquals(expected, Toml.write(child));
   }
 
   @Test
-  public void should_serialize_empty_toml_to_empty_string() {
+  public void should_write_empty_toml_to_empty_string() {
     Toml toml = new Toml();
     assertEquals("", toml.serialize());
   }
 
   @Test
-  public void should_serialize_strings_to_toml_utf8() throws UnsupportedEncodingException {
+  public void should_write_strings_to_toml_utf8() throws UnsupportedEncodingException {
     String input = " é foo € \b \t \n \f \r \" \\ ";
-    assertEquals("\" \\u00E9 foo \\u20AC \\b \\t \\n \\f \\r \\\" \\ \"", Toml.serializeFrom(input));
+    assertEquals("\" \\u00E9 foo \\u20AC \\b \\t \\n \\f \\r \\\" \\ \"", Toml.write(input));
 
     // Check unicode code points greater than 0XFFFF
     input = " \uD801\uDC28 \uD840\uDC0B ";
-    assertEquals("\" \\U00010428 \\U0002000B \"", Toml.serializeFrom(input));
+    assertEquals("\" \\U00010428 \\U0002000B \"", Toml.write(input));
   }
 
   @Test
@@ -281,11 +281,11 @@ public class SerializerTest {
         "\"5€\" = 2\n" +
         "\"c$d\" = 3\n" +
         "\"e/f\" = 4\n";
-    assertEquals(expected, Toml.serializeFrom(aMap));
+    assertEquals(expected, Toml.write(aMap));
   }
 
   @Test
-  public void should_serialize_from_toml() {
+  public void should_write_from_toml() {
     String tomlString = "a = 1\n";
     Toml toml = new Toml().parse(tomlString);
     assertEquals(tomlString, toml.serialize());

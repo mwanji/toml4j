@@ -2,7 +2,7 @@ package com.moandjiezana.toml;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-class NumberConverter implements ValueConverter {
+class NumberConverter implements ValueConverter, ValueWriter {
   static final NumberConverter NUMBER_PARSER = new NumberConverter();
   
   @Override
@@ -82,4 +82,25 @@ class NumberConverter implements ValueConverter {
       return errors;
     }
   }
+
+  @Override
+  public boolean canWrite(Object value) {
+    return Number.class.isInstance(value);
+  }
+
+  @Override
+  public void write(Object value, WriterContext context) {
+    context.output.append(value.toString());
+  }
+
+  @Override
+  public boolean isPrimitiveType() {
+    return true;
+  }
+
+  @Override
+  public boolean isTable() {
+    return false;
+  }
+
 }

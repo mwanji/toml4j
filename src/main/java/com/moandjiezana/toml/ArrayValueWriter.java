@@ -5,7 +5,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 
-abstract class ArraySerializer implements Serializer {
+abstract class ArrayValueWriter implements ValueWriter {
   static protected boolean isArrayish(Object value) {
     return value instanceof Collection || value.getClass().isArray();
   }
@@ -23,8 +23,8 @@ abstract class ArraySerializer implements Serializer {
   static boolean isArrayOfPrimitive(Object array) {
     Object first = peek(array);
     if (first != null) {
-      Serializer serializer = Serializers.findSerializerFor(first);
-      return serializer.isPrimitiveType() || isArrayish(first);
+      ValueWriter valueWriter = ValueWriters.findWriterFor(first);
+      return valueWriter.isPrimitiveType() || isArrayish(first);
     }
 
     return false;

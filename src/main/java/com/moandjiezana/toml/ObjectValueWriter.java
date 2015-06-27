@@ -4,25 +4,25 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-import static com.moandjiezana.toml.MapSerializer.MAP_SERIALIZER;
+import static com.moandjiezana.toml.MapValueWriter.MAP_VALUE_WRITER;
 
-class ObjectSerializer implements Serializer {
-  static final Serializer OBJECT_SERIALIZER = new ObjectSerializer();
+class ObjectValueWriter implements ValueWriter {
+  static final ValueWriter OBJECT_VALUE_WRITER = new ObjectValueWriter();
 
   @Override
-  public boolean canSerialize(Object value) {
+  public boolean canWrite(Object value) {
     return true;
   }
 
   @Override
-  public void serialize(Object value, SerializerContext context) {
+  public void write(Object value, WriterContext context) {
     Map<String, Object> to = new LinkedHashMap<String, Object>();
     Set<Field> fields = getFieldsForClass(value.getClass());
     for (Field field : fields) {
       to.put(field.getName(), getFieldValue(field, value));
     }
 
-    MAP_SERIALIZER.serialize(to, context);
+    MAP_VALUE_WRITER.write(to, context);
   }
 
   @Override

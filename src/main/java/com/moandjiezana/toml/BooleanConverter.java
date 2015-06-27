@@ -3,7 +3,7 @@ package com.moandjiezana.toml;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-class BooleanConverter implements ValueConverter {
+class BooleanConverter implements ValueConverter, ValueWriter {
   
   static final BooleanConverter BOOLEAN_PARSER = new BooleanConverter(); 
 
@@ -22,6 +22,26 @@ class BooleanConverter implements ValueConverter {
     index.addAndGet(endIndex - 1);
     
     return b;
+  }
+
+  @Override
+  public boolean canWrite(Object value) {
+    return Boolean.class.isInstance(value);
+  }
+
+  @Override
+  public void write(Object value, WriterContext context) {
+    context.output.append(value.toString());
+  }
+
+  @Override
+  public boolean isPrimitiveType() {
+    return true;
+  }
+
+  @Override
+  public boolean isTable() {
+    return false;
   }
 
   private BooleanConverter() {}

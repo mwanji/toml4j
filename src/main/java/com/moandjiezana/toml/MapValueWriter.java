@@ -4,25 +4,25 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.moandjiezana.toml.PrimitiveArraySerializer.PRIMITIVE_ARRAY_SERIALIZER;
-import static com.moandjiezana.toml.TableArraySerializer.TABLE_ARRAY_SERIALIZER;
+import static com.moandjiezana.toml.PrimitiveArrayValueWriter.PRIMITIVE_ARRAY_VALUE_WRITER;
+import static com.moandjiezana.toml.TableArrayValueWriter.TABLE_ARRAY_VALUE_WRITER;
 
-class MapSerializer implements Serializer {
-  static final Serializer MAP_SERIALIZER = new MapSerializer();
+class MapValueWriter implements ValueWriter {
+  static final ValueWriter MAP_VALUE_WRITER = new MapValueWriter();
 
   private static final Pattern requiredQuotingPattern = Pattern.compile("^.*[^A-Za-z\\d_-].*$");
 
   @Override
-  public boolean canSerialize(Object value) {
+  public boolean canWrite(Object value) {
     return value instanceof Map;
   }
 
   @Override
-  public void serialize(Object value, SerializerContext context) {
+  public void write(Object value, WriterContext context) {
     Map from = (Map) value;
 
     if (hasPrimitiveValues(from)) {
-      context.serializeKey();
+      context.writeKey();
     }
 
     // Render primitive types and arrays of primitive first so they are
@@ -33,16 +33,16 @@ class MapSerializer implements Serializer {
         continue;
       }
 
-      Serializer serializer = Serializers.findSerializerFor(fromValue);
-      if (serializer.isPrimitiveType()) {
+      ValueWriter valueWriter = ValueWriters.findWriterFor(fromValue);
+      if (valueWriter.isPrimitiveType()) {
         context.indent();
-        context.serialized.append(quoteKey(key)).append(" = ");
-        serializer.serialize(fromValue, context);
-        context.serialized.append('\n');
-      } else if (serializer == PRIMITIVE_ARRAY_SERIALIZER) {
-        context.serialized.append(quoteKey(key)).append(" = ");
-        serializer.serialize(fromValue, context);
-        context.serialized.append('\n');
+        context.output.append(quoteKey(key)).append(" = ");
+        valueWriter.write(fromValue, context);
+        context.output.append('\n');
+      } else if (valueWriter == PRIMITIVE_ARRAY_VALUE_WRITER) {
+        context.output.append(quoteKey(key)).append(" = ");
+        valueWriter.write(fromValue, context);
+        context.output.append('\n');
       }
     }
 
@@ -53,9 +53,9 @@ class MapSerializer implements Serializer {
         continue;
       }
 
-      Serializer serializer = Serializers.findSerializerFor(fromValue);
-      if (serializer.isTable() || serializer == TABLE_ARRAY_SERIALIZER) {
-        serializer.serialize(fromValue, context.extend(quoteKey(key)));
+      ValueWriter valueWriter = ValueWriters.findWriterFor(fromValue);
+      if (valueWriter.isTable() || valueWriter == TABLE_ARRAY_VALUE_WRITER) {
+        valueWriter.write(fromValue, context.extend(quoteKey(key)));
       }
     }
   }
@@ -87,8 +87,8 @@ class MapSerializer implements Serializer {
         continue;
       }
 
-      Serializer serializer = Serializers.findSerializerFor(fromValue);
-      if (serializer.isPrimitiveType() || serializer == PRIMITIVE_ARRAY_SERIALIZER) {
+      ValueWriter valueWriter = ValueWriters.findWriterFor(fromValue);
+      if (valueWriter.isPrimitiveType() || valueWriter == PRIMITIVE_ARRAY_VALUE_WRITER) {
         return true;
       }
     }

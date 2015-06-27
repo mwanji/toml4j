@@ -1,0 +1,41 @@
+package com.moandjiezana.toml;
+
+import static com.moandjiezana.toml.BooleanConverter.BOOLEAN_PARSER;
+import static com.moandjiezana.toml.DateConverter.DATE_PARSER;
+import static com.moandjiezana.toml.MapValueWriter.MAP_VALUE_WRITER;
+import static com.moandjiezana.toml.NumberConverter.NUMBER_PARSER;
+import static com.moandjiezana.toml.ObjectValueWriter.OBJECT_VALUE_WRITER;
+import static com.moandjiezana.toml.PrimitiveArrayValueWriter.PRIMITIVE_ARRAY_VALUE_WRITER;
+import static com.moandjiezana.toml.StringConverter.STRING_PARSER;
+import static com.moandjiezana.toml.TableArrayValueWriter.TABLE_ARRAY_VALUE_WRITER;
+
+class ValueWriters {
+
+  static ValueWriter findWriterFor(Object value) {
+    for (ValueWriter valueWriter : VALUE_WRITERs) {
+      if (valueWriter.canWrite(value)) {
+        return valueWriter;
+      }
+    }
+
+    return OBJECT_VALUE_WRITER;
+  }
+
+  static String write(Object value) {
+    WriterContext context = new WriterContext();
+    write(value, context);
+
+    return context.output.toString();
+  }
+
+  static void write(Object value, WriterContext context) {
+    findWriterFor(value).write(value, context);
+  }
+
+  private ValueWriters() {}
+
+  private static final ValueWriter[] VALUE_WRITERs = {
+      STRING_PARSER, NUMBER_PARSER, BOOLEAN_PARSER, DATE_PARSER,
+      MAP_VALUE_WRITER, PRIMITIVE_ARRAY_VALUE_WRITER, TABLE_ARRAY_VALUE_WRITER
+  };
+}

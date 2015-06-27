@@ -1,7 +1,7 @@
 package com.moandjiezana.toml;
 
-class StringSerializer implements Serializer {
-  static final Serializer STRING_SERIALIZER = new StringSerializer();
+class StringValueWriter implements ValueWriter {
+  static final ValueWriter STRING_VALUE_WRITER = new StringValueWriter();
 
   static private final String[] specialCharacterEscapes = new String[93];
 
@@ -16,15 +16,15 @@ class StringSerializer implements Serializer {
   }
 
   @Override
-  public boolean canSerialize(Object value) {
+  public boolean canWrite(Object value) {
     return value.getClass().isAssignableFrom(String.class);
   }
 
   @Override
-  public void serialize(Object value, SerializerContext context) {
-    context.serialized.append('"');
-    escapeUnicode(value.toString(), context.serialized);
-    context.serialized.append('"');
+  public void write(Object value, WriterContext context) {
+    context.output.append('"');
+    escapeUnicode(value.toString(), context.output);
+    context.output.append('"');
   }
 
   @Override
