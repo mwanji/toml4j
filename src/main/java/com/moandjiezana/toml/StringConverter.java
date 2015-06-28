@@ -18,7 +18,7 @@ class StringConverter implements ValueConverter, ValueWriter {
     specialCharacterEscapes[0x0C] = "\\f";
     specialCharacterEscapes[0x0D] = "\\r";
     specialCharacterEscapes[0x22] = "\\\"";
-    specialCharacterEscapes[0x5C] = "\\";
+    specialCharacterEscapes[0x5C] = "\\\\";
   }
 
   @Override
