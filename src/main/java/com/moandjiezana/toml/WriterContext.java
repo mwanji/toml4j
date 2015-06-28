@@ -1,26 +1,43 @@
 package com.moandjiezana.toml;
 
+import java.util.Arrays;
+
 class WriterContext {
   private String key = "";
+  private String currentTableIndent = "";
+  private String currentFieldIndent = "";
   private boolean isArrayOfTable = false;
+  private final TomlWriter tomlWriter;
   StringBuilder output = new StringBuilder();
 
-  WriterContext(String key, StringBuilder output) {
+  WriterContext(String key, String tableIndent, StringBuilder output, TomlWriter tomlWriter) {
     this.key = key;
+    this.currentTableIndent = tableIndent;
+    this.currentFieldIndent = tableIndent + fillStringWithSpaces(tomlWriter.getIndentationPolicy().getKeyValueIndent());
     this.output = output;
+    this.tomlWriter = tomlWriter;
   }
 
-  WriterContext() {
+  WriterContext(TomlWriter tomlWriter) {
+    this.tomlWriter = tomlWriter;
   }
 
-  WriterContext extend(String newKey) {
+  WriterContext pushTable(String newKey) {
+    String newIndent = "";
+    if (!key.isEmpty()) {
+      newIndent = growIndent(tomlWriter.getIndentationPolicy());
+    }
+
     String fullKey = key + (key.isEmpty() ? newKey : "." + newKey);
 
-    return new WriterContext(fullKey, output);
+    return new WriterContext(fullKey, newIndent, output, tomlWriter);
   }
 
-  WriterContext extend() {
-    return new WriterContext(key, output);
+  WriterContext pushTableFromArray() {
+    WriterContext subContext = new WriterContext(key, currentTableIndent, output, tomlWriter);
+    subContext.setIsArrayOfTable(true);
+
+    return subContext;
   }
 
   void writeKey() {
@@ -32,6 +49,8 @@ class WriterContext {
       output.append('\n');
     }
 
+    output.append(currentTableIndent);
+
     if (isArrayOfTable) {
       output.append("[[").append(key).append("]]\n");
     } else {
@@ -40,11 +59,24 @@ class WriterContext {
   }
 
   void indent() {
-    output.append(key.isEmpty() ? "" : "  ");
+    if (!key.isEmpty()) {
+      output.append(currentFieldIndent);
+    }
   }
 
   WriterContext setIsArrayOfTable(boolean isArrayOfTable) {
     this.isArrayOfTable = isArrayOfTable;
     return this;
+  }
+
+  private String growIndent(WriterIndentationPolicy indentationPolicy) {
+    return currentTableIndent + fillStringWithSpaces(indentationPolicy.getTableIndent());
+  }
+
+  private String fillStringWithSpaces(int count) {
+    char[] chars = new char[count];
+    Arrays.fill(chars, ' ');
+
+    return new String(chars);
   }
 }

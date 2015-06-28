@@ -56,7 +56,7 @@ class MapValueWriter implements ValueWriter {
 
       ValueWriter valueWriter = WRITERS.findWriterFor(fromValue);
       if (valueWriter.isTable() || valueWriter == TABLE_ARRAY_VALUE_WRITER) {
-        valueWriter.write(fromValue, context.extend(quoteKey(key)));
+        valueWriter.write(fromValue, context.pushTable(quoteKey(key)));
       }
     }
   }

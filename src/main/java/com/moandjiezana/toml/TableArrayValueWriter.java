@@ -16,7 +16,7 @@ class TableArrayValueWriter extends ArrayValueWriter {
   public void write(Object value, WriterContext context) {
     Collection values = normalize(value);
 
-    WriterContext subContext = context.extend().setIsArrayOfTable(true);
+    WriterContext subContext = context.pushTableFromArray();
 
     for (Object elem : values) {
       WRITERS.write(elem, subContext);

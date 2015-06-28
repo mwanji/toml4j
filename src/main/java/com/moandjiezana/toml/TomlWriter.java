@@ -24,6 +24,9 @@ import static com.moandjiezana.toml.ValueWriters.WRITERS;
  * </code></pre>
  */
 public class TomlWriter {
+
+  private WriterIndentationPolicy indentationPolicy = new WriterIndentationPolicy();
+
   /**
    * Creates a TomlWriter instance.
    */
@@ -36,7 +39,7 @@ public class TomlWriter {
    * @return a string containing the TOML representation of the given Object
    */
   public String write(Object from) {
-    return WRITERS.write(from);
+    return WRITERS.write(from, this);
   }
 
   /**
@@ -72,5 +75,22 @@ public class TomlWriter {
     FileWriter writer = new FileWriter(target);
     writer.write(write(from));
     writer.close();
+  }
+
+  public WriterIndentationPolicy getIndentationPolicy() {
+    return indentationPolicy;
+  }
+
+  /**
+   * Set the {@link WriterIndentationPolicy} for this writer.
+   *
+   * If unset, the default policy (no indentation) is used.
+   *
+   * @param indentationPolicy the new policy
+   * @return this TomlWriter instance
+   */
+  public TomlWriter setIndentationPolicy(WriterIndentationPolicy indentationPolicy) {
+    this.indentationPolicy = indentationPolicy;
+    return this;
   }
 }

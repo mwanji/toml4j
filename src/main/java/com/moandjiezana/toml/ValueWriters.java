@@ -23,8 +23,8 @@ class ValueWriters {
     return OBJECT_VALUE_WRITER;
   }
 
-  String write(Object value) {
-    WriterContext context = new WriterContext();
+  String write(Object value, TomlWriter tomlWriter) {
+    WriterContext context = new WriterContext(tomlWriter);
     write(value, context);
 
     return context.output.toString();

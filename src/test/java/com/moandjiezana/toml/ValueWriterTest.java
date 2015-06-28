@@ -60,21 +60,20 @@ public class ValueWriterTest {
     return dateString;
   }
 
-  @Test
-  public void should_write_nested_map() {
-    class SubChild {
-      int anInt;
-    }
-    class Child {
-      SubChild subChild;
-      int anInt;
-    }
-    class Parent {
-      Map<String, Object> aMap;
-      Child child;
-      boolean aBoolean;
-    }
+  class SubChild {
+    int anInt;
+  }
+  class Child {
+    SubChild subChild;
+    int anInt;
+  }
+  class Parent {
+    Map<String, Object> aMap;
+    Child child;
+    boolean aBoolean;
+  }
 
+  private Parent buildNestedMap() {
     Parent parent = new Parent();
     parent.aMap = new LinkedHashMap<String, Object>();
     parent.aMap.put("foo", 1);
@@ -86,7 +85,29 @@ public class ValueWriterTest {
     parent.child.subChild.anInt = 4;
     parent.aBoolean = true;
 
-    String output = new TomlWriter().write(parent);
+    return parent;
+  }
+
+  @Test
+  public void should_write_nested_map() {
+    String output = new TomlWriter().write(buildNestedMap());
+    String expected = "aBoolean = true\n\n" +
+        "[aMap]\n" +
+        "foo = 1\n" +
+        "bar = \"value1\"\n" +
+        "\"baz.x\" = true\n\n" +
+        "[child]\n" +
+        "anInt = 2\n\n" +
+        "[child.subChild]\n" +
+        "anInt = 4\n";
+    assertEquals(expected, output);
+  }
+
+  @Test
+  public void should_follow_indentation_policy_of_indented_values() {
+    String output = new TomlWriter().
+        setIndentationPolicy(new WriterIndentationPolicy().setKeyValueIndent(2)).
+        write(buildNestedMap());
     String expected = "aBoolean = true\n\n" +
         "[aMap]\n" +
         "  foo = 1\n" +
@@ -96,6 +117,40 @@ public class ValueWriterTest {
         "  anInt = 2\n\n" +
         "[child.subChild]\n" +
         "  anInt = 4\n";
+    assertEquals(expected, output);
+  }
+
+  @Test
+  public void should_follow_indentation_policy_of_indented_tables() {
+    String output = new TomlWriter().
+        setIndentationPolicy(new WriterIndentationPolicy().setTableIndent(2)).
+        write(buildNestedMap());
+    String expected = "aBoolean = true\n\n" +
+        "[aMap]\n" +
+        "foo = 1\n" +
+        "bar = \"value1\"\n" +
+        "\"baz.x\" = true\n\n" +
+        "[child]\n" +
+        "anInt = 2\n\n" +
+        "  [child.subChild]\n" +
+        "  anInt = 4\n";
+    assertEquals(expected, output);
+  }
+
+  @Test
+  public void should_follow_indentation_policy_of_indented_tables_and_values() {
+    String output = new TomlWriter().
+        setIndentationPolicy(new WriterIndentationPolicy().setTableIndent(2).setKeyValueIndent(2)).
+        write(buildNestedMap());
+    String expected = "aBoolean = true\n\n" +
+        "[aMap]\n" +
+        "  foo = 1\n" +
+        "  bar = \"value1\"\n" +
+        "  \"baz.x\" = true\n\n" +
+        "[child]\n" +
+        "  anInt = 2\n\n" +
+        "  [child.subChild]\n" +
+        "    anInt = 4\n";
     assertEquals(expected, output);
   }
 
@@ -128,9 +183,9 @@ public class ValueWriterTest {
 
     String output = new TomlWriter().write(config);
     String expected = "[[table]]\n" +
-        "  anInt = 1\n\n" +
+        "anInt = 1\n\n" +
         "[[table]]\n" +
-        "  anInt = 2\n";
+        "anInt = 2\n";
     assertEquals(expected, output);
   }
 
@@ -179,7 +234,7 @@ public class ValueWriterTest {
       B b = new B();
     }
 
-    assertEquals("[b.c]\n  anInt = 1\n", new TomlWriter().write(new A()));
+    assertEquals("[b.c]\nanInt = 1\n", new TomlWriter().write(new A()));
   }
 
   @Test
@@ -221,23 +276,23 @@ public class ValueWriterTest {
     basket.fruit[1].variety[0].name = "plantain";
 
     String expected = "[[fruit]]\n" +
-        "  name = \"apple\"\n" +
+        "name = \"apple\"\n" +
         "\n" +
         "[fruit.physical]\n" +
-        "  color = \"red\"\n" +
-        "  shape = \"round\"\n" +
+        "color = \"red\"\n" +
+        "shape = \"round\"\n" +
         "\n" +
         "[[fruit.variety]]\n" +
-        "  name = \"red delicious\"\n" +
+        "name = \"red delicious\"\n" +
         "\n" +
         "[[fruit.variety]]\n" +
-        "  name = \"granny smith\"\n" +
+        "name = \"granny smith\"\n" +
         "\n" +
         "[[fruit]]\n" +
-        "  name = \"banana\"\n" +
+        "name = \"banana\"\n" +
         "\n" +
         "[[fruit.variety]]\n" +
-        "  name = \"plantain\"" +
+        "name = \"plantain\"" +
         "\n";
 
 
