@@ -29,7 +29,7 @@ import static com.moandjiezana.toml.ValueWriters.WRITERS;
 public class TomlWriter {
 
   private WriterIndentationPolicy indentationPolicy = new WriterIndentationPolicy();
-  private boolean wantSpaceyArraysValue = true;
+  private boolean wantTerseArraysValue = true;
   private GregorianCalendar calendar = new GregorianCalendar();
   private DateFormat customDateFormat = null;
 
@@ -101,25 +101,25 @@ public class TomlWriter {
   }
 
   /**
-   * <p>Control spacing around array brackets in the TOML output.</p>
+   * <p>Control whitespace in arrays in the TOML output.</p>
    *
-   * <p>Spacey arrays = true (default):</p>
+   * <p>Terse arrays = false (default):</p>
    *
    * <pre><code>
    *   a = [ 1, 2, 3 ]
    * </code></pre>
    *
-   * <p>Spacey arrays = false:</p>
+   * <p>Terse arrays = true:</p>
    *
    * <pre><code>
-   *   a = [1, 2, 3]
+   *   a = [1,2,3]
    * </code></pre>
    *
-   * @param value spacey arrays setting
+   * @param value terse arrays setting
    * @return this TomlWriter instance
    */
-  public TomlWriter wantSpaceyArrays(boolean value) {
-    this.wantSpaceyArraysValue = value;
+  public TomlWriter wantTerseArrays(boolean value) {
+    this.wantTerseArraysValue = value;
     return this;
   }
 
@@ -127,8 +127,8 @@ public class TomlWriter {
    * Get the current array whitespace policy
    * @return the current policy
    */
-  public boolean wantSpaceyArrays() {
-    return wantSpaceyArraysValue;
+  public boolean wantTerseArrays() {
+    return wantTerseArraysValue;
   }
 
   /**

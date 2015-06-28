@@ -15,7 +15,7 @@ class PrimitiveArrayValueWriter extends ArrayValueWriter {
     Collection values = normalize(value);
 
     context.output.append('[');
-    if (context.getTomlWriter().wantSpaceyArrays()) {
+    if (!context.getTomlWriter().wantTerseArrays()) {
       context.output.append(' ');
     }
 
@@ -28,7 +28,7 @@ class PrimitiveArrayValueWriter extends ArrayValueWriter {
       first = false;
     }
 
-    if (context.getTomlWriter().wantSpaceyArrays()) {
+    if (!context.getTomlWriter().wantTerseArrays()) {
       context.output.append(' ');
     }
     context.output.append(']');
