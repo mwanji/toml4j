@@ -26,6 +26,7 @@ import static com.moandjiezana.toml.ValueWriters.WRITERS;
 public class TomlWriter {
 
   private WriterIndentationPolicy indentationPolicy = new WriterIndentationPolicy();
+  private boolean wantSpaceyArraysValue = true;
 
   /**
    * Creates a TomlWriter instance.
@@ -92,5 +93,36 @@ public class TomlWriter {
   public TomlWriter setIndentationPolicy(WriterIndentationPolicy indentationPolicy) {
     this.indentationPolicy = indentationPolicy;
     return this;
+  }
+
+  /**
+   * <p>Control spacing around array brackets in the TOML output.</p>
+   *
+   * <p>Spacey arrays = true (default):</p>
+   *
+   * <pre><code>
+   *   a = [ 1, 2, 3 ]
+   * </code></pre>
+   *
+   * <p>Spacey arrays = false:</p>
+   *
+   * <pre><code>
+   *   a = [1, 2, 3]
+   * </code></pre>
+   *
+   * @param value spacey arrays setting
+   * @return this TomlWriter instance
+   */
+  public TomlWriter wantSpaceyArrays(boolean value) {
+    this.wantSpaceyArraysValue = value;
+    return this;
+  }
+
+  /**
+   * Get the current array whitespace policy
+   * @return the current policy
+   */
+  public boolean wantSpaceyArrays() {
+    return wantSpaceyArraysValue;
   }
 }

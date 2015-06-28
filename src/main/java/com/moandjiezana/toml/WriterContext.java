@@ -79,4 +79,8 @@ class WriterContext {
 
     return new String(chars);
   }
+
+  public TomlWriter getTomlWriter() {
+    return tomlWriter;
+  }
 }

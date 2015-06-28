@@ -14,7 +14,11 @@ class PrimitiveArrayValueWriter extends ArrayValueWriter {
   public void write(Object value, WriterContext context) {
     Collection values = normalize(value);
 
-    context.output.append("[ ");
+    context.output.append('[');
+    if (context.getTomlWriter().wantSpaceyArrays()) {
+      context.output.append(' ');
+    }
+
     boolean first = true;
     for (Object elem : values) {
       if (!first) {
@@ -23,7 +27,11 @@ class PrimitiveArrayValueWriter extends ArrayValueWriter {
       ValueWriters.WRITERS.write(elem, context);
       first = false;
     }
-    context.output.append(" ]");
+
+    if (context.getTomlWriter().wantSpaceyArrays()) {
+      context.output.append(' ');
+    }
+    context.output.append(']');
   }
 
   private PrimitiveArrayValueWriter() {}
