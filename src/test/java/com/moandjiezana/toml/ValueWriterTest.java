@@ -89,7 +89,7 @@ public class ValueWriterTest {
   }
 
   @Test
-  public void should_write_nested_map() {
+  public void should_write_nested_map_with_default_indentation_policy() {
     String output = new TomlWriter().write(buildNestedMap());
     String expected = "aBoolean = true\n\n" +
         "[aMap]\n" +
@@ -151,18 +151,6 @@ public class ValueWriterTest {
         "  anInt = 2\n\n" +
         "  [child.subChild]\n" +
         "    anInt = 4\n";
-    assertEquals(expected, output);
-  }
-
-  @Test
-  public void should_write_array_of_primitive() {
-    class ArrayTest {
-      int[] array = {1, 2, 3};
-    }
-
-    ArrayTest arrayTest = new ArrayTest();
-    String output = new TomlWriter().write(arrayTest);
-    String expected = "array = [ 1, 2, 3 ]\n";
     assertEquals(expected, output);
   }
 
@@ -235,69 +223,6 @@ public class ValueWriterTest {
     }
 
     assertEquals("[b.c]\nanInt = 1\n", new TomlWriter().write(new A()));
-  }
-
-  @Test
-  public void should_write_nested_arrays_of_tables() {
-    class Physical {
-      String color;
-      String shape;
-    }
-    class Variety {
-      String name;
-    }
-    class Fruit {
-      Physical physical;
-      Variety[] variety;
-      String name;
-    }
-    class Basket {
-      Fruit[] fruit;
-    }
-
-    Basket basket = new Basket();
-    basket.fruit = new Fruit[2];
-
-    basket.fruit[0] = new Fruit();
-    basket.fruit[0].name = "apple";
-    basket.fruit[0].physical = new Physical();
-    basket.fruit[0].physical.color = "red";
-    basket.fruit[0].physical.shape = "round";
-    basket.fruit[0].variety = new Variety[2];
-    basket.fruit[0].variety[0] = new Variety();
-    basket.fruit[0].variety[0].name = "red delicious";
-    basket.fruit[0].variety[1] = new Variety();
-    basket.fruit[0].variety[1].name = "granny smith";
-
-    basket.fruit[1] = new Fruit();
-    basket.fruit[1].name = "banana";
-    basket.fruit[1].variety = new Variety[1];
-    basket.fruit[1].variety[0] = new Variety();
-    basket.fruit[1].variety[0].name = "plantain";
-
-    String expected = "[[fruit]]\n" +
-        "name = \"apple\"\n" +
-        "\n" +
-        "[fruit.physical]\n" +
-        "color = \"red\"\n" +
-        "shape = \"round\"\n" +
-        "\n" +
-        "[[fruit.variety]]\n" +
-        "name = \"red delicious\"\n" +
-        "\n" +
-        "[[fruit.variety]]\n" +
-        "name = \"granny smith\"\n" +
-        "\n" +
-        "[[fruit]]\n" +
-        "name = \"banana\"\n" +
-        "\n" +
-        "[[fruit.variety]]\n" +
-        "name = \"plantain\"" +
-        "\n";
-
-
-    String output = new TomlWriter().write(basket);
-    assertEquals(expected, output);
   }
 
   @Test
