@@ -29,7 +29,7 @@ import static com.moandjiezana.toml.ValueWriters.WRITERS;
 public class TomlWriter {
 
   private WriterIndentationPolicy indentationPolicy = new WriterIndentationPolicy();
-  private boolean wantTerseArraysValue = true;
+  private boolean wantTerseArraysValue = false;
   private GregorianCalendar calendar = new GregorianCalendar();
   private DateFormat customDateFormat = null;
 

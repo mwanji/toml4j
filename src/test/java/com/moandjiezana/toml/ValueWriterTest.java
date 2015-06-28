@@ -317,7 +317,7 @@ public class ValueWriterTest {
   @Test
   public void should_write_strings_to_toml_utf8() throws UnsupportedEncodingException {
     String input = " é foo € \b \t \n \f \r \" \\ ";
-    assertEquals("\" \\u00E9 foo \\u20AC \\b \\t \\n \\f \\r \\\" \\ \"", new TomlWriter().write(input));
+    assertEquals("\" \\u00E9 foo \\u20AC \\b \\t \\n \\f \\r \\\" \\\\ \"", new TomlWriter().write(input));
 
     // Check unicode code points greater than 0XFFFF
     input = " \uD801\uDC28 \uD840\uDC0B ";

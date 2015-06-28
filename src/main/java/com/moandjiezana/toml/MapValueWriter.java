@@ -22,7 +22,7 @@ class MapValueWriter implements ValueWriter {
   public void write(Object value, WriterContext context) {
     Map from = (Map) value;
 
-    if (hasPrimitiveValues(from)) {
+    if (hasPrimitiveValues(from, context)) {
       context.writeKey();
     }
 
@@ -81,7 +81,7 @@ class MapValueWriter implements ValueWriter {
     return stringKey;
   }
 
-  private static boolean hasPrimitiveValues(Map values) {
+  private static boolean hasPrimitiveValues(Map values, WriterContext context) {
     for (Object key : values.keySet()) {
       Object fromValue = values.get(key);
       if (fromValue == null) {
