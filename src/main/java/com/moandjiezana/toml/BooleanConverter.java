@@ -45,4 +45,9 @@ class BooleanConverter implements ValueConverter, ValueWriter {
   }
 
   private BooleanConverter() {}
+
+  @Override
+  public String toString() {
+    return "boolean";
+  }
 }

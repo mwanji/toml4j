@@ -210,6 +210,18 @@ public class ValueWriterTest {
     assertEquals("", new TomlWriter().write(new TestClass()));
   }
 
+  @Test(expected = IllegalStateException.class)
+  public void should_reject_heterogeneous_arrays() {
+    class BadArray {
+      Object[] array = new Object[2];
+    }
+    BadArray badArray = new BadArray();
+    badArray.array[0] = new Integer(1);
+    badArray.array[1] = "oops";
+
+    new TomlWriter().write(badArray);
+  }
+
   @Test
   public void should_elide_empty_intermediate_tables() {
     class C {

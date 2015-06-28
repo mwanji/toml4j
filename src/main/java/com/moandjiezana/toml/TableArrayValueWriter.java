@@ -24,4 +24,9 @@ class TableArrayValueWriter extends ArrayValueWriter {
   }
 
   private TableArrayValueWriter() {}
+
+  @Override
+  public String toString() {
+    return "table-array";
+  }
 }

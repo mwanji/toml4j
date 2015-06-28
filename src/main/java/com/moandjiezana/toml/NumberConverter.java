@@ -103,4 +103,8 @@ class NumberConverter implements ValueConverter, ValueWriter {
     return false;
   }
 
+  @Override
+  public String toString() {
+    return "number";
+  }
 }

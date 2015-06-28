@@ -119,4 +119,9 @@ class DateConverter implements ValueConverter, ValueWriter {
   }
 
   private DateConverter() {}
+
+  @Override
+  public String toString() {
+    return "datetime";
+  }
 }

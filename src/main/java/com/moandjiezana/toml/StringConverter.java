@@ -129,4 +129,9 @@ class StringConverter implements ValueConverter, ValueWriter {
   }
 
   private StringConverter() {}
+
+  @Override
+  public String toString() {
+    return "string";
+  }
 }

@@ -6,6 +6,7 @@ class WriterContext {
   private String key = "";
   private String currentTableIndent = "";
   private String currentFieldIndent = "";
+  private String arrayKey = null;
   private boolean isArrayOfTable = false;
   private final TomlWriter tomlWriter;
   StringBuilder output = new StringBuilder();
@@ -82,5 +83,14 @@ class WriterContext {
 
   public TomlWriter getTomlWriter() {
     return tomlWriter;
+  }
+
+  public WriterContext setArrayKey(String arrayKey) {
+    this.arrayKey = arrayKey;
+    return this;
+  }
+
+  public String getContextPath() {
+    return key.isEmpty() ? arrayKey : key + "." + arrayKey;
   }
 }

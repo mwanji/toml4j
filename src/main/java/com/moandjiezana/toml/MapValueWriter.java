@@ -41,6 +41,7 @@ class MapValueWriter implements ValueWriter {
         valueWriter.write(fromValue, context);
         context.output.append('\n');
       } else if (valueWriter == PRIMITIVE_ARRAY_VALUE_WRITER) {
+        context.setArrayKey(key.toString());
         context.output.append(quoteKey(key)).append(" = ");
         valueWriter.write(fromValue, context);
         context.output.append('\n');
