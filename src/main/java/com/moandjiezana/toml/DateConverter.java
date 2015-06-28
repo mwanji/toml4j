@@ -1,9 +1,9 @@
 package com.moandjiezana.toml;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,7 +12,6 @@ class DateConverter implements ValueConverter, ValueWriter {
 
   static final DateConverter DATE_PARSER = new DateConverter();
   private static final Pattern DATE_REGEX = Pattern.compile("(\\d{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9])(\\.\\d*)?(Z|(?:[+\\-]\\d{2}:\\d{2}))(.*)");
-  private static final Calendar calendar = new GregorianCalendar();
 
   @Override
   public boolean canConvert(String s) {
@@ -91,10 +90,22 @@ class DateConverter implements ValueConverter, ValueWriter {
 
   @Override
   public void write(Object value, WriterContext context) {
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:m:ss");
+    DateFormat dateFormat;
+    DateFormat customDateFormat = context.getTomlWriter().getDateFormat();
+    if (customDateFormat != null) {
+      dateFormat = customDateFormat;
+    } else {
+      dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:m:ss");
+    }
+    dateFormat.setTimeZone(context.getTomlWriter().getTimeZone());
+
     context.output.append(dateFormat.format(value));
-    int tzOffset = (calendar.get(Calendar.ZONE_OFFSET) + calendar.get(Calendar.DST_OFFSET)) / (60 * 1000);
-    context.output.append(String.format("%+03d:%02d", tzOffset / 60, tzOffset % 60));
+
+    if (customDateFormat == null) {
+      Calendar calendar = context.getTomlWriter().getCalendar();
+      int tzOffset = (calendar.get(Calendar.ZONE_OFFSET) + calendar.get(Calendar.DST_OFFSET)) / (60 * 1000);
+      context.output.append(String.format("%+03d:%02d", tzOffset / 60, tzOffset % 60));
+    }
   }
 
   @Override

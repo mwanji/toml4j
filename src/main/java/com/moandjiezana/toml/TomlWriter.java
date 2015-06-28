@@ -1,8 +1,11 @@
 package com.moandjiezana.toml;
 
 import java.io.*;
+import java.text.DateFormat;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import static com.moandjiezana.toml.ValueWriters.WRITERS;
 
@@ -27,6 +30,8 @@ public class TomlWriter {
 
   private WriterIndentationPolicy indentationPolicy = new WriterIndentationPolicy();
   private boolean wantSpaceyArraysValue = true;
+  private GregorianCalendar calendar = new GregorianCalendar();
+  private DateFormat customDateFormat = null;
 
   /**
    * Creates a TomlWriter instance.
@@ -124,5 +129,49 @@ public class TomlWriter {
    */
   public boolean wantSpaceyArrays() {
     return wantSpaceyArraysValue;
+  }
+
+  /**
+   * Set the {@link TimeZone} used when formatting datetimes.
+   *
+   * If unset, datetimes will be rendered in the current time zone.
+   *
+   * @param timeZone custom TimeZone.
+   * @return this TomlWriter instance
+   */
+  public TomlWriter setTimeZone(TimeZone timeZone) {
+    calendar = new GregorianCalendar(timeZone);
+    return this;
+  }
+
+  /**
+   * Get the {@link TimeZone} in use for this TomlWriter.
+   *
+   * @return the currently set TimeZone.
+   */
+  public TimeZone getTimeZone() {
+    return calendar.getTimeZone();
+  }
+
+  /**
+   * Override the default date format.
+   *
+   * If a time zone was set with {@link #setTimeZone(TimeZone)}, it will be applied before formatting
+   * datetimes.
+   *
+   * @param customDateFormat a custom DateFormat
+   * @return this TomlWriter instance
+   */
+  public TomlWriter setDateFormat(DateFormat customDateFormat) {
+    this.customDateFormat = customDateFormat;
+    return this;
+  }
+
+  public DateFormat getDateFormat() {
+    return customDateFormat;
+  }
+
+  GregorianCalendar getCalendar() {
+    return calendar;
   }
 }
