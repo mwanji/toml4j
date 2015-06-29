@@ -5,14 +5,14 @@
 ### Changed
 
 * __BREAKING:__ Toml#getList(String), Toml#getTable(String) and Toml#getTables(String) return null when key is not found
-* Removed trailing newline from error messages
+* Removed trailing newline from error messages (thanks to __[Zero3](https://github.com/Zero3)__)
 
 ### Added
 
-* Support for writing objects to TOML format.
+* Support for writing objects to TOML (thanks to __[dilecti](https://github.com/dilecti)__)
 * Support for underscores in numbers (the feature branch had accidentally not been merged! :( )
-* Set<Map.Entry> Toml#entrySet() cf. Reflection section in README
-* Overloaded getters that take a default value. Thanks to __[udiabon](https://github.com/udiabon)__.
+* Set<Map.Entry> Toml#entrySet() cf. Reflection section in README (thanks __[Zero3](https://github.com/Zero3)__ and __[d3xter](https://github.com/d3xter)__)
+* Overloaded getters that take a default value (thanks to __[udiabon](https://github.com/udiabon)__)
 
 ## 0.4.0 / 2015-02-16
 
