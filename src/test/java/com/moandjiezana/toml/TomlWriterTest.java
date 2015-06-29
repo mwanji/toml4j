@@ -10,7 +10,7 @@ import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
-public class ValueWriterTest {
+public class TomlWriterTest {
 
   @Rule
   public TemporaryFolder testDirectory = new TemporaryFolder();
