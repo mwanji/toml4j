@@ -237,18 +237,18 @@ public class ValueWriterTest {
     assertEquals("[b.c]\nanInt = 1\n", new TomlWriter().write(new A()));
   }
 
+  class Base {
+    protected int anInt = 2;
+  }
+  class Impl extends Base {
+    boolean aBoolean = true;
+  }
+
   @Test
   public void should_write_classes_with_inheritance() {
-    class Parent {
-      protected int anInt = 2;
-    }
-    class Child extends Parent {
-      boolean aBoolean = true;
-    }
-
-    Child child = new Child();
+    Impl impl = new Impl();
     String expected = "aBoolean = true\nanInt = 2\n";
-    assertEquals(expected, new TomlWriter().write(child));
+    assertEquals(expected, new TomlWriter().write(impl));
   }
 
   @Test
