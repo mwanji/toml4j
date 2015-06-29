@@ -96,9 +96,9 @@ class StringConverter implements ValueConverter, ValueWriter {
 
   @Override
   public void write(Object value, WriterContext context) {
-    context.output.append('"');
-    escapeUnicode(value.toString(), context.output);
-    context.output.append('"');
+    context.write('"');
+    escapeUnicode(value.toString(), context);
+    context.write('"');
   }
 
   @Override
@@ -106,17 +106,17 @@ class StringConverter implements ValueConverter, ValueWriter {
     return true;
   }
 
-  private void escapeUnicode(String in, StringBuilder out) {
+  private void escapeUnicode(String in, WriterContext context) {
     for (int i = 0; i < in.length(); i++) {
       int codePoint = in.codePointAt(i);
       if (codePoint < specialCharacterEscapes.length && specialCharacterEscapes[codePoint] != null) {
-        out.append(specialCharacterEscapes[codePoint]);
+        context.write(specialCharacterEscapes[codePoint]);
       } else if (codePoint > 0x1f && codePoint < 0x7f) {
-        out.append(Character.toChars(codePoint));
+        context.write(Character.toChars(codePoint));
       } else if (codePoint <= 0xFFFF) {
-        out.append(String.format("\\u%04X", codePoint));
+        context.write(String.format("\\u%04X", codePoint));
       } else {
-        out.append(String.format("\\U%08X", codePoint));
+        context.write(String.format("\\U%08X", codePoint));
         // Skip the low surrogate, which will be the next in the code point sequence.
         i++;
       }

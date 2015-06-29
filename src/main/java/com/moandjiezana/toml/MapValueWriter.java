@@ -37,14 +37,14 @@ class MapValueWriter implements ValueWriter {
       ValueWriter valueWriter = WRITERS.findWriterFor(fromValue);
       if (valueWriter.isPrimitiveType()) {
         context.indent();
-        context.output.append(quoteKey(key)).append(" = ");
+        context.write(quoteKey(key)).write(" = ");
         valueWriter.write(fromValue, context);
-        context.output.append('\n');
+        context.write('\n');
       } else if (valueWriter == PRIMITIVE_ARRAY_VALUE_WRITER) {
         context.setArrayKey(key.toString());
-        context.output.append(quoteKey(key)).append(" = ");
+        context.write(quoteKey(key)).write(" = ");
         valueWriter.write(fromValue, context);
-        context.output.append('\n');
+        context.write('\n');
       }
     }
 

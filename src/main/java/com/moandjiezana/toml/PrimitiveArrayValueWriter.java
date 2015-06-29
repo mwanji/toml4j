@@ -1,8 +1,8 @@
 package com.moandjiezana.toml;
 
-import java.util.Collection;
-
 import static com.moandjiezana.toml.ValueWriters.WRITERS;
+
+import java.util.Collection;
 
 class PrimitiveArrayValueWriter extends ArrayValueWriter {
   static final ValueWriter PRIMITIVE_ARRAY_VALUE_WRITER = new PrimitiveArrayValueWriter();
@@ -16,9 +16,9 @@ class PrimitiveArrayValueWriter extends ArrayValueWriter {
   public void write(Object value, WriterContext context) {
     Collection values = normalize(value);
 
-    context.output.append('[');
+    context.write('[');
     if (!context.getTomlWriter().wantTerseArrays()) {
-      context.output.append(' ');
+      context.write(' ');
     }
 
     boolean first = true;
@@ -37,16 +37,16 @@ class PrimitiveArrayValueWriter extends ArrayValueWriter {
                   " but found " + writer
           );
         }
-        context.output.append(", ");
+        context.write(", ");
       }
 
       WRITERS.write(elem, context);
     }
 
     if (!context.getTomlWriter().wantTerseArrays()) {
-      context.output.append(' ');
+      context.write(' ');
     }
-    context.output.append(']');
+    context.write(']');
   }
 
   private PrimitiveArrayValueWriter() {}

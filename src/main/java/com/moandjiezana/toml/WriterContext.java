@@ -1,5 +1,7 @@
 package com.moandjiezana.toml;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Arrays;
 
 class WriterContext {
@@ -8,19 +10,13 @@ class WriterContext {
   private String currentFieldIndent = "";
   private String arrayKey = null;
   private boolean isArrayOfTable = false;
+  private boolean empty = true;
   private final TomlWriter tomlWriter;
-  StringBuilder output = new StringBuilder();
+  private final Writer output;
 
-  WriterContext(String key, String tableIndent, StringBuilder output, TomlWriter tomlWriter) {
-    this.key = key;
-    this.currentTableIndent = tableIndent;
-    this.currentFieldIndent = tableIndent + fillStringWithSpaces(tomlWriter.getIndentationPolicy().getKeyValueIndent());
+  WriterContext(TomlWriter tomlWriter, Writer output) {
+    this.tomlWriter = tomlWriter;
     this.output = output;
-    this.tomlWriter = tomlWriter;
-  }
-
-  WriterContext(TomlWriter tomlWriter) {
-    this.tomlWriter = tomlWriter;
   }
 
   WriterContext pushTable(String newKey) {
@@ -31,14 +27,52 @@ class WriterContext {
 
     String fullKey = key + (key.isEmpty() ? newKey : "." + newKey);
 
-    return new WriterContext(fullKey, newIndent, output, tomlWriter);
+    WriterContext subContext = new WriterContext(fullKey, newIndent, output, tomlWriter);
+    if (!empty) {
+      subContext.empty = false;
+    }
+    
+    return subContext;
   }
 
   WriterContext pushTableFromArray() {
     WriterContext subContext = new WriterContext(key, currentTableIndent, output, tomlWriter);
+    if (!empty) {
+      subContext.empty = false;
+    }
     subContext.setIsArrayOfTable(true);
 
     return subContext;
+  }
+  
+  WriterContext write(String s) {
+    try {
+      output.write(s);
+      if (s != null && !s.isEmpty()) {
+        empty = false;
+      }
+      
+      return this;
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  void write(char[] chars) {
+    for (char c : chars) {
+      write(c);
+    }
+  }
+  
+  WriterContext write(char c) {
+    try {
+      output.write(c);
+      empty = false;
+      
+      return this;
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   void writeKey() {
@@ -46,22 +80,22 @@ class WriterContext {
       return;
     }
 
-    if (output.length() > 0) {
-      output.append('\n');
+    if (!empty) {
+      write('\n');
     }
 
-    output.append(currentTableIndent);
+    write(currentTableIndent);
 
     if (isArrayOfTable) {
-      output.append("[[").append(key).append("]]\n");
+      write("[[").write(key).write("]]\n");
     } else {
-      output.append('[').append(key).append("]\n");
+      write('[').write(key).write("]\n");
     }
   }
 
   void indent() {
     if (!key.isEmpty()) {
-      output.append(currentFieldIndent);
+      write(currentFieldIndent);
     }
   }
 
@@ -79,6 +113,14 @@ class WriterContext {
     Arrays.fill(chars, ' ');
 
     return new String(chars);
+  }
+
+  private WriterContext(String key, String tableIndent, Writer output, TomlWriter tomlWriter) {
+    this.key = key;
+    this.currentTableIndent = tableIndent;
+    this.currentFieldIndent = tableIndent + fillStringWithSpaces(tomlWriter.getIndentationPolicy().getKeyValueIndent());
+    this.output = output;
+    this.tomlWriter = tomlWriter;
   }
 
   public TomlWriter getTomlWriter() {

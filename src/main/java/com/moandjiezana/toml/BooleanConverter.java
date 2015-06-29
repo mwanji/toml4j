@@ -31,7 +31,7 @@ class BooleanConverter implements ValueConverter, ValueWriter {
 
   @Override
   public void write(Object value, WriterContext context) {
-    context.output.append(value.toString());
+    context.write(value.toString());
   }
 
   @Override

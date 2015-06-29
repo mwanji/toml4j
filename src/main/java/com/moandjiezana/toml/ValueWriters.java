@@ -9,6 +9,8 @@ import static com.moandjiezana.toml.PrimitiveArrayValueWriter.PRIMITIVE_ARRAY_VA
 import static com.moandjiezana.toml.StringConverter.STRING_PARSER;
 import static com.moandjiezana.toml.TableArrayValueWriter.TABLE_ARRAY_VALUE_WRITER;
 
+import java.io.Writer;
+
 class ValueWriters {
 
   static final ValueWriters WRITERS = new ValueWriters();
@@ -23,11 +25,9 @@ class ValueWriters {
     return OBJECT_VALUE_WRITER;
   }
 
-  String write(Object value, TomlWriter tomlWriter) {
-    WriterContext context = new WriterContext(tomlWriter);
+  void write(Object value, TomlWriter tomlWriter, Writer output) {
+    WriterContext context = new WriterContext(tomlWriter, output);
     write(value, context);
-
-    return context.output.toString();
   }
 
   void write(Object value, WriterContext context) {

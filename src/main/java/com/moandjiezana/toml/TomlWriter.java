@@ -1,13 +1,19 @@
 package com.moandjiezana.toml;
 
-import java.io.*;
+import static com.moandjiezana.toml.ValueWriters.WRITERS;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.text.DateFormat;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-
-import static com.moandjiezana.toml.ValueWriters.WRITERS;
 
 /**
  * <p>Converts Objects to TOML</p>
@@ -45,29 +51,27 @@ public class TomlWriter {
    * @return a string containing the TOML representation of the given Object
    */
   public String write(Object from) {
-    return WRITERS.write(from, this);
-  }
-
-  /**
-   * Write an Object in TOML to a {@link Writer}.
-   *
-   * @param from the object to be written
-   * @param target the Writer to which TOML will be written
-   * @throws IOException if target.write() fails
-   */
-  public void write(Object from, Writer target) throws IOException {
-    target.write(write(from));
+    try {
+      StringWriter output = new StringWriter();
+      write(from, output);
+      
+      return output.toString();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**
    * Write an Object in TOML to a {@link OutputStream}.
    *
    * @param from the object to be written
-   * @param target the OutputStream to which the TOML will be written
+   * @param target the OutputStream to which the TOML will be written. The stream is not closed after being written to.
    * @throws IOException if target.write() fails
    */
   public void write(Object from, OutputStream target) throws IOException {
-    target.write(write(from).getBytes());
+    OutputStreamWriter writer = new OutputStreamWriter(target);
+    write(from, writer);
+    writer.flush();
   }
 
   /**
@@ -79,8 +83,19 @@ public class TomlWriter {
    */
   public void write(Object from, File target) throws IOException {
     FileWriter writer = new FileWriter(target);
-    writer.write(write(from));
+    write(from, writer);
     writer.close();
+  }
+
+  /**
+   * Write an Object in TOML to a {@link Writer}.
+   *
+   * @param from the object to be written
+   * @param target the Writer to which TOML will be written. The Writer is not closed.
+   * @throws IOException if target.write() fails
+   */
+  public void write(Object from, Writer target) throws IOException {
+    WRITERS.write(from, this, target);
   }
 
   public WriterIndentationPolicy getIndentationPolicy() {

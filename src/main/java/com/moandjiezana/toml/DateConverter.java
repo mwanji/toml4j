@@ -99,12 +99,12 @@ class DateConverter implements ValueConverter, ValueWriter {
     }
     dateFormat.setTimeZone(context.getTomlWriter().getTimeZone());
 
-    context.output.append(dateFormat.format(value));
+    context.write(dateFormat.format(value));
 
     if (customDateFormat == null) {
       Calendar calendar = context.getTomlWriter().getCalendar();
       int tzOffset = (calendar.get(Calendar.ZONE_OFFSET) + calendar.get(Calendar.DST_OFFSET)) / (60 * 1000);
-      context.output.append(String.format("%+03d:%02d", tzOffset / 60, tzOffset % 60));
+      context.write(String.format("%+03d:%02d", tzOffset / 60, tzOffset % 60));
     }
   }
 
