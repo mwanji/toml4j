@@ -4,10 +4,22 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class StringConverter implements ValueConverter {
+class StringConverter implements ValueConverter, ValueWriter {
   
   static final StringConverter STRING_PARSER = new StringConverter();
   private static final Pattern UNICODE_REGEX = Pattern.compile("\\\\[uU](.{4})");
+
+  static private final String[] specialCharacterEscapes = new String[93];
+
+  static {
+    specialCharacterEscapes[0x08] = "\\b";
+    specialCharacterEscapes[0x09] = "\\t";
+    specialCharacterEscapes[0x0A] = "\\n";
+    specialCharacterEscapes[0x0C] = "\\f";
+    specialCharacterEscapes[0x0D] = "\\r";
+    specialCharacterEscapes[0x22] = "\\\"";
+    specialCharacterEscapes[0x5C] = "\\\\";
+  }
 
   @Override
   public boolean canConvert(String s) {
@@ -76,6 +88,50 @@ class StringConverter implements ValueConverter {
       .replace("\\b", "\b")
       .replace("\\f", "\f");
   }
-  
+
+  @Override
+  public boolean canWrite(Object value) {
+    return value.getClass().isAssignableFrom(String.class);
+  }
+
+  @Override
+  public void write(Object value, WriterContext context) {
+    context.output.append('"');
+    escapeUnicode(value.toString(), context.output);
+    context.output.append('"');
+  }
+
+  @Override
+  public boolean isPrimitiveType() {
+    return true;
+  }
+
+  @Override
+  public boolean isTable() {
+    return false;
+  }
+
+  private void escapeUnicode(String in, StringBuilder out) {
+    for (int i = 0; i < in.length(); i++) {
+      int codePoint = in.codePointAt(i);
+      if (codePoint < specialCharacterEscapes.length && specialCharacterEscapes[codePoint] != null) {
+        out.append(specialCharacterEscapes[codePoint]);
+      } else if (codePoint > 0x1f && codePoint < 0x7f) {
+        out.append(Character.toChars(codePoint));
+      } else if (codePoint <= 0xFFFF) {
+        out.append(String.format("\\u%04X", codePoint));
+      } else {
+        out.append(String.format("\\U%08X", codePoint));
+        // Skip the low surrogate, which will be the next in the code point sequence.
+        i++;
+      }
+    }
+  }
+
   private StringConverter() {}
+
+  @Override
+  public String toString() {
+    return "string";
+  }
 }

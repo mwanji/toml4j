@@ -233,6 +233,35 @@ toml.containsTable("a"); // false
 toml.containsTableArray("a"); // false
 ```
 
+### Converting Objects To TOML
+
+You can write any arbitrary object to a TOML `String`, `File`, `Writer`, or `OutputStream`.
+
+```java
+class AClass {
+  int anInt = 1;
+  int[] anArray = { 2, 3 };
+}
+
+String tomlString = new TomlWriter().write(new AClass());
+
+/*
+yields:
+anInt = 1
+anArray = [ 2, 3 ]
+*/
+```
+
+You can exert some control over formatting. For example, you can change the default indentation, white space, and time zone:   
+
+ ```java
+new TomlWriter().
+    wantTerseArrays(true).
+    setIndentationPolicy(new WriterIndentationPolicy().setTableIndent(2)).
+    setTimeZone(TimeZone.getTimeZone("UTC"));
+```
+
+See the `TomlWriter` class for more details.
 
 ### Limitations
 
