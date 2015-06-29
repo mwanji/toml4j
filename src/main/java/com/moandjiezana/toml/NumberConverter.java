@@ -99,11 +99,6 @@ class NumberConverter implements ValueConverter, ValueWriter {
   }
 
   @Override
-  public boolean isTable() {
-    return false;
-  }
-
-  @Override
   public String toString() {
     return "number";
   }

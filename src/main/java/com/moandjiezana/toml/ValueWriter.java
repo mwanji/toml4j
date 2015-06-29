@@ -6,6 +6,4 @@ interface ValueWriter {
   void write(Object value, WriterContext context);
 
   boolean isPrimitiveType();
-
-  boolean isTable();
 }

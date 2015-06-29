@@ -113,11 +113,6 @@ class DateConverter implements ValueConverter, ValueWriter {
     return true;
   }
 
-  @Override
-  public boolean isTable() {
-    return false;
-  }
-
   private DateConverter() {}
 
   @Override

@@ -1,12 +1,12 @@
 package com.moandjiezana.toml;
 
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import static com.moandjiezana.toml.PrimitiveArrayValueWriter.PRIMITIVE_ARRAY_VALUE_WRITER;
 import static com.moandjiezana.toml.TableArrayValueWriter.TABLE_ARRAY_VALUE_WRITER;
 import static com.moandjiezana.toml.ValueWriters.WRITERS;
+
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class MapValueWriter implements ValueWriter {
   static final ValueWriter MAP_VALUE_WRITER = new MapValueWriter();
@@ -56,7 +56,7 @@ class MapValueWriter implements ValueWriter {
       }
 
       ValueWriter valueWriter = WRITERS.findWriterFor(fromValue);
-      if (valueWriter.isTable() || valueWriter == TABLE_ARRAY_VALUE_WRITER) {
+      if (valueWriter == this || valueWriter == ObjectValueWriter.OBJECT_VALUE_WRITER || valueWriter == TABLE_ARRAY_VALUE_WRITER) {
         valueWriter.write(fromValue, context.pushTable(quoteKey(key)));
       }
     }
@@ -65,11 +65,6 @@ class MapValueWriter implements ValueWriter {
   @Override
   public boolean isPrimitiveType() {
     return false;
-  }
-
-  @Override
-  public boolean isTable() {
-    return true;
   }
 
   private static String quoteKey(Object key) {

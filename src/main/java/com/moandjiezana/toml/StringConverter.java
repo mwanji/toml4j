@@ -106,11 +106,6 @@ class StringConverter implements ValueConverter, ValueWriter {
     return true;
   }
 
-  @Override
-  public boolean isTable() {
-    return false;
-  }
-
   private void escapeUnicode(String in, StringBuilder out) {
     for (int i = 0; i < in.length(); i++) {
       int codePoint = in.codePointAt(i);

@@ -1,10 +1,14 @@
 package com.moandjiezana.toml;
 
+import static com.moandjiezana.toml.MapValueWriter.MAP_VALUE_WRITER;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
-
-import static com.moandjiezana.toml.MapValueWriter.MAP_VALUE_WRITER;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 class ObjectValueWriter implements ValueWriter {
   static final ValueWriter OBJECT_VALUE_WRITER = new ObjectValueWriter();
@@ -28,11 +32,6 @@ class ObjectValueWriter implements ValueWriter {
   @Override
   public boolean isPrimitiveType() {
     return false;
-  }
-
-  @Override
-  public boolean isTable() {
-    return true;
   }
 
   static private Set<Field> getFieldsForClass(Class cls) {

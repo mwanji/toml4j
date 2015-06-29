@@ -1,11 +1,11 @@
 package com.moandjiezana.toml;
 
 
+import static com.moandjiezana.toml.ValueWriters.WRITERS;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import static com.moandjiezana.toml.ValueWriters.WRITERS;
 
 abstract class ArrayValueWriter implements ValueWriter {
   static protected boolean isArrayish(Object value) {
@@ -14,11 +14,6 @@ abstract class ArrayValueWriter implements ValueWriter {
 
   @Override
   public boolean isPrimitiveType() {
-    return false;
-  }
-
-  @Override
-  public boolean isTable() {
     return false;
   }
 

@@ -39,11 +39,6 @@ class BooleanConverter implements ValueConverter, ValueWriter {
     return true;
   }
 
-  @Override
-  public boolean isTable() {
-    return false;
-  }
-
   private BooleanConverter() {}
 
   @Override
