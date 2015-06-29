@@ -1,15 +1,33 @@
 package com.moandjiezana.toml;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.lang.annotation.RetentionPolicy;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URI;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import static org.junit.Assert.assertEquals;
-
+@SuppressWarnings("unused")
 public class TomlWriterTest {
 
   @Rule
@@ -275,7 +293,70 @@ public class TomlWriterTest {
         "\"e/f\" = 4\n";
     assertEquals(expected, new TomlWriter().write(aMap));
   }
+  
+  @Test
+  public void should_handle_urls() throws Exception {
+    class WithUrl {
+      URL url;
+      URI uri;
+    }
+    
+    WithUrl from = new WithUrl();
+    from.url = new URL("https://github.com");
+    from.uri = new URI("https://bitbucket.com");
+    
+    String expected = "url = \"https://github.com\"\n"
+      + "uri = \"https://bitbucket.com\"\n";
+    
+    assertEquals(expected, new TomlWriter().write(from));
+  }
 
+  @Test
+  public void should_handle_enum() throws Exception {
+    class WithEnum {
+      RetentionPolicy retentionPolicy = RetentionPolicy.RUNTIME;
+    }
+    
+    assertEquals("retentionPolicy = \"RUNTIME\"\n", new TomlWriter().write(new WithEnum()));
+  }
+  
+  @Test
+  public void should_handle_char() throws Exception {
+    class WithChar {
+      char c = 'a';
+    }
+    
+    assertEquals("c = \"a\"\n", new TomlWriter().write(new WithChar()));
+  }
+  
+  @Test
+  public void should_handle_big_numbers() throws Exception {
+    class WithBigNumbers {
+      BigInteger bigInt = BigInteger.valueOf(1);
+      BigDecimal bigDecimal = BigDecimal.valueOf(2.8);
+    }
+    
+    String expected = "bigInt = 1\n"
+      + "bigDecimal = 2.8\n";
+    
+    assertEquals(expected, new TomlWriter().write(new WithBigNumbers()));
+  }
+  
+  @Test
+  public void should_handle_wrappers() throws Exception {
+    class WithWrappers {
+      Character c = Character.valueOf('b');
+      Long l = Long.valueOf(2);
+      Double d = Double.valueOf(3.4);
+    }
+    
+    String expected = "c = \"b\"\n"
+      + "l = 2\n"
+      + "d = 3.4\n";
+    
+    assertEquals(expected, new TomlWriter().write(new WithWrappers()));
+  }
+  
   private static class SimpleTestClass {
     int a = 1;
   }
@@ -307,13 +388,17 @@ public class TomlWriterTest {
   private String readFile(File input) throws IOException {
     BufferedReader bufferedReader = new BufferedReader(new FileReader(input));
 
-    StringBuilder w = new StringBuilder();
-    String line = bufferedReader.readLine();
-    while (line != null) {
-      w.append(line).append('\n');
-      line = bufferedReader.readLine();
-    }
+    try {
+      StringBuilder w = new StringBuilder();
+      String line = bufferedReader.readLine();
+      while (line != null) {
+        w.append(line).append('\n');
+        line = bufferedReader.readLine();
+      }
 
-    return w.toString();
+      return w.toString();
+    } finally {
+      bufferedReader.close();
+    }
   }
 }

@@ -1,5 +1,7 @@
 package com.moandjiezana.toml;
 
+import java.net.URI;
+import java.net.URL;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -91,7 +93,7 @@ class StringConverter implements ValueConverter, ValueWriter {
 
   @Override
   public boolean canWrite(Object value) {
-    return value.getClass().isAssignableFrom(String.class);
+    return value instanceof String || value instanceof Character || value instanceof URL || value instanceof URI || value instanceof Enum;
   }
 
   @Override
