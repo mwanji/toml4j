@@ -83,8 +83,11 @@ public class TomlWriter {
    */
   public void write(Object from, File target) throws IOException {
     FileWriter writer = new FileWriter(target);
-    write(from, writer);
-    writer.close();
+    try {
+      write(from, writer);
+    } finally {
+      writer.close();
+    }
   }
 
   /**
