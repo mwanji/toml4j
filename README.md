@@ -243,10 +243,16 @@ class AClass {
   int[] anArray = { 2, 3 };
 }
 
-String tomlString = new TomlWriter().write(new AClass());
+TomlWriter tomlWriter = new TomlWriter();
+AClass obj = new AClass();
+String tomlString = tomlWriter.write(obj);
+tomlWriter.write(obj, new File("path/to/file"));
+tomlWriter.write(obj, new ByteArrayOutputStream());
+tomlWriter.write(obj, new OutputStreamWriter(anOutputStream));
 
 /*
-yields:
+All methods yield:
+
 anInt = 1
 anArray = [ 2, 3 ]
 */
