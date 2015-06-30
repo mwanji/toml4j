@@ -46,7 +46,6 @@ abstract class ArrayValueWriter implements ValueWriter {
     return collection;
   }
 
-  @SuppressWarnings("unchecked")
   private static Object peek(Object value) {
     if (value.getClass().isArray()) {
       if (Array.getLength(value) > 0) {
