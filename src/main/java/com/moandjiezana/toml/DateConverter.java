@@ -98,7 +98,6 @@ class DateConverter implements ValueConverter, ValueWriter {
       dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:m:ss");
     }
     dateFormat.setTimeZone(context.getTomlWriter().getTimeZone());
-
     context.write(dateFormat.format(value));
 
     if (customDateFormat == null) {

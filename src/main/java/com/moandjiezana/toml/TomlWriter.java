@@ -33,16 +33,53 @@ import java.util.TimeZone;
  * </code></pre>
  */
 public class TomlWriter {
+  
+  public static class Builder {
+    private int keyIndentation;
+    private int tableIndentation;
+    private int arrayDelimiterPadding = 0;
+    
+    public TomlWriter.Builder indentValuesBy(int spaces) {
+      this.keyIndentation = spaces;
+      
+      return this;
+    }
 
-  private WriterIndentationPolicy indentationPolicy = new WriterIndentationPolicy();
-  private boolean wantTerseArraysValue = false;
+    public TomlWriter.Builder indentTablesBy(int spaces) {
+      this.tableIndentation = spaces;
+      
+      return this;
+    }
+    
+    /**
+     * @param spaces number of spaces to put between opening square bracket and first item and between closing square bracket and last item
+     * @return this TomlWriter.Builder instance
+     */
+    public TomlWriter.Builder padArrayDelimitersBy(int spaces) {
+      this.arrayDelimiterPadding = spaces;
+      
+      return this;
+    }
+    
+    public TomlWriter build() {
+      return new TomlWriter(keyIndentation, tableIndentation, arrayDelimiterPadding);
+    }
+  }
+
+  private final WriterIndentationPolicy indentationPolicy;
   private GregorianCalendar calendar = new GregorianCalendar();
   private DateFormat customDateFormat = null;
 
   /**
    * Creates a TomlWriter instance.
    */
-  public TomlWriter() {}
+  public TomlWriter() {
+    this(0, 0, 0);
+  }
+  
+  private TomlWriter(int keyIndentation, int tableIndentation, int arrayDelimiterPadding) {
+    this.indentationPolicy = new WriterIndentationPolicy(keyIndentation, tableIndentation, arrayDelimiterPadding);
+  }
 
   /**
    * Write an Object into TOML String.
@@ -103,50 +140,6 @@ public class TomlWriter {
 
   public WriterIndentationPolicy getIndentationPolicy() {
     return indentationPolicy;
-  }
-
-  /**
-   * Set the {@link WriterIndentationPolicy} for this writer.
-   *
-   * If unset, the default policy (no indentation) is used.
-   *
-   * @param indentationPolicy the new policy
-   * @return this TomlWriter instance
-   */
-  public TomlWriter setIndentationPolicy(WriterIndentationPolicy indentationPolicy) {
-    this.indentationPolicy = indentationPolicy;
-    return this;
-  }
-
-  /**
-   * <p>Control whitespace in arrays in the TOML output.</p>
-   *
-   * <p>Terse arrays = false (default):</p>
-   *
-   * <pre><code>
-   *   a = [ 1, 2, 3 ]
-   * </code></pre>
-   *
-   * <p>Terse arrays = true:</p>
-   *
-   * <pre><code>
-   *   a = [1,2,3]
-   * </code></pre>
-   *
-   * @param value terse arrays setting
-   * @return this TomlWriter instance
-   */
-  public TomlWriter wantTerseArrays(boolean value) {
-    this.wantTerseArraysValue = value;
-    return this;
-  }
-
-  /**
-   * Get the current array whitespace policy
-   * @return the current policy
-   */
-  public boolean wantTerseArrays() {
-    return wantTerseArraysValue;
   }
 
   /**

@@ -93,6 +93,12 @@ class WriterContext {
     }
   }
 
+  void writeArrayDelimiterPadding() {
+    for (int i = 0; i < tomlWriter.getIndentationPolicy().getArrayDelimiterPadding(); i++) {
+      write(' ');
+    }
+  }
+
   void indent() {
     if (!key.isEmpty()) {
       write(currentFieldIndent);

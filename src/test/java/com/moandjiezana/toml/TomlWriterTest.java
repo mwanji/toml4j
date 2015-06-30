@@ -123,9 +123,10 @@ public class TomlWriterTest {
 
   @Test
   public void should_follow_indentation_policy_of_indented_values() {
-    String output = new TomlWriter().
-        setIndentationPolicy(new WriterIndentationPolicy().setKeyValueIndent(2)).
-        write(buildNestedMap());
+    String output = new TomlWriter.Builder().
+      indentValuesBy(2).
+      build().
+      write(buildNestedMap());
     String expected = "aBoolean = true\n\n" +
         "[aMap]\n" +
         "  foo = 1\n" +
@@ -140,9 +141,10 @@ public class TomlWriterTest {
 
   @Test
   public void should_follow_indentation_policy_of_indented_tables() {
-    String output = new TomlWriter().
-        setIndentationPolicy(new WriterIndentationPolicy().setTableIndent(2)).
-        write(buildNestedMap());
+    String output = new TomlWriter.Builder().
+      indentTablesBy(2).
+      build().
+      write(buildNestedMap());
     String expected = "aBoolean = true\n\n" +
         "[aMap]\n" +
         "foo = 1\n" +
@@ -157,9 +159,11 @@ public class TomlWriterTest {
 
   @Test
   public void should_follow_indentation_policy_of_indented_tables_and_values() {
-    String output = new TomlWriter().
-        setIndentationPolicy(new WriterIndentationPolicy().setTableIndent(2).setKeyValueIndent(2)).
-        write(buildNestedMap());
+    String output = new TomlWriter.Builder().
+      indentValuesBy(2).
+      indentTablesBy(2).
+      build().
+      write(buildNestedMap());
     String expected = "aBoolean = true\n\n" +
         "[aMap]\n" +
         "  foo = 1\n" +
@@ -202,7 +206,7 @@ public class TomlWriterTest {
     }
     ArrayTest arrayTest = new ArrayTest();
 
-    String output = new TomlWriter().write(arrayTest);
+    String output = new TomlWriter.Builder().padArrayDelimitersBy(1).build().write(arrayTest);
     String expected = "array = [ [ 1, 2, 3 ], [ 4, 5, 6 ] ]\n";
     assertEquals(expected, output);
   }
@@ -216,7 +220,7 @@ public class TomlWriterTest {
     o.aList.add(1);
     o.aList.add(2);
 
-    assertEquals("aList = [ 1, 2 ]\n", new TomlWriter().write(o));
+    assertEquals("aList = [ 1, 2 ]\n", new TomlWriter.Builder().padArrayDelimitersBy(1).build().write(o));
   }
 
   @Test

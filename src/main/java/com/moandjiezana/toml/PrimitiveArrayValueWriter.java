@@ -17,9 +17,7 @@ class PrimitiveArrayValueWriter extends ArrayValueWriter {
     Collection values = normalize(value);
 
     context.write('[');
-    if (!context.getTomlWriter().wantTerseArrays()) {
-      context.write(' ');
-    }
+    context.writeArrayDelimiterPadding();
 
     boolean first = true;
     ValueWriter firstWriter = null;
@@ -43,9 +41,7 @@ class PrimitiveArrayValueWriter extends ArrayValueWriter {
       WRITERS.write(elem, context);
     }
 
-    if (!context.getTomlWriter().wantTerseArrays()) {
-      context.write(' ');
-    }
+    context.writeArrayDelimiterPadding();
     context.write(']');
   }
 

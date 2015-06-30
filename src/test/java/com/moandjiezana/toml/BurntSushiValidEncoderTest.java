@@ -114,7 +114,7 @@ public class BurntSushiValidEncoderTest {
   public void table_array_nest_modified() throws Exception {
     // Modified to remove stray spaces in the expected TOML
     runEncoder("table-array-nest-modified",
-        new TomlWriter().setIndentationPolicy(new WriterIndentationPolicy().setTableIndent(2)));
+        new TomlWriter.Builder().indentTablesBy(2).build());
   }
 
   @Test
@@ -126,8 +126,8 @@ public class BurntSushiValidEncoderTest {
 
   private void runEncoder(String testName) {
     runEncoder(testName,
-        new TomlWriter().
-            wantTerseArrays(true).
+        new TomlWriter.Builder().
+            build().
             setTimeZone(TimeZone.getTimeZone("UTC")).
             setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")));
   }

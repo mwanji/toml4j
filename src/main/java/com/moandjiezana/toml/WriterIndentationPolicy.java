@@ -5,37 +5,26 @@ package com.moandjiezana.toml;
  *
  * The default policy is to not indent.
  */
-public class WriterIndentationPolicy {
-  private int tableIndent = 0;
-  private int keyValueIndent = 0;
+class WriterIndentationPolicy {
+  private final int tableIndent;
+  private final int keyValueIndent;
+  private final int arrayDelimiterPadding;
 
-  public int getTableIndent() {
+  WriterIndentationPolicy(int keyIndentation, int tableIndentation, int arrayDelimiterPadding) {
+    this.keyValueIndent = keyIndentation;
+    this.tableIndent = tableIndentation;
+    this.arrayDelimiterPadding = arrayDelimiterPadding;
+  }
+
+  int getTableIndent() {
     return tableIndent;
   }
 
-  /**
-   * Sets the number of spaces a nested table name is indented.
-   *
-   * @param tableIndent number of spaces to indent
-   * @return this WriterIndentationPolicy instance
-   */
-  public WriterIndentationPolicy setTableIndent(int tableIndent) {
-    this.tableIndent = tableIndent;
-    return this;
-  }
-
-  public int getKeyValueIndent() {
+  int getKeyValueIndent() {
     return keyValueIndent;
   }
 
-  /**
-   * Sets the number of spaces key/value pairs within a table are indented.
-   *
-   * @param keyValueIndent number of spaces to indent
-   * @return this WriterIndentationPolicy instance
-   */
-  public WriterIndentationPolicy setKeyValueIndent(int keyValueIndent) {
-    this.keyValueIndent = keyValueIndent;
-    return this;
+  int getArrayDelimiterPadding() {
+    return arrayDelimiterPadding;
   }
 }
