@@ -5,27 +5,27 @@ import java.io.Writer;
 import java.util.Arrays;
 
 class WriterContext {
-  private String key = "";
-  private String currentTableIndent = "";
-  private String currentFieldIndent = "";
   private String arrayKey = null;
   private boolean isArrayOfTable = false;
   private boolean empty = true;
+  private final String key;
+  private final String currentTableIndent;
+  private final String currentFieldIndent;
   private final TomlWriter tomlWriter;
   private final Writer output;
+  private final WriterIndentationPolicy indentationPolicy;
 
   WriterContext(TomlWriter tomlWriter, Writer output) {
-    this.tomlWriter = tomlWriter;
-    this.output = output;
+    this("", "", output, tomlWriter);
   }
 
   WriterContext pushTable(String newKey) {
     String newIndent = "";
     if (!key.isEmpty()) {
-      newIndent = growIndent(tomlWriter.getIndentationPolicy());
+      newIndent = growIndent(indentationPolicy);
     }
 
-    String fullKey = key + (key.isEmpty() ? newKey : "." + newKey);
+    String fullKey = key.isEmpty() ? newKey : key + "." + newKey;
 
     WriterContext subContext = new WriterContext(fullKey, newIndent, output, tomlWriter);
     if (!empty) {
@@ -94,7 +94,7 @@ class WriterContext {
   }
 
   void writeArrayDelimiterPadding() {
-    for (int i = 0; i < tomlWriter.getIndentationPolicy().getArrayDelimiterPadding(); i++) {
+    for (int i = 0; i < indentationPolicy.getArrayDelimiterPadding(); i++) {
       write(' ');
     }
   }
@@ -123,9 +123,10 @@ class WriterContext {
 
   private WriterContext(String key, String tableIndent, Writer output, TomlWriter tomlWriter) {
     this.key = key;
-    this.currentTableIndent = tableIndent;
-    this.currentFieldIndent = tableIndent + fillStringWithSpaces(tomlWriter.getIndentationPolicy().getKeyValueIndent());
     this.output = output;
+    this.indentationPolicy = tomlWriter.getIndentationPolicy();
+    this.currentTableIndent = tableIndent;
+    this.currentFieldIndent = tableIndent + fillStringWithSpaces(this.indentationPolicy.getKeyValueIndent());
     this.tomlWriter = tomlWriter;
   }
 
