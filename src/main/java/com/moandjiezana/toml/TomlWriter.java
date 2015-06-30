@@ -138,7 +138,7 @@ public class TomlWriter {
     WRITERS.write(from, this, target);
   }
 
-  public WriterIndentationPolicy getIndentationPolicy() {
+  WriterIndentationPolicy getIndentationPolicy() {
     return indentationPolicy;
   }
 
