@@ -23,8 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 @SuppressWarnings("unused")
@@ -32,6 +34,9 @@ public class TomlWriterTest {
 
   @Rule
   public TemporaryFolder testDirectory = new TemporaryFolder();
+  
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void should_write_primitive_types() {
@@ -222,7 +227,7 @@ public class TomlWriterTest {
     assertEquals("", new TomlWriter().write(new TestClass()));
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_reject_heterogeneous_arrays() {
     class BadArray {
       Object[] array = new Object[2];
@@ -230,6 +235,24 @@ public class TomlWriterTest {
     BadArray badArray = new BadArray();
     badArray.array[0] = new Integer(1);
     badArray.array[1] = "oops";
+
+    expectedException.expect(IllegalStateException.class);
+    expectedException.expectMessage(Matchers.startsWith("array"));
+    
+    new TomlWriter().write(badArray);
+  }
+
+  @Test
+  public void should_reject_nested_heterogeneous_array() {
+    class BadArray {
+      Map<String, Object> aMap = new HashMap<String, Object>();
+    }
+    
+    BadArray badArray = new BadArray();
+    badArray.aMap.put("array", new Object[] { Integer.valueOf(1), "oops" });
+
+    expectedException.expect(IllegalStateException.class);
+    expectedException.expectMessage("aMap.array");
 
     new TomlWriter().write(badArray);
   }
