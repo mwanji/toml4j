@@ -114,6 +114,15 @@ class WriterContext {
     return this;
   }
 
+  WriterContext setArrayKey(String arrayKey) {
+    this.arrayKey = arrayKey;
+    return this;
+  }
+
+  String getContextPath() {
+    return key.isEmpty() ? arrayKey : key + "." + arrayKey;
+  }
+
   private String growIndent(WriterIndentationPolicy indentationPolicy) {
     return currentTableIndent + fillStringWithSpaces(indentationPolicy.getTableIndent());
   }
@@ -132,14 +141,5 @@ class WriterContext {
     this.currentTableIndent = tableIndent;
     this.datePolicy = datePolicy;
     this.currentFieldIndent = tableIndent + fillStringWithSpaces(this.indentationPolicy.getKeyValueIndent());
-  }
-
-  public WriterContext setArrayKey(String arrayKey) {
-    this.arrayKey = arrayKey;
-    return this;
-  }
-
-  public String getContextPath() {
-    return key.isEmpty() ? arrayKey : key + "." + arrayKey;
   }
 }
