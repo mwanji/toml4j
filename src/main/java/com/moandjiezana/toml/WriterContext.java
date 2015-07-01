@@ -48,7 +48,7 @@ class WriterContext {
   WriterContext write(String s) {
     try {
       output.write(s);
-      if (s != null && !s.isEmpty()) {
+      if (empty && !s.isEmpty()) {
         empty = false;
       }
       

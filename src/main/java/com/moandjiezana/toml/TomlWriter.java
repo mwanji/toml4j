@@ -149,8 +149,4 @@ public class TomlWriter {
     WriterContext context = new WriterContext(indentationPolicy, datePolicy, target);
     WRITERS.write(from, context);
   }
-
-  WriterIndentationPolicy getIndentationPolicy() {
-    return indentationPolicy;
-  }
 }
