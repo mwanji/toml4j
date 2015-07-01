@@ -37,6 +37,7 @@ public class TomlWriter {
     private int tableIndentation;
     private int arrayDelimiterPadding = 0;
     private TimeZone timeZone = TimeZone.getTimeZone("UTC");
+    private boolean showFractionalSeconds = false;
     
     public TomlWriter.Builder indentValuesBy(int spaces) {
       this.keyIndentation = spaces;
@@ -67,23 +68,28 @@ public class TomlWriter {
     }
     
     public TomlWriter build() {
-      return new TomlWriter(keyIndentation, tableIndentation, arrayDelimiterPadding, timeZone);
+      return new TomlWriter(keyIndentation, tableIndentation, arrayDelimiterPadding, timeZone, showFractionalSeconds);
+    }
+
+    public TomlWriter.Builder showFractionalSeconds() {
+      this.showFractionalSeconds = true;
+      return this;
     }
   }
 
   private final WriterIndentationPolicy indentationPolicy;
-  private TimeZone timeZone;
+  private final DatePolicy datePolicy;
 
   /**
    * Creates a TomlWriter instance.
    */
   public TomlWriter() {
-    this(0, 0, 0, TimeZone.getTimeZone("UTC"));
+    this(0, 0, 0, TimeZone.getTimeZone("UTC"), false);
   }
   
-  private TomlWriter(int keyIndentation, int tableIndentation, int arrayDelimiterPadding, TimeZone timeZone) {
+  private TomlWriter(int keyIndentation, int tableIndentation, int arrayDelimiterPadding, TimeZone timeZone, boolean showFractionalSeconds) {
     this.indentationPolicy = new WriterIndentationPolicy(keyIndentation, tableIndentation, arrayDelimiterPadding);
-    this.timeZone = timeZone;
+    this.datePolicy = new DatePolicy(timeZone, showFractionalSeconds);
   }
 
   /**
@@ -140,7 +146,7 @@ public class TomlWriter {
    * @throws IOException if target.write() fails
    */
   public void write(Object from, Writer target) throws IOException {
-    WriterContext context = new WriterContext(indentationPolicy, timeZone, target);
+    WriterContext context = new WriterContext(indentationPolicy, datePolicy, target);
     WRITERS.write(from, context);
   }
 

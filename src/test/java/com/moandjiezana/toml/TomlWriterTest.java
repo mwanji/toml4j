@@ -53,7 +53,7 @@ public class TomlWriterTest {
     o.aBoolean = false;
 
     Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Africa/Johannesburg"));
-    calendar.set(2015, Calendar.JULY, 1, 11, 15, 30);
+    calendar.set(2015, Calendar.JULY, 1, 11, 5, 30);
     calendar.set(Calendar.MILLISECOND, 0);
     o.aDate = calendar.getTime();
     
@@ -63,7 +63,7 @@ public class TomlWriterTest {
         "aFloat = 1.23\n" +
         "aDouble = -5.43\n" +
         "aBoolean = false\n" +
-        "aDate = 2015-07-01T09:15:30Z\n";
+        "aDate = 2015-07-01T09:05:30Z\n";
 
     assertEquals(expected, output);
   }
@@ -354,7 +354,7 @@ public class TomlWriterTest {
   @Test
   public void should_use_specified_time_zone() throws Exception {
     Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-    calendar.set(2015, Calendar.JULY, 1, 11, 15, 30);
+    calendar.set(2015, Calendar.JULY, 1, 11, 5, 30);
     calendar.set(Calendar.MILLISECOND, 0);
     
     Map<String, Date> o = new HashMap<String, Date>();
@@ -365,7 +365,47 @@ public class TomlWriterTest {
       timeZone(TimeZone.getTimeZone("Africa/Johannesburg")).
       build();
     
-    assertEquals("sast = 2015-07-01T13:15:30+02:00\n", writer.write(o));
+    assertEquals("sast = 2015-07-01T13:05:30+02:00\n", writer.write(o));
+  }
+  
+  @Test
+  public void should_show_fractional_seconds() throws Exception {
+    Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+    calendar.set(2015, Calendar.JULY, 1, 11, 5, 30);
+    calendar.set(Calendar.MILLISECOND, 345);
+    
+    Map<String, Date> o = new HashMap<String, Date>();
+    
+    o.put("date", calendar.getTime());
+    
+    TomlWriter writer = new TomlWriter.Builder().
+      showFractionalSeconds().
+      build();
+    
+    assertEquals("date = 2015-07-01T11:05:30.345Z\n", writer.write(o));
+  }
+  
+  @Test
+  public void should_show_fractional_seconds_in_specified_time_zone() throws Exception {
+    Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+    calendar.set(2015, Calendar.JULY, 1, 11, 5, 30);
+    calendar.set(Calendar.MILLISECOND, 345);
+    
+    Map<String, Date> o = new LinkedHashMap<String, Date>();
+    
+    o.put("date", calendar.getTime());
+    calendar.set(Calendar.MINUTE, 37);
+    o.put("date2", calendar.getTime());
+    
+    TomlWriter writer = new TomlWriter.Builder().
+      timeZone(TimeZone.getTimeZone("Africa/Johannesburg")).
+      showFractionalSeconds().
+      build();
+    
+    String expected = "date = 2015-07-01T13:05:30.345+02:00\n"
+      + "date2 = 2015-07-01T13:37:30.345+02:00\n";
+    
+    assertEquals(expected, writer.write(o));
   }
   
   private static class SimpleTestClass {

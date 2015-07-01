@@ -3,7 +3,6 @@ package com.moandjiezana.toml;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
-import java.util.TimeZone;
 
 class WriterContext {
   private String arrayKey = null;
@@ -14,10 +13,10 @@ class WriterContext {
   private final String currentFieldIndent;
   private final Writer output;
   private final WriterIndentationPolicy indentationPolicy;
-  private final TimeZone timeZone;
+  private final DatePolicy datePolicy;
 
-  WriterContext(WriterIndentationPolicy indentationPolicy, TimeZone timeZone, Writer output) {
-    this("", "", output, indentationPolicy, timeZone);
+  WriterContext(WriterIndentationPolicy indentationPolicy, DatePolicy datePolicy, Writer output) {
+    this("", "", output, indentationPolicy, datePolicy);
   }
 
   WriterContext pushTable(String newKey) {
@@ -28,7 +27,7 @@ class WriterContext {
 
     String fullKey = key.isEmpty() ? newKey : key + "." + newKey;
 
-    WriterContext subContext = new WriterContext(fullKey, newIndent, output, indentationPolicy, timeZone);
+    WriterContext subContext = new WriterContext(fullKey, newIndent, output, indentationPolicy, datePolicy);
     if (!empty) {
       subContext.empty = false;
     }
@@ -37,7 +36,7 @@ class WriterContext {
   }
 
   WriterContext pushTableFromArray() {
-    WriterContext subContext = new WriterContext(key, currentTableIndent, output, indentationPolicy, timeZone);
+    WriterContext subContext = new WriterContext(key, currentTableIndent, output, indentationPolicy, datePolicy);
     if (!empty) {
       subContext.empty = false;
     }
@@ -106,8 +105,8 @@ class WriterContext {
     }
   }
   
-  TimeZone getTimeZone() {
-    return timeZone;
+  DatePolicy getDatePolicy() {
+    return datePolicy;
   }
 
   WriterContext setIsArrayOfTable(boolean isArrayOfTable) {
@@ -126,13 +125,13 @@ class WriterContext {
     return new String(chars);
   }
 
-  private WriterContext(String key, String tableIndent, Writer output, WriterIndentationPolicy indentationPolicy, TimeZone timeZone) {
+  private WriterContext(String key, String tableIndent, Writer output, WriterIndentationPolicy indentationPolicy, DatePolicy datePolicy) {
     this.key = key;
     this.output = output;
     this.indentationPolicy = indentationPolicy;
     this.currentTableIndent = tableIndent;
+    this.datePolicy = datePolicy;
     this.currentFieldIndent = tableIndent + fillStringWithSpaces(this.indentationPolicy.getKeyValueIndent());
-    this.timeZone = timeZone;
   }
 
   public WriterContext setArrayKey(String arrayKey) {
