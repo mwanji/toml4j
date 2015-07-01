@@ -2,7 +2,10 @@ package com.moandjiezana.toml;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.TimeZone;
 
 class WriterContext {
   private String arrayKey = null;
@@ -11,12 +14,12 @@ class WriterContext {
   private final String key;
   private final String currentTableIndent;
   private final String currentFieldIndent;
-  private final TomlWriter tomlWriter;
   private final Writer output;
   private final WriterIndentationPolicy indentationPolicy;
+  private final TimeZone timeZone;
 
-  WriterContext(TomlWriter tomlWriter, Writer output) {
-    this("", "", output, tomlWriter);
+  WriterContext(WriterIndentationPolicy indentationPolicy, TimeZone timeZone, Writer output) {
+    this("", "", output, indentationPolicy, timeZone);
   }
 
   WriterContext pushTable(String newKey) {
@@ -27,7 +30,7 @@ class WriterContext {
 
     String fullKey = key.isEmpty() ? newKey : key + "." + newKey;
 
-    WriterContext subContext = new WriterContext(fullKey, newIndent, output, tomlWriter);
+    WriterContext subContext = new WriterContext(fullKey, newIndent, output, indentationPolicy, timeZone);
     if (!empty) {
       subContext.empty = false;
     }
@@ -36,7 +39,7 @@ class WriterContext {
   }
 
   WriterContext pushTableFromArray() {
-    WriterContext subContext = new WriterContext(key, currentTableIndent, output, tomlWriter);
+    WriterContext subContext = new WriterContext(key, currentTableIndent, output, indentationPolicy, timeZone);
     if (!empty) {
       subContext.empty = false;
     }
@@ -104,6 +107,14 @@ class WriterContext {
       write(currentFieldIndent);
     }
   }
+  
+  DateFormat getDateFormat() {
+    String format = "yyyy-MM-dd'T'HH:m:ss'Z'";
+    SimpleDateFormat formatter = new SimpleDateFormat(format);
+    formatter.setTimeZone(timeZone);
+    
+    return formatter;
+  }
 
   WriterContext setIsArrayOfTable(boolean isArrayOfTable) {
     this.isArrayOfTable = isArrayOfTable;
@@ -121,17 +132,13 @@ class WriterContext {
     return new String(chars);
   }
 
-  private WriterContext(String key, String tableIndent, Writer output, TomlWriter tomlWriter) {
+  private WriterContext(String key, String tableIndent, Writer output, WriterIndentationPolicy indentationPolicy, TimeZone timeZone) {
     this.key = key;
     this.output = output;
-    this.indentationPolicy = tomlWriter.getIndentationPolicy();
+    this.indentationPolicy = indentationPolicy;
     this.currentTableIndent = tableIndent;
     this.currentFieldIndent = tableIndent + fillStringWithSpaces(this.indentationPolicy.getKeyValueIndent());
-    this.tomlWriter = tomlWriter;
-  }
-
-  public TomlWriter getTomlWriter() {
-    return tomlWriter;
+    this.timeZone = timeZone;
   }
 
   public WriterContext setArrayKey(String arrayKey) {

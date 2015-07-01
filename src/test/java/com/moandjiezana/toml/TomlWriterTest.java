@@ -14,14 +14,13 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,30 +51,20 @@ public class TomlWriterTest {
     o.aDouble = -5.43;
     o.aBoolean = false;
 
-    o.aDate = new Date();
-    String theDate = formatDate(o.aDate);
-
+    Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Africa/Johannesburg"));
+    calendar.set(2015, Calendar.JULY, 1, 11, 15, 30);
+    calendar.set(Calendar.MILLISECOND, 0);
+    o.aDate = calendar.getTime();
+    
     String output = new TomlWriter().write(o);
     String expected = "aString = \"hello\"\n" +
         "anInt = 4\n" +
         "aFloat = 1.23\n" +
         "aDouble = -5.43\n" +
         "aBoolean = false\n" +
-        "aDate = " + theDate + "\n";
+        "aDate = 2015-07-01T09:15:30Z\n";
 
     assertEquals(expected, output);
-  }
-
-  private String formatDate(Date date) {
-    // Copying the date formatting code from DateValueWriter isn't optimal, but
-    // I can't see any other way to check date formatting - the test gets
-    // run in multiple time zones, so we can't just hard-code a time zone.
-    String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:m:ss").format(date);
-    Calendar calendar = new GregorianCalendar();
-    int tzOffset = (calendar.get(Calendar.ZONE_OFFSET) + calendar.get(Calendar.DST_OFFSET)) / (60 * 1000);
-    dateString += String.format("%+03d:%02d", tzOffset / 60, tzOffset % 60);
-
-    return dateString;
   }
 
   class SubChild {

@@ -125,11 +125,7 @@ public class BurntSushiValidEncoderTest {
   private static final Gson GSON = new Gson();
 
   private void runEncoder(String testName) {
-    runEncoder(testName,
-        new TomlWriter.Builder().
-            build().
-            setTimeZone(TimeZone.getTimeZone("UTC")).
-            setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")));
+    runEncoder(testName, new TomlWriter());
   }
 
   private void runEncoder(String testName, TomlWriter tomlWriter) {

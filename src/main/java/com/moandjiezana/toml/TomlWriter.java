@@ -9,8 +9,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.DateFormat;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -38,6 +36,7 @@ public class TomlWriter {
     private int keyIndentation;
     private int tableIndentation;
     private int arrayDelimiterPadding = 0;
+    private TimeZone timeZone = TimeZone.getTimeZone("UTC");
     
     public TomlWriter.Builder indentValuesBy(int spaces) {
       this.keyIndentation = spaces;
@@ -62,23 +61,23 @@ public class TomlWriter {
     }
     
     public TomlWriter build() {
-      return new TomlWriter(keyIndentation, tableIndentation, arrayDelimiterPadding);
+      return new TomlWriter(keyIndentation, tableIndentation, arrayDelimiterPadding, timeZone);
     }
   }
 
   private final WriterIndentationPolicy indentationPolicy;
-  private GregorianCalendar calendar = new GregorianCalendar();
-  private DateFormat customDateFormat = null;
+  private TimeZone timeZone;
 
   /**
    * Creates a TomlWriter instance.
    */
   public TomlWriter() {
-    this(0, 0, 0);
+    this(0, 0, 0, TimeZone.getTimeZone("UTC"));
   }
   
-  private TomlWriter(int keyIndentation, int tableIndentation, int arrayDelimiterPadding) {
+  private TomlWriter(int keyIndentation, int tableIndentation, int arrayDelimiterPadding, TimeZone timeZone) {
     this.indentationPolicy = new WriterIndentationPolicy(keyIndentation, tableIndentation, arrayDelimiterPadding);
+    this.timeZone = timeZone;
   }
 
   /**
@@ -135,54 +134,11 @@ public class TomlWriter {
    * @throws IOException if target.write() fails
    */
   public void write(Object from, Writer target) throws IOException {
-    WRITERS.write(from, this, target);
+    WriterContext context = new WriterContext(indentationPolicy, timeZone, target);
+    WRITERS.write(from, context);
   }
 
   WriterIndentationPolicy getIndentationPolicy() {
     return indentationPolicy;
-  }
-
-  /**
-   * Set the {@link TimeZone} used when formatting datetimes.
-   *
-   * If unset, datetimes will be rendered in the current time zone.
-   *
-   * @param timeZone custom TimeZone.
-   * @return this TomlWriter instance
-   */
-  public TomlWriter setTimeZone(TimeZone timeZone) {
-    calendar = new GregorianCalendar(timeZone);
-    return this;
-  }
-
-  /**
-   * Get the {@link TimeZone} in use for this TomlWriter.
-   *
-   * @return the currently set TimeZone.
-   */
-  public TimeZone getTimeZone() {
-    return calendar.getTimeZone();
-  }
-
-  /**
-   * Override the default date format.
-   *
-   * If a time zone was set with {@link #setTimeZone(TimeZone)}, it will be applied before formatting
-   * datetimes.
-   *
-   * @param customDateFormat a custom DateFormat
-   * @return this TomlWriter instance
-   */
-  public TomlWriter setDateFormat(DateFormat customDateFormat) {
-    this.customDateFormat = customDateFormat;
-    return this;
-  }
-
-  public DateFormat getDateFormat() {
-    return customDateFormat;
-  }
-
-  GregorianCalendar getCalendar() {
-    return calendar;
   }
 }
