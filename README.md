@@ -235,7 +235,7 @@ toml.containsTableArray("a"); // false
 
 ### Converting Objects To TOML
 
-You can write any arbitrary object to a TOML `String`, `File`, `Writer`, or `OutputStream`.
+You can write any arbitrary object to a TOML `String`, `File`, `Writer`, or `OutputStream` with a `TomlWriter`. Each TomlWriter instance is customisable, immutable and threadsafe, so it can be reused and passed around.
 
 ```java
 class AClass {
@@ -251,23 +251,42 @@ tomlWriter.write(obj, new ByteArrayOutputStream());
 tomlWriter.write(obj, new OutputStreamWriter(anOutputStream));
 
 /*
-All methods yield:
+All methods output:
 
 anInt = 1
-anArray = [ 2, 3 ]
+anArray = [2, 3]
 */
 ```
 
-You can exert some control over formatting. For example, you can change the default indentation, white space, and time zone:   
+You can customise formatting with a TomlWriter.Builder:
 
  ```java
-new TomlWriter().
-    wantTerseArrays(true).
-    setIndentationPolicy(new WriterIndentationPolicy().setTableIndent(2)).
-    setTimeZone(TimeZone.getTimeZone("UTC"));
-```
+class BClass {
+  Map<String, ?> aMap = new HashMap<String, Object>();
+}
 
-See the `TomlWriter` class for more details.
+BClass obj = new BClass();
+obj.aMap.put("item", 1);
+
+TomlWriter tomlWriter = new TomlWriter.Builder().
+  indentValuesBy(2).
+  indentTablesBy(4).
+  padArrayDelimitersBy(3).
+  build();
+    
+String tomlString = tomlWriter.write(obj);
+
+/*
+Output:
+
+[aMap]
+  item = 1
+  
+    [aMap.a]
+      anInt = 1
+      anArray = [   2, 3   ]
+*/
+```
 
 ### Limitations
 
