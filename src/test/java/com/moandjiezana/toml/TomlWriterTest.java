@@ -16,6 +16,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -348,6 +349,23 @@ public class TomlWriterTest {
       + "d = 3.4\n";
     
     assertEquals(expected, new TomlWriter().write(new WithWrappers()));
+  }
+  
+  @Test
+  public void should_use_specified_time_zone() throws Exception {
+    Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+    calendar.set(2015, Calendar.JULY, 1, 11, 15, 30);
+    calendar.set(Calendar.MILLISECOND, 0);
+    
+    Map<String, Date> o = new HashMap<String, Date>();
+    
+    o.put("sast", calendar.getTime());
+    
+    TomlWriter writer = new TomlWriter.Builder().
+      timeZone(TimeZone.getTimeZone("Africa/Johannesburg")).
+      build();
+    
+    assertEquals("sast = 2015-07-01T13:15:30+02:00\n", writer.write(o));
   }
   
   private static class SimpleTestClass {

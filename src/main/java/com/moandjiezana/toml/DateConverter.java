@@ -3,6 +3,7 @@ package com.moandjiezana.toml;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,6 +11,7 @@ import java.util.regex.Pattern;
 class DateConverter implements ValueConverter, ValueWriter {
 
   static final DateConverter DATE_PARSER = new DateConverter();
+  static final DateConverter DATE_PARSER_JDK_6 = new DateConverterJdk6();
   private static final Pattern DATE_REGEX = Pattern.compile("(\\d{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9])(\\.\\d*)?(Z|(?:[+\\-]\\d{2}:\\d{2}))(.*)");
 
   @Override
@@ -89,16 +91,46 @@ class DateConverter implements ValueConverter, ValueWriter {
 
   @Override
   public void write(Object value, WriterContext context) {
-    DateFormat dateFormat = context.getDateFormat();
-    context.write(dateFormat.format(value));
+    DateFormat formatter = getFormatter(context.getTimeZone());
+    context.write(formatter.format(value));
   }
 
   @Override
   public boolean isPrimitiveType() {
     return true;
   }
-
+  
+  private DateFormat getFormatter(TimeZone timeZone) {
+    String format = "UTC".equals(timeZone.getID()) ? "yyyy-MM-dd'T'HH:m:ss'Z'" : "yyyy-MM-dd'T'HH:m:ssXXX";
+    SimpleDateFormat formatter = new SimpleDateFormat(format);
+    formatter.setTimeZone(timeZone);
+    
+    return formatter;
+  }
+  
   private DateConverter() {}
+  
+  private static class DateConverterJdk6 extends DateConverter {
+    @Override
+    public void write(Object value, WriterContext context) {
+      TimeZone timeZone = context.getTimeZone();
+      DateFormat formatter = getFormatter(timeZone);
+      String date = formatter.format(value);
+      
+      if ("UTC".equals(timeZone.getID())) {
+        context.write(date);
+      } else {
+        context.write(date.substring(0, 22)).write(':').write(date.substring(22));
+      }
+    }
+
+    private DateFormat getFormatter(TimeZone timeZone) {
+      String format = "UTC".equals(timeZone.getID()) ? "yyyy-MM-dd'T'HH:m:ss'Z'" : "yyyy-MM-dd'T'HH:m:ssZ";
+      SimpleDateFormat formatter = new SimpleDateFormat(format);
+      formatter.setTimeZone(timeZone);
+      return formatter;
+    }
+  }
 
   @Override
   public String toString() {

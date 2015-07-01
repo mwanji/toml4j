@@ -2,8 +2,6 @@ package com.moandjiezana.toml;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.TimeZone;
 
@@ -108,12 +106,8 @@ class WriterContext {
     }
   }
   
-  DateFormat getDateFormat() {
-    String format = "yyyy-MM-dd'T'HH:m:ss'Z'";
-    SimpleDateFormat formatter = new SimpleDateFormat(format);
-    formatter.setTimeZone(timeZone);
-    
-    return formatter;
+  TimeZone getTimeZone() {
+    return timeZone;
   }
 
   WriterContext setIsArrayOfTable(boolean isArrayOfTable) {

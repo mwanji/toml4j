@@ -50,6 +50,12 @@ public class TomlWriter {
       return this;
     }
     
+    public TomlWriter.Builder timeZone(TimeZone timeZone) {
+      this.timeZone = timeZone;
+      
+      return this;
+    }
+    
     /**
      * @param spaces number of spaces to put between opening square bracket and first item and between closing square bracket and last item
      * @return this TomlWriter.Builder instance
