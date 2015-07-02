@@ -77,7 +77,7 @@ public class TomlWriter {
     }
   }
 
-  private final WriterIndentationPolicy indentationPolicy;
+  private final IndentationPolicy indentationPolicy;
   private final DatePolicy datePolicy;
 
   /**
@@ -88,7 +88,7 @@ public class TomlWriter {
   }
   
   private TomlWriter(int keyIndentation, int tableIndentation, int arrayDelimiterPadding, TimeZone timeZone, boolean showFractionalSeconds) {
-    this.indentationPolicy = new WriterIndentationPolicy(keyIndentation, tableIndentation, arrayDelimiterPadding);
+    this.indentationPolicy = new IndentationPolicy(keyIndentation, tableIndentation, arrayDelimiterPadding);
     this.datePolicy = new DatePolicy(timeZone, showFractionalSeconds);
   }
 

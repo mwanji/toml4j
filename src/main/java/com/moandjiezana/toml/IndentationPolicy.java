@@ -5,12 +5,12 @@ package com.moandjiezana.toml;
  *
  * The default policy is to not indent.
  */
-class WriterIndentationPolicy {
+class IndentationPolicy {
   private final int tableIndent;
   private final int keyValueIndent;
   private final int arrayDelimiterPadding;
 
-  WriterIndentationPolicy(int keyIndentation, int tableIndentation, int arrayDelimiterPadding) {
+  IndentationPolicy(int keyIndentation, int tableIndentation, int arrayDelimiterPadding) {
     this.keyValueIndent = keyIndentation;
     this.tableIndent = tableIndentation;
     this.arrayDelimiterPadding = arrayDelimiterPadding;
