@@ -24,10 +24,6 @@ class ValueWriters {
     return OBJECT_VALUE_WRITER;
   }
 
-  void write(Object value, WriterContext context) {
-    findWriterFor(value).write(value, context);
-  }
-
   private ValueWriters() {}
   
   private static DateConverter getPlatformSpecificDateConverter() {

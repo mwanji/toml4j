@@ -38,7 +38,7 @@ class PrimitiveArrayValueWriter extends ArrayValueWriter {
         context.write(", ");
       }
 
-      WRITERS.write(value, context);
+      WRITERS.findWriterFor(value).write(value, context);
     }
 
     context.writeArrayDelimiterPadding();

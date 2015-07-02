@@ -147,6 +147,6 @@ public class TomlWriter {
    */
   public void write(Object from, Writer target) throws IOException {
     WriterContext context = new WriterContext(indentationPolicy, datePolicy, target);
-    WRITERS.write(from, context);
+    WRITERS.findWriterFor(from).write(from, context);
   }
 }

@@ -13,13 +13,13 @@ class TableArrayValueWriter extends ArrayValueWriter {
   }
 
   @Override
-  public void write(Object value, WriterContext context) {
-    Collection<?> values = normalize(value);
+  public void write(Object from, WriterContext context) {
+    Collection<?> values = normalize(from);
 
     WriterContext subContext = context.pushTableFromArray();
 
-    for (Object elem : values) {
-      WRITERS.write(elem, subContext);
+    for (Object value : values) {
+      WRITERS.findWriterFor(value).write(value, subContext);
     }
   }
 
