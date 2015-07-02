@@ -13,8 +13,8 @@ class PrimitiveArrayValueWriter extends ArrayValueWriter {
   }
 
   @Override
-  public void write(Object value, WriterContext context) {
-    Collection values = normalize(value);
+  public void write(Object o, WriterContext context) {
+    Collection<?> values = normalize(o);
 
     context.write('[');
     context.writeArrayDelimiterPadding();
@@ -22,12 +22,12 @@ class PrimitiveArrayValueWriter extends ArrayValueWriter {
     boolean first = true;
     ValueWriter firstWriter = null;
 
-    for (Object elem : values) {
+    for (Object value : values) {
       if (first) {
-        firstWriter = WRITERS.findWriterFor(elem);
+        firstWriter = WRITERS.findWriterFor(value);
         first = false;
       } else {
-        ValueWriter writer = WRITERS.findWriterFor(elem);
+        ValueWriter writer = WRITERS.findWriterFor(value);
         if (writer != firstWriter) {
           throw new IllegalStateException(
               context.getContextPath() +
@@ -38,7 +38,7 @@ class PrimitiveArrayValueWriter extends ArrayValueWriter {
         context.write(", ");
       }
 
-      WRITERS.write(elem, context);
+      WRITERS.write(value, context);
     }
 
     context.writeArrayDelimiterPadding();

@@ -34,7 +34,7 @@ class ObjectValueWriter implements ValueWriter {
     return false;
   }
 
-  static private Set<Field> getFieldsForClass(Class cls) {
+  static private Set<Field> getFieldsForClass(Class<?> cls) {
     Set<Field> fields = new LinkedHashSet<Field>(Arrays.asList(cls.getDeclaredFields()));
 
     getSuperClassFields(cls.getSuperclass(), fields);
@@ -50,7 +50,7 @@ class ObjectValueWriter implements ValueWriter {
     return prunedFields;
   }
 
-  static private void getSuperClassFields(Class cls, Set<Field> fields) {
+  static private void getSuperClassFields(Class<?> cls, Set<Field> fields) {
     if (cls == Object.class) {
       return;
     }

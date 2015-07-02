@@ -1,8 +1,8 @@
 package com.moandjiezana.toml;
 
-import java.util.Collection;
-
 import static com.moandjiezana.toml.ValueWriters.WRITERS;
+
+import java.util.Collection;
 
 class TableArrayValueWriter extends ArrayValueWriter {
   static final ValueWriter TABLE_ARRAY_VALUE_WRITER = new TableArrayValueWriter();
@@ -14,7 +14,7 @@ class TableArrayValueWriter extends ArrayValueWriter {
 
   @Override
   public void write(Object value, WriterContext context) {
-    Collection values = normalize(value);
+    Collection<?> values = normalize(value);
 
     WriterContext subContext = context.pushTableFromArray();
 

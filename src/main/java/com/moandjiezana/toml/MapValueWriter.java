@@ -20,7 +20,7 @@ class MapValueWriter implements ValueWriter {
 
   @Override
   public void write(Object value, WriterContext context) {
-    Map from = (Map) value;
+    Map<?, ?> from = (Map<?, ?>) value;
 
     if (hasPrimitiveValues(from, context)) {
       context.writeKey();
@@ -28,8 +28,9 @@ class MapValueWriter implements ValueWriter {
 
     // Render primitive types and arrays of primitive first so they are
     // grouped under the same table (if there is one)
-    for (Object key : from.keySet()) {
-      Object fromValue = from.get(key);
+    for (Map.Entry<?, ?> entry : from.entrySet()) {
+      Object key = entry.getKey();
+      Object fromValue = entry.getValue();
       if (fromValue == null) {
         continue;
       }
@@ -77,7 +78,7 @@ class MapValueWriter implements ValueWriter {
     return stringKey;
   }
 
-  private static boolean hasPrimitiveValues(Map values, WriterContext context) {
+  private static boolean hasPrimitiveValues(Map<?, ?> values, WriterContext context) {
     for (Object key : values.keySet()) {
       Object fromValue = values.get(key);
       if (fromValue == null) {

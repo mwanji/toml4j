@@ -28,8 +28,8 @@ abstract class ArrayValueWriter implements ValueWriter {
   }
 
   @SuppressWarnings("unchecked")
-  protected Collection normalize(Object value) {
-    Collection collection;
+  protected Collection<?> normalize(Object value) {
+    Collection<Object> collection;
 
     if (value.getClass().isArray()) {
       // Arrays.asList() interprets an array as a single element,
@@ -40,7 +40,7 @@ abstract class ArrayValueWriter implements ValueWriter {
         collection.add(elem);
       }
     } else {
-      collection = (Collection) value;
+      collection = (Collection<Object>) value;
     }
 
     return collection;
@@ -54,7 +54,7 @@ abstract class ArrayValueWriter implements ValueWriter {
         return null;
       }
     } else {
-      Collection collection = (Collection) value;
+      Collection<?> collection = (Collection<?>) value;
       if (collection.size() > 0) {
         return collection.iterator().next();
       }
