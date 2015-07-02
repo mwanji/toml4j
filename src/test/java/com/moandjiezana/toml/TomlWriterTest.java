@@ -41,21 +41,16 @@ public class TomlWriterTest {
   @Test
   public void should_write_primitive_types() {
     class TestClass {
-      public String aString;
-      int anInt;
-      protected float aFloat;
-      private double aDouble;
-      boolean aBoolean;
-      final int aFinalInt = 1; // Should be skipped
+      public String aString = "hello";
+      int anInt = 4;
+      protected float aFloat = 1.23f;
+      private double aDouble = -5.43;
+      final boolean aBoolean = false;
+      static final int aFinalInt = 1; // Should be skipped
       Date aDate;
     }
 
     TestClass o = new TestClass();
-    o.aString = "hello";
-    o.anInt = 4;
-    o.aFloat = 1.23f;
-    o.aDouble = -5.43;
-    o.aBoolean = false;
 
     Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Africa/Johannesburg"));
     calendar.set(2015, Calendar.JULY, 1, 11, 5, 30);

@@ -235,7 +235,7 @@ toml.containsTableArray("a"); // false
 
 ### Converting Objects To TOML
 
-You can write any arbitrary object to a TOML `String`, `File`, `Writer`, or `OutputStream` with a `TomlWriter`. Each TomlWriter instance is customisable, immutable and threadsafe, so it can be reused and passed around.
+You can write any arbitrary object to a TOML `String`, `File`, `Writer`, or `OutputStream` with a `TomlWriter`. Each TomlWriter instance is customisable, immutable and threadsafe, so it can be reused and passed around. Constants are ignored.
 
 ```java
 class AClass {
