@@ -312,6 +312,21 @@ public class TomlWriterTest {
   }
   
   @Test
+  public void should_quote_keys_in_object() throws Exception {
+    class A$ {
+      Double µµ = 5.3;
+    }
+    
+    class A {
+      int €5 = 5;
+      String français = "langue";
+      A$ a$ = new A$();
+    }
+    
+    assertEquals("\"€5\" = 5\n\"français\" = \"langue\"\n\n[\"a$\"]\n\"µµ\" = 5.3\n", new TomlWriter().write(new A()));
+  }
+  
+  @Test
   public void should_handle_urls() throws Exception {
     class WithUrl {
       URL url;

@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 class MapValueWriter implements ValueWriter {
   static final ValueWriter MAP_VALUE_WRITER = new MapValueWriter();
 
-  private static final Pattern requiredQuotingPattern = Pattern.compile("^.*[^A-Za-z\\d_-].*$");
+  private static final Pattern REQUIRED_QUOTING_PATTERN = Pattern.compile("^.*[^A-Za-z\\d_-].*$");
 
   @Override
   public boolean canWrite(Object value) {
@@ -70,7 +70,7 @@ class MapValueWriter implements ValueWriter {
 
   private static String quoteKey(Object key) {
     String stringKey = key.toString();
-    Matcher matcher = requiredQuotingPattern.matcher(stringKey);
+    Matcher matcher = REQUIRED_QUOTING_PATTERN.matcher(stringKey);
     if (matcher.matches()) {
       stringKey = "\"" + stringKey + "\"";
     }
