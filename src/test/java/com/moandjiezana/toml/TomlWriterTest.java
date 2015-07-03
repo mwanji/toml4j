@@ -1,6 +1,8 @@
 package com.moandjiezana.toml;
 
-import static org.junit.Assert.assertEquals;
+import org.hamcrest.Matchers;
+import org.junit.*;
+import org.junit.rules.*;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -23,11 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.hamcrest.Matchers;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
+import static org.junit.Assert.*;
 
 @SuppressWarnings("unused")
 public class TomlWriterTest {
@@ -219,7 +217,7 @@ public class TomlWriterTest {
       List<Integer> aList = new LinkedList<Integer>();
       Float[] anArray = new Float[0];
     }
-    assertEquals("", new TomlWriter().write(new TestClass()));
+    assertEquals("aList = []\nanArray = []\n", new TomlWriter().write(new TestClass()));
   }
 
   @Test
