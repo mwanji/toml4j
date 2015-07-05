@@ -1,7 +1,5 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueWriters.WRITERS;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,6 +10,10 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
+import static com.moandjiezana.toml.MapValueWriter.*;
+import static com.moandjiezana.toml.ObjectValueWriter.*;
+import static com.moandjiezana.toml.ValueWriters.WRITERS;
 
 /**
  * <p>Converts Objects to TOML</p>
@@ -144,9 +146,16 @@ public class TomlWriter {
    * @param from the object to be written
    * @param target the Writer to which TOML will be written. The Writer is not closed.
    * @throws IOException if target.write() fails
+   * @throws IllegalStateException if
    */
   public void write(Object from, Writer target) throws IOException {
     WriterContext context = new WriterContext(indentationPolicy, datePolicy, target);
-    WRITERS.findWriterFor(from).write(from, context);
+
+    ValueWriter writer = WRITERS.findWriterFor(from);
+    if (writer == MAP_VALUE_WRITER || writer == OBJECT_VALUE_WRITER) {
+      WRITERS.findWriterFor(from).write(from, context);
+    } else {
+      throw new IllegalStateException("Top-level value must not be a primitive or array.");
+    }
   }
 }

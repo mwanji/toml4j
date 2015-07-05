@@ -281,12 +281,17 @@ public class TomlWriterTest {
 
   @Test
   public void should_write_strings_to_toml_utf8() throws UnsupportedEncodingException {
-    String input = " é foo € \b \t \n \f \r \" \\ ";
-    assertEquals("\" \\u00E9 foo \\u20AC \\b \\t \\n \\f \\r \\\" \\\\ \"", new TomlWriter().write(input));
+    class Utf8Test {
+      String input;
+    }
+
+    Utf8Test utf8Test = new Utf8Test();
+    utf8Test.input = " é foo € \b \t \n \f \r \" \\ ";
+    assertEquals("input = \" \\u00E9 foo \\u20AC \\b \\t \\n \\f \\r \\\" \\\\ \"\n", new TomlWriter().write(utf8Test));
 
     // Check unicode code points greater than 0XFFFF
-    input = " \uD801\uDC28 \uD840\uDC0B ";
-    assertEquals("\" \\U00010428 \\U0002000B \"", new TomlWriter().write(input));
+    utf8Test.input = " \uD801\uDC28 \uD840\uDC0B ";
+    assertEquals("input = \" \\U00010428 \\U0002000B \"\n", new TomlWriter().write(utf8Test));
   }
 
   @Test
@@ -438,9 +443,39 @@ public class TomlWriterTest {
     
     assertEquals(expected, writer.write(o));
   }
-  
+
   private static class SimpleTestClass {
     int a = 1;
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_refuse_to_write_string_fragment() {
+    new TomlWriter().write("fragment");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_refuse_to_write_boolean_fragment() {
+    new TomlWriter().write(true);
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_refuse_to_write_number_fragment() {
+    new TomlWriter().write(42);
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_refuse_to_write_date_fragment() {
+    new TomlWriter().write(new Date());
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_refuse_to_write_array_fragment() {
+    new TomlWriter().write(new int[2]);
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_refuse_to_write_table_array_fragment() {
+    new TomlWriter().write(new SimpleTestClass[2]);
   }
 
   @Test
