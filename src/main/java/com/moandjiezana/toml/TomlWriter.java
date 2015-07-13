@@ -1,5 +1,7 @@
 package com.moandjiezana.toml;
 
+import static com.moandjiezana.toml.MapValueWriter.MAP_VALUE_WRITER;
+import static com.moandjiezana.toml.ObjectValueWriter.OBJECT_VALUE_WRITER;
 import static com.moandjiezana.toml.ValueWriters.WRITERS;
 
 import java.io.File;
@@ -146,7 +148,13 @@ public class TomlWriter {
    * @throws IOException if target.write() fails
    */
   public void write(Object from, Writer target) throws IOException {
+    ValueWriter valueWriter = WRITERS.findWriterFor(from);
+    
+    if (valueWriter != MAP_VALUE_WRITER && valueWriter != OBJECT_VALUE_WRITER) {
+      throw new IllegalArgumentException("An object of type " + from.getClass().getSimpleName() + " cannot produce valid TOML.");
+    }
+    
     WriterContext context = new WriterContext(indentationPolicy, datePolicy, target);
-    WRITERS.findWriterFor(from).write(from, context);
+    valueWriter.write(from, context);
   }
 }

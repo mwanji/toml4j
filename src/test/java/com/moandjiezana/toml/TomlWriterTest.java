@@ -1,6 +1,6 @@
 package com.moandjiezana.toml;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -283,12 +284,14 @@ public class TomlWriterTest {
 
   @Test
   public void should_write_strings_to_toml_utf8() throws UnsupportedEncodingException {
-    String input = " é foo € \b \t \n \f \r \" \\ ";
-    assertEquals("\" \\u00E9 foo \\u20AC \\b \\t \\n \\f \\r \\\" \\\\ \"", new TomlWriter().write(input));
-
-    // Check unicode code points greater than 0XFFFF
-    input = " \uD801\uDC28 \uD840\uDC0B ";
-    assertEquals("\" \\U00010428 \\U0002000B \"", new TomlWriter().write(input));
+    Map<String, String> input = new HashMap<String, String>();
+    input.put("a", " é foo € \b \t \n \f \r \" \\ ");
+    input.put("b", " \uD801\uDC28 \uD840\uDC0B "); // Check unicode code points greater than 0XFFFF
+    
+    String expected = "a = \" \\u00E9 foo \\u20AC \\b \\t \\n \\f \\r \\\" \\\\ \"\n"
+        + "b = \" \\U00010428 \\U0002000B \"\n";
+    
+    assertEquals(expected, new TomlWriter().write(input));
   }
 
   @Test
@@ -467,6 +470,26 @@ public class TomlWriterTest {
     new TomlWriter().write(new SimpleTestClass(), output);
 
     assertEquals("a = 1\n", readFile(output));
+  }
+  
+  @Test(expected=IllegalArgumentException.class)
+  public void should_not_write_date() throws Exception {
+    new TomlWriter().write(new Date());
+  }
+  
+  @Test(expected=IllegalArgumentException.class)
+  public void should_not_write_boolean() throws Exception {
+    new TomlWriter().write(Boolean.TRUE);
+  }
+  
+  @Test(expected=IllegalArgumentException.class)
+  public void should_not_write_number() throws Exception {
+    new TomlWriter().write(Long.valueOf(1));
+  }
+  
+  @Test(expected=IllegalArgumentException.class)
+  public void should_not_write_list() throws Exception {
+    new TomlWriter().write(Arrays.asList("a"));
   }
 
   private String readFile(File input) throws IOException {
