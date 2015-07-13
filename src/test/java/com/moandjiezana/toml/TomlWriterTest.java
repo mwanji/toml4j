@@ -475,32 +475,32 @@ public class TomlWriterTest {
     assertEquals("a = 1\n", readFile(output));
   }
   
-  @Test(expected = IllegalStateException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void should_refuse_to_write_string_fragment() {
     new TomlWriter().write("fragment");
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void should_refuse_to_write_boolean_fragment() {
     new TomlWriter().write(true);
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void should_refuse_to_write_number_fragment() {
     new TomlWriter().write(42);
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void should_refuse_to_write_date_fragment() {
     new TomlWriter().write(new Date());
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void should_refuse_to_write_array_fragment() {
     new TomlWriter().write(new int[2]);
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void should_refuse_to_write_table_array_fragment() {
     new TomlWriter().write(new SimpleTestClass[2]);
   }
