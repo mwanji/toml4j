@@ -288,6 +288,10 @@ Output:
 */
 ```
 
+### Threadsafety
+
+`TomlWriter` is threadsafe, however the JDK's streams and `Writer` are not. Take care not to write to the same stream in parallel.
+
 ### Limitations
 
 Date precision is limited to milliseconds.
