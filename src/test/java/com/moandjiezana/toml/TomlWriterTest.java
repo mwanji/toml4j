@@ -220,7 +220,7 @@ public class TomlWriterTest {
       List<Integer> aList = new LinkedList<Integer>();
       Float[] anArray = new Float[0];
     }
-    assertEquals("", new TomlWriter().write(new TestClass()));
+    assertEquals("aList = []\nanArray = []\n", new TomlWriter().write(new TestClass()));
   }
 
   @Test
@@ -284,14 +284,17 @@ public class TomlWriterTest {
 
   @Test
   public void should_write_strings_to_toml_utf8() throws UnsupportedEncodingException {
-    Map<String, String> input = new HashMap<String, String>();
-    input.put("a", " é foo € \b \t \n \f \r \" \\ ");
-    input.put("b", " \uD801\uDC28 \uD840\uDC0B "); // Check unicode code points greater than 0XFFFF
-    
-    String expected = "a = \" \\u00E9 foo \\u20AC \\b \\t \\n \\f \\r \\\" \\\\ \"\n"
-        + "b = \" \\U00010428 \\U0002000B \"\n";
-    
-    assertEquals(expected, new TomlWriter().write(input));
+    class Utf8Test {
+      String input;
+    }
+
+    Utf8Test utf8Test = new Utf8Test();
+    utf8Test.input = " é foo € \b \t \n \f \r \" \\ ";
+    assertEquals("input = \" \\u00E9 foo \\u20AC \\b \\t \\n \\f \\r \\\" \\\\ \"\n", new TomlWriter().write(utf8Test));
+
+    // Check unicode code points greater than 0XFFFF
+    utf8Test.input = " \uD801\uDC28 \uD840\uDC0B ";
+    assertEquals("input = \" \\U00010428 \\U0002000B \"\n", new TomlWriter().write(utf8Test));
   }
 
   @Test
@@ -443,7 +446,7 @@ public class TomlWriterTest {
     
     assertEquals(expected, writer.write(o));
   }
-  
+
   private static class SimpleTestClass {
     int a = 1;
   }
@@ -472,21 +475,36 @@ public class TomlWriterTest {
     assertEquals("a = 1\n", readFile(output));
   }
   
-  @Test(expected=IllegalArgumentException.class)
-  public void should_not_write_date() throws Exception {
+  @Test(expected = IllegalStateException.class)
+  public void should_refuse_to_write_string_fragment() {
+    new TomlWriter().write("fragment");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_refuse_to_write_boolean_fragment() {
+    new TomlWriter().write(true);
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_refuse_to_write_number_fragment() {
+    new TomlWriter().write(42);
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void should_refuse_to_write_date_fragment() {
     new TomlWriter().write(new Date());
   }
-  
-  @Test(expected=IllegalArgumentException.class)
-  public void should_not_write_boolean() throws Exception {
-    new TomlWriter().write(Boolean.TRUE);
+
+  @Test(expected = IllegalStateException.class)
+  public void should_refuse_to_write_array_fragment() {
+    new TomlWriter().write(new int[2]);
   }
-  
-  @Test(expected=IllegalArgumentException.class)
-  public void should_not_write_number() throws Exception {
-    new TomlWriter().write(Long.valueOf(1));
+
+  @Test(expected = IllegalStateException.class)
+  public void should_refuse_to_write_table_array_fragment() {
+    new TomlWriter().write(new SimpleTestClass[2]);
   }
-  
+
   @Test(expected=IllegalArgumentException.class)
   public void should_not_write_list() throws Exception {
     new TomlWriter().write(Arrays.asList("a"));

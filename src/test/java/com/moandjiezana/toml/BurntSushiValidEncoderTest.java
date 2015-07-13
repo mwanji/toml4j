@@ -1,6 +1,10 @@
 package com.moandjiezana.toml;
 
-import static org.junit.Assert.assertEquals;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import org.junit.*;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,14 +19,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.junit.Test;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import static org.junit.Assert.*;
 
 public class BurntSushiValidEncoderTest {
+
+  @Test
+  public void array_empty() throws Exception {
+    runEncoder("array-empty");
+  }
 
   @Test
   public void arrays_hetergeneous() throws Exception {

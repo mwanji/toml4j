@@ -146,15 +146,16 @@ public class TomlWriter {
    * @param from the object to be written
    * @param target the Writer to which TOML will be written. The Writer is not closed.
    * @throws IOException if target.write() fails
+   * @throws IllegalStateException if
    */
   public void write(Object from, Writer target) throws IOException {
     ValueWriter valueWriter = WRITERS.findWriterFor(from);
-    
-    if (valueWriter != MAP_VALUE_WRITER && valueWriter != OBJECT_VALUE_WRITER) {
-      throw new IllegalArgumentException("An object of type " + from.getClass().getSimpleName() + " cannot produce valid TOML.");
+
+    ValueWriter writer = WRITERS.findWriterFor(from);
+    if (writer == MAP_VALUE_WRITER || writer == OBJECT_VALUE_WRITER) {
+      WRITERS.findWriterFor(from).write(from, context);
+    } else {
+      throw new IllegalStateException("Top-level value must not be a primitive or array.");
     }
-    
-    WriterContext context = new WriterContext(indentationPolicy, datePolicy, target);
-    valueWriter.write(from, context);
   }
 }
