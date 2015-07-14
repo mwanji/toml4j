@@ -289,12 +289,12 @@ public class TomlWriterTest {
     }
 
     Utf8Test utf8Test = new Utf8Test();
-    utf8Test.input = " é foo € \b \t \n \f \r \" \\ ";
-    assertEquals("input = \" \\u00E9 foo \\u20AC \\b \\t \\n \\f \\r \\\" \\\\ \"\n", new TomlWriter().write(utf8Test));
+    utf8Test.input = " é foo \u20AC \b \t \n \f \r \" \\ ";
+    assertEquals("input = \" é foo € \\b \\t \\n \\f \\r \\\" \\\\ \"\n", new TomlWriter().write(utf8Test));
 
     // Check unicode code points greater than 0XFFFF
     utf8Test.input = " \uD801\uDC28 \uD840\uDC0B ";
-    assertEquals("input = \" \\U00010428 \\U0002000B \"\n", new TomlWriter().write(utf8Test));
+    assertEquals("input = \" 𐐨 𠀋 \"\n", new TomlWriter().write(utf8Test));
   }
 
   @Test
