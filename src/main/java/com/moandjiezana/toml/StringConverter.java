@@ -113,17 +113,6 @@ class StringConverter implements ValueConverter, ValueWriter {
       int codePoint = in.codePointAt(i);
       if (codePoint < specialCharacterEscapes.length && specialCharacterEscapes[codePoint] != null) {
         context.write(specialCharacterEscapes[codePoint]);
-        /*
-      } else if (codePoint > 0x1f && codePoint < 0x7f) {
-        context.write(Character.toChars(codePoint));
-      } else if (codePoint <= 0xFFFF) {
-        context.write(String.format("\\u%04X", codePoint));
-      } else {
-        context.write(String.format("\\U%08X", codePoint));
-        // Skip the low surrogate, which will be the next in the code point sequence.
-        i++;
-      }
-      */
       } else {
         context.write(in.charAt(i));
       }
