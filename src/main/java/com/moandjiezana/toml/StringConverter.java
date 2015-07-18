@@ -14,13 +14,13 @@ class StringConverter implements ValueConverter, ValueWriter {
   static private final String[] specialCharacterEscapes = new String[93];
 
   static {
-    specialCharacterEscapes[0x08] = "\\b";
-    specialCharacterEscapes[0x09] = "\\t";
-    specialCharacterEscapes[0x0A] = "\\n";
-    specialCharacterEscapes[0x0C] = "\\f";
-    specialCharacterEscapes[0x0D] = "\\r";
-    specialCharacterEscapes[0x22] = "\\\"";
-    specialCharacterEscapes[0x5C] = "\\\\";
+    specialCharacterEscapes['\b'] = "\\b";
+    specialCharacterEscapes['\t'] = "\\t";
+    specialCharacterEscapes['\n'] = "\\n";
+    specialCharacterEscapes['\f'] = "\\f";
+    specialCharacterEscapes['\r'] = "\\r";
+    specialCharacterEscapes['"'] = "\\\"";
+    specialCharacterEscapes['\\'] = "\\\\";
   }
 
   @Override
