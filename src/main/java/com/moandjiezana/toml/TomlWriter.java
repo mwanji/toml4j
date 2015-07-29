@@ -5,6 +5,7 @@ import static com.moandjiezana.toml.ObjectValueWriter.OBJECT_VALUE_WRITER;
 import static com.moandjiezana.toml.ValueWriters.WRITERS;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -112,38 +113,38 @@ public class TomlWriter {
   }
 
   /**
-   * Write an Object in TOML to a {@link OutputStream}.
-   *
-   * @param from the object to be written
-   * @param target the OutputStream to which the TOML will be written. The stream is not closed after being written to.
-   * @throws IOException if target.write() fails
-   */
-  public void write(Object from, OutputStream target) throws IOException {
-    OutputStreamWriter writer = new OutputStreamWriter(target);
-    write(from, writer);
-    writer.flush();
-  }
-
-  /**
-   * Write an Object in TOML to a {@link File}.
+   * Write an Object in TOML to a {@link File}. Output is encoded as UTF-8.
    *
    * @param from the object to be written
    * @param target the File to which the TOML will be written
    * @throws IOException if any file operations fail
    */
   public void write(Object from, File target) throws IOException {
-    FileWriter writer = new FileWriter(target);
+    OutputStream outputStream = new FileOutputStream(target);
     try {
-      write(from, writer);
+      write(from, outputStream);
     } finally {
-      writer.close();
+      outputStream.close();
     }
   }
 
   /**
-   * Write an Object in TOML to a {@link Writer}.
+   * Write an Object in TOML to a {@link OutputStream}. Output is encoded as UTF-8.
    *
-   * @param from the object to be written. Can be a Map or a custom type.
+   * @param from the object to be written
+   * @param target the OutputStream to which the TOML will be written. The stream is NOT closed after being written to.
+   * @throws IOException if target.write() fails
+   */
+  public void write(Object from, OutputStream target) throws IOException {
+    OutputStreamWriter writer = new OutputStreamWriter(target, "UTF-8");
+    write(from, writer);
+    writer.flush();
+  }
+
+  /**
+   * Write an Object in TOML to a {@link Writer}. You MUST ensure that the {@link Writer}s's encoding is set to UTF-8 for the TOML to be valid.
+   *
+   * @param from the object to be written. Can be a Map or a custom type. Must not be null.
    * @param target the Writer to which TOML will be written. The Writer is not closed.
    * @throws IOException if target.write() fails
    * @throws IllegalArgumentException if from is of an invalid type
