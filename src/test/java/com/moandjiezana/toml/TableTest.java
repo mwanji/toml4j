@@ -10,7 +10,7 @@ public class TableTest {
   
   @Test
   public void should_get_table() throws Exception {
-    Toml toml = new Toml().parse("[group]\nkey = \"value\"");
+    Toml toml = new Toml().read("[group]\nkey = \"value\"");
 
     Toml group = toml.getTable("group");
 
@@ -19,35 +19,35 @@ public class TableTest {
 
   @Test
   public void should_get_value_for_multi_key() throws Exception {
-    Toml toml = new Toml().parse("[group]\nkey = \"value\"");
+    Toml toml = new Toml().read("[group]\nkey = \"value\"");
 
     assertEquals("value", toml.getString("group.key"));
   }
 
   @Test
   public void should_get_value_for_multi_key_with_no_parent_table() throws Exception {
-    Toml toml = new Toml().parse("[group.sub]\nkey = \"value\"");
+    Toml toml = new Toml().read("[group.sub]\nkey = \"value\"");
 
     assertEquals("value", toml.getString("group.sub.key"));
   }
 
   @Test
   public void should_get_table_for_multi_key() throws Exception {
-    Toml toml = new Toml().parse("[group]\nother=1\n[group.sub]\nkey = \"value\"");
+    Toml toml = new Toml().read("[group]\nother=1\n[group.sub]\nkey = \"value\"");
 
     assertEquals("value", toml.getTable("group.sub").getString("key"));
   }
 
   @Test
   public void should_get_table_for_multi_key_with_no_parent_table() throws Exception {
-    Toml toml = new Toml().parse("[group.sub]\nkey = \"value\"");
+    Toml toml = new Toml().read("[group.sub]\nkey = \"value\"");
 
     assertEquals("value", toml.getTable("group.sub").getString("key"));
   }
 
   @Test
   public void should_get_value_from_table_with_sub_table() throws Exception {
-    Toml toml = new Toml().parse("[a.b]\nc=1\n[a]\nd=2");
+    Toml toml = new Toml().read("[a.b]\nc=1\n[a]\nd=2");
 
     assertEquals(2, toml.getLong("a.d").intValue());
     assertEquals(1, toml.getTable("a.b").getLong("c").intValue());
@@ -55,7 +55,7 @@ public class TableTest {
   
   @Test
   public void should_get_empty_table() throws Exception {
-    Toml toml = new Toml().parse("[a]");
+    Toml toml = new Toml().read("[a]");
     assertTrue(toml.getTable("a").isEmpty());
   }
   
@@ -75,18 +75,18 @@ public class TableTest {
 
   @Test
   public void should_return_null_when_no_value_for_multi_key() throws Exception {
-    Toml toml = new Toml().parse("");
+    Toml toml = new Toml().read("");
 
     assertNull(toml.getString("group.key"));
   }
 
   @Test(expected = IllegalStateException.class)
   public void should_fail_when_table_defined_twice() throws Exception {
-    new Toml().parse("[a]\nb=1\n[a]\nc=2");
+    new Toml().read("[a]\nb=1\n[a]\nc=2");
   }
 
   @Test(expected = IllegalStateException.class)
   public void should_fail_when_illegal_characters_after_table() throws Exception {
-    new Toml().parse("[error]   if you didn't catch this, your parser is broken");
+    new Toml().read("[error]   if you didn't catch this, your parser is broken");
   }
 }

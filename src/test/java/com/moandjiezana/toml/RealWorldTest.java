@@ -21,7 +21,7 @@ public class RealWorldTest {
   @SuppressWarnings("unchecked")
   @Test
   public void should_parse_example() throws Exception {
-    Toml toml = new Toml().parse(new File(getClass().getResource("example.toml").getFile()));
+    Toml toml = new Toml().read(new File(getClass().getResource("example.toml").getFile()));
 
     // printMap(root);
 
@@ -60,7 +60,7 @@ public class RealWorldTest {
 
   @Test
   public void should_parse_hard_example() throws Exception {
-    Toml toml = new Toml().parse(new File(getClass().getResource("hard_example.toml").getFile()));
+    Toml toml = new Toml().read(new File(getClass().getResource("hard_example.toml").getFile()));
 
     assertEquals("You'll hate me after this - #", toml.getString("the.test_string"));
     assertEquals(asList("] ", " # "), toml.<String>getList("the.hard.test_array"));
@@ -75,7 +75,7 @@ public class RealWorldTest {
   @SuppressWarnings("unchecked")
   @Test
   public void should_parse_current_version_example() throws Exception {
-    Toml toml = new Toml().parse(new File(getClass().getResource("example-v0.4.0.toml").getFile()));
+    Toml toml = new Toml().read(new File(getClass().getResource("example-v0.4.0.toml").getFile()));
     
     assertEquals("value", toml.getString("table.key"));
     assertEquals("another value", toml.getString("table.subtable.key"));
@@ -147,7 +147,7 @@ public class RealWorldTest {
 
   @Test
   public void should_allow_keys_with_same_name_in_different_tables() throws Exception {
-    Toml toml = new Toml().parse(new File(getClass().getResource("should_allow_keys_with_same_name_in_different_tables.toml").getFile()));
+    Toml toml = new Toml().read(new File(getClass().getResource("should_allow_keys_with_same_name_in_different_tables.toml").getFile()));
 
     assertTrue(toml.getTable("siteInfo.local.sh").getBoolean("enable"));
     assertFalse(toml.getTable("siteInfo.localMobile.sh").getBoolean("enable"));

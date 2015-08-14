@@ -252,7 +252,7 @@ public class BurntSushiValidTest {
     Reader expectedJsonReader = new InputStreamReader(getClass().getResourceAsStream("burntsushi/valid/" + testName + ".json"));
     JsonElement expectedJson = GSON.fromJson(expectedJsonReader, JsonElement.class);
 
-    Toml toml = new Toml().parse(inputToml);
+    Toml toml = new Toml().read(inputToml);
     JsonElement actual = TEST_GSON.toJsonTree(toml).getAsJsonObject().get("values");
 
     assertEquals(expectedJson, actual);

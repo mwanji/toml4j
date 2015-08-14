@@ -1,21 +1,21 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueConverters.CONVERTERS;
+import static com.moandjiezana.toml.ValueReaders.VALUE_READERS;
 
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-class InlineTableConverter implements ValueConverter {
+class InlineTableValueReader implements ValueReader {
 
-  static final InlineTableConverter INLINE_TABLE_PARSER = new InlineTableConverter();
+  static final InlineTableValueReader INLINE_TABLE_VALUE_READER = new InlineTableValueReader();
   
   @Override
-  public boolean canConvert(String s) {
+  public boolean canRead(String s) {
     return s.startsWith("{");
   }
 
   @Override
-  public Object convert(String s, AtomicInteger sharedIndex, Context context) {
+  public Object read(String s, AtomicInteger sharedIndex, Context context) {
     AtomicInteger line = context.line;
     int startLine = line.get();
     int startIndex = sharedIndex.get();
@@ -30,7 +30,7 @@ class InlineTableConverter implements ValueConverter {
       char c = s.charAt(i);
       
       if (inValue && !Character.isWhitespace(c)) {
-        Object converted = CONVERTERS.convert(s, sharedIndex, context.with(Identifier.from(currentKey.toString(), context)));
+        Object converted = VALUE_READERS.convert(s, sharedIndex, context.with(Identifier.from(currentKey.toString(), context)));
         
         if (converted instanceof Results.Errors) {
           errors.add((Results.Errors) converted);
@@ -73,5 +73,5 @@ class InlineTableConverter implements ValueConverter {
     return results;
   }
 
-  private InlineTableConverter() {}
+  private InlineTableValueReader() {}
 }

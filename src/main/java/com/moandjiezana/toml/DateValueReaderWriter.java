@@ -7,14 +7,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class DateConverter implements ValueConverter, ValueWriter {
+class DateValueReaderWriter implements ValueReader, ValueWriter {
 
-  static final DateConverter DATE_PARSER = new DateConverter();
-  static final DateConverter DATE_PARSER_JDK_6 = new DateConverterJdk6();
+  static final DateValueReaderWriter DATE_VALUE_READER_WRITER = new DateValueReaderWriter();
+  static final DateValueReaderWriter DATE_PARSER_JDK_6 = new DateConverterJdk6();
   private static final Pattern DATE_REGEX = Pattern.compile("(\\d{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9])(\\.\\d*)?(Z|(?:[+\\-]\\d{2}:\\d{2}))(.*)");
 
   @Override
-  public boolean canConvert(String s) {
+  public boolean canRead(String s) {
     if (s.length() < 5) {
       return false;
     }
@@ -35,7 +35,7 @@ class DateConverter implements ValueConverter, ValueWriter {
   }
 
   @Override
-  public Object convert(String original, AtomicInteger index, Context context) {
+  public Object read(String original, AtomicInteger index, Context context) {
     StringBuilder sb = new StringBuilder();
     
     for (int i = index.get(); i < original.length(); i = index.incrementAndGet()) {
@@ -126,9 +126,9 @@ class DateConverter implements ValueConverter, ValueWriter {
     return "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
   }
   
-  private DateConverter() {}
+  private DateValueReaderWriter() {}
   
-  private static class DateConverterJdk6 extends DateConverter {
+  private static class DateConverterJdk6 extends DateValueReaderWriter {
     @Override
     public void write(Object value, WriterContext context) {
       DateFormat formatter = super.getFormatter(context.getDatePolicy());

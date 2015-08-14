@@ -29,7 +29,7 @@ public class TomlToClassTest {
 
   @Test
   public void should_convert_toml_primitives() throws Exception {
-    Toml toml = new Toml().parse(file("should_convert_primitive_values.toml"));
+    Toml toml = new Toml().read(file("should_convert_primitive_values.toml"));
 
     TomlPrimitives values = toml.to(TomlPrimitives.class);
 
@@ -47,7 +47,7 @@ public class TomlToClassTest {
 
   @Test
   public void should_convert_to_non_toml_primitives() throws Exception {
-    ExtraPrimitives extraPrimitives = new Toml().parse(file("should_convert_extra_primitives.toml")).to(ExtraPrimitives.class);
+    ExtraPrimitives extraPrimitives = new Toml().read(file("should_convert_extra_primitives.toml")).to(ExtraPrimitives.class);
 
     assertEquals("Did not convert table to map", "value", extraPrimitives.group.get("key"));
     assertEquals("Did not convert double to BigDecimal", BigDecimal.valueOf(1.2), extraPrimitives.bigDecimal);
@@ -65,7 +65,7 @@ public class TomlToClassTest {
   @Test
   public void should_convert_tables() throws Exception {
     String fileName = "should_convert_tables.toml";
-    Toml toml = new Toml().parse(file(fileName));
+    Toml toml = new Toml().read(file(fileName));
 
     TomlTables tomlTables = toml.to(TomlTables.class);
 
@@ -75,8 +75,8 @@ public class TomlToClassTest {
 
   @Test
   public void should_convert_tables_with_defaults() throws Exception {
-    Toml defaultToml = new Toml().parse("[group2]\n string=\"defaultValue2\"\n number=2\n [group3]\n string=\"defaultValue3\"");
-    Toml toml = new Toml(defaultToml).parse(file("should_convert_tables.toml"));
+    Toml defaultToml = new Toml().read("[group2]\n string=\"defaultValue2\"\n number=2\n [group3]\n string=\"defaultValue3\"");
+    Toml toml = new Toml(defaultToml).read(file("should_convert_tables.toml"));
 
     TomlTables tomlTables = toml.to(TomlTables.class);
 
@@ -88,8 +88,8 @@ public class TomlToClassTest {
 
   @Test
   public void should_use_defaults() throws Exception {
-    Toml defaults = new Toml().parse(file("should_convert_tables.toml"));
-    Toml toml = new Toml(defaults).parse("");
+    Toml defaults = new Toml().read(file("should_convert_tables.toml"));
+    Toml toml = new Toml(defaults).read("");
 
     TomlTables tomlTables = toml.to(TomlTables.class);
 
@@ -99,14 +99,14 @@ public class TomlToClassTest {
 
   @Test
   public void should_ignore_keys_not_in_class() throws Exception {
-    TomlPrimitives tomlPrimitives = new Toml().parse("a=1\nstring=\"s\"").to(TomlPrimitives.class);
+    TomlPrimitives tomlPrimitives = new Toml().read("a=1\nstring=\"s\"").to(TomlPrimitives.class);
 
     assertEquals("s", tomlPrimitives.string);
   }
 
   @Test
   public void should_convert_table_array() throws Exception {
-    TomlTableArrays toml = new Toml().parse(file("should_convert_table_array_to_class.toml")).to(TomlTableArrays.class);
+    TomlTableArrays toml = new Toml().read(file("should_convert_table_array_to_class.toml")).to(TomlTableArrays.class);
 
     assertEquals(2, toml.groupers.size());
     assertEquals("grouper 1", toml.groupers.get(0).string);
@@ -118,7 +118,7 @@ public class TomlToClassTest {
 
   @Test
   public void should_convert_fruit_table_array() throws Exception {
-    FruitArray fruitArray = new Toml().parse(file("fruit_table_array.toml")).to(FruitArray.class);
+    FruitArray fruitArray = new Toml().read(file("fruit_table_array.toml")).to(FruitArray.class);
 
     assertEquals(2, fruitArray.fruit.size());
     Fruit apple = fruitArray.fruit.get(0);

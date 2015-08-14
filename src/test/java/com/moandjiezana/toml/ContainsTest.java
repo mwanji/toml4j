@@ -9,7 +9,7 @@ public class ContainsTest {
 
   @Test
   public void should_contain_top_level_of_any_type() throws Exception {
-    Toml toml = new Toml().parse("a = 1  \n  [b]  \n  b1 = 1  \n  [[c]]  \n c1 = 1");
+    Toml toml = new Toml().read("a = 1  \n  [b]  \n  b1 = 1  \n  [[c]]  \n c1 = 1");
     
     assertTrue(toml.contains("a"));
     assertTrue(toml.contains("b"));
@@ -19,7 +19,7 @@ public class ContainsTest {
   
   @Test
   public void should_contain_nested_of_any_type() throws Exception {
-    Toml toml = new Toml().parse("[a]  \n  a1 = 1  \n  [[b]]  \n b1 = 1  \n  [[b]]  \n b1 = 2  \n  b2 = 3");
+    Toml toml = new Toml().read("[a]  \n  a1 = 1  \n  [[b]]  \n b1 = 1  \n  [[b]]  \n b1 = 2  \n  b2 = 3");
     
     assertTrue(toml.contains("a.a1"));
     assertTrue(toml.contains("b[0].b1"));
@@ -30,7 +30,7 @@ public class ContainsTest {
   
   @Test
   public void should_contain_key() throws Exception {
-    Toml toml = new Toml().parse("a = 1  \n  [b]  \n  b1 = 1  \n  [[c]]  \n c1 = 1");
+    Toml toml = new Toml().read("a = 1  \n  [b]  \n  b1 = 1  \n  [[c]]  \n c1 = 1");
     
     assertTrue(toml.containsKey("a"));
     assertTrue(toml.containsKey("b.b1"));
@@ -42,7 +42,7 @@ public class ContainsTest {
   
   @Test
   public void should_contain_table() throws Exception {
-    Toml toml = new Toml().parse("a = 1  \n  [b]  \n  b1 = 1  \n  [b.b2]  \n  [[c]]  \n c1 = 1  \n [c.c2]");
+    Toml toml = new Toml().read("a = 1  \n  [b]  \n  b1 = 1  \n  [b.b2]  \n  [[c]]  \n c1 = 1  \n [c.c2]");
 
     assertTrue(toml.containsTable("b"));
     assertTrue(toml.containsTable("b.b2"));
@@ -56,7 +56,7 @@ public class ContainsTest {
   
   @Test
   public void should_contain_table_array() throws Exception {
-    Toml toml = new Toml().parse("a = 1  \n  [b]  \n  b1 = 1  \n  [[c]]  \n c1 = 1  \n [c.c2] \n  [[c]]  \n  [[c.c3]] \n c4 = 4");
+    Toml toml = new Toml().read("a = 1  \n  [b]  \n  b1 = 1  \n  [[c]]  \n c1 = 1  \n [c.c2] \n  [[c]]  \n  [[c.c3]] \n c4 = 4");
     
     assertTrue(toml.containsTableArray("c"));
     assertTrue(toml.containsTableArray("c[1].c3"));
@@ -69,7 +69,7 @@ public class ContainsTest {
   
   @Test
   public void should_not_contain_when_parent_table_is_missing() throws Exception {
-    Toml toml = new Toml().parse("a = \"1\"");
+    Toml toml = new Toml().read("a = \"1\"");
     
     assertFalse(toml.contains("b.b1"));
     assertFalse(toml.containsKey("b.b1"));

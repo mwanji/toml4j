@@ -1,10 +1,23 @@
 package com.moandjiezana.toml;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-
-import java.io.*;
-import java.util.*;
 
 /**
  * <p>Provides access to the keys and tables in a TOML data source.</p>
@@ -13,11 +26,11 @@ import java.util.*;
  * Getters for simple values (String, Date, etc.) will return null if no matching key exists.
  * {@link #getList(String)}, {@link #getTable(String)} and {@link #getTables(String)} return empty values if there is no matching key.</p>
  * 
- * <p>All parse methods throw an {@link IllegalStateException} if the TOML is incorrect.</p>
+ * <p>All read methods throw an {@link IllegalStateException} if the TOML is incorrect.</p>
  *
  * <p>Example usage:</p>
  * <pre><code>
- * Toml toml = new Toml().parse(getTomlFile());
+ * Toml toml = new Toml().read(getTomlFile());
  * String name = toml.getString("name");
  * Long port = toml.getLong("server.ip"); // compound key. Is equivalent to:
  * Long port2 = toml.getTable("server").getLong("ip");
@@ -53,9 +66,9 @@ public class Toml {
    * @return this instance
    * @throws IllegalStateException If file contains invalid TOML
    */
-  public Toml parse(File file) {
+  public Toml read(File file) {
     try {
-      return parse(new FileReader(file));
+      return read(new FileReader(file));
     } catch (FileNotFoundException e) {
       throw new RuntimeException(e);
     }
@@ -68,8 +81,8 @@ public class Toml {
    * @return this instance
    * @throws IllegalStateException If file contains invalid TOML
    */
-  public Toml parse(InputStream inputStream) {
-    return parse(new InputStreamReader(inputStream));
+  public Toml read(InputStream inputStream) {
+    return read(new InputStreamReader(inputStream));
   }
 
   /**
@@ -79,7 +92,7 @@ public class Toml {
    * @return this instance
    * @throws IllegalStateException If file contains invalid TOML
    */
-  public Toml parse(Reader reader) {
+  public Toml read(Reader reader) {
     BufferedReader bufferedReader = null;
     try {
       bufferedReader = new BufferedReader(reader);
@@ -90,7 +103,7 @@ public class Toml {
         w.append(line).append('\n');
         line = bufferedReader.readLine();
       }
-      parse(w.toString());
+      read(w.toString());
     } catch (IOException e) {
       throw new RuntimeException(e);
     } finally {
@@ -108,7 +121,7 @@ public class Toml {
    * @return this instance
    * @throws IllegalStateException If tomlString is not valid TOML
    */
-  public Toml parse(String tomlString) throws IllegalStateException {
+  public Toml read(String tomlString) throws IllegalStateException {
     Results results = TomlParser.run(tomlString);
     if (results.errors.hasErrors()) {
       throw new IllegalStateException(results.errors.toString());

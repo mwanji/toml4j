@@ -17,14 +17,14 @@ public class TomlParseTest {
 
   @Test
   public void should_parse_input_stream() throws Exception {
-    Toml toml = new Toml().parse(getClass().getResourceAsStream("should_load_from_file.toml"));
+    Toml toml = new Toml().read(getClass().getResourceAsStream("should_load_from_file.toml"));
 
     assertEquals("value", toml.getString("key"));
   }
 
   @Test
   public void should_parse_reader() throws Exception {
-    Toml toml = new Toml().parse(new StringReader("key=1"));
+    Toml toml = new Toml().read(new StringReader("key=1"));
 
     assertEquals(1, toml.getLong("key").intValue());
   }
@@ -32,7 +32,7 @@ public class TomlParseTest {
   @Test
   public void should_fail_on_missing_file() throws Exception {
     try {
-      new Toml().parse(new File("missing"));
+      new Toml().read(new File("missing"));
       fail("Exception should have been thrown");
     } catch (RuntimeException e) {
       assertThat(e.getCause(), instanceOf(FileNotFoundException.class));
@@ -53,7 +53,7 @@ public class TomlParseTest {
     };
 
     try {
-      new Toml().parse(readerThatThrows);
+      new Toml().read(readerThatThrows);
       fail("Exception should have been thrown");
     } catch (RuntimeException e) {
       assertThat(e.getCause(), instanceOf(IOException.class));

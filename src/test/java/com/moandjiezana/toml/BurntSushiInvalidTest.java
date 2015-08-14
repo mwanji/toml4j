@@ -209,7 +209,7 @@ public class BurntSushiInvalidTest {
     inputToml = getClass().getResourceAsStream("burntsushi/invalid/" + testName + ".toml");
 
     try {
-      new Toml().parse(inputToml);
+      new Toml().read(inputToml);
       Assert.fail("Should have rejected invalid input!");
     } catch (IllegalStateException e) {
       // success

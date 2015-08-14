@@ -3,17 +3,17 @@ package com.moandjiezana.toml;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-class LiteralStringConverter implements ValueConverter {
+class LiteralStringValueReader implements ValueReader {
 
-  static final LiteralStringConverter LITERAL_STRING_PARSER = new LiteralStringConverter();
+  static final LiteralStringValueReader LITERAL_STRING_VALUE_READER = new LiteralStringValueReader();
   
   @Override
-  public boolean canConvert(String s) {
+  public boolean canRead(String s) {
     return s.startsWith("'");
   }
 
   @Override
-  public Object convert(String s, AtomicInteger index, Context context) {
+  public Object read(String s, AtomicInteger index, Context context) {
     int startLine = context.line.get();
     boolean terminated = false;
     int startIndex = index.incrementAndGet();
@@ -38,5 +38,5 @@ class LiteralStringConverter implements ValueConverter {
     return substring;
   }
 
-  private LiteralStringConverter() {}
+  private LiteralStringValueReader() {}
 }

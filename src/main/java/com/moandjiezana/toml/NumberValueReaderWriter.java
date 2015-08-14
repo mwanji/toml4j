@@ -2,18 +2,18 @@ package com.moandjiezana.toml;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-class NumberConverter implements ValueConverter, ValueWriter {
-  static final NumberConverter NUMBER_PARSER = new NumberConverter();
+class NumberValueReaderWriter implements ValueReader, ValueWriter {
+  static final NumberValueReaderWriter NUMBER_VALUE_READER_WRITER = new NumberValueReaderWriter();
   
   @Override
-  public boolean canConvert(String s) {
+  public boolean canRead(String s) {
     char firstChar = s.charAt(0);
     
     return firstChar == '+' || firstChar == '-' || Character.isDigit(firstChar);
   }
 
   @Override
-  public Object convert(String s, AtomicInteger index, Context context) {
+  public Object read(String s, AtomicInteger index, Context context) {
     boolean signable = true;
     boolean dottable = false;
     boolean exponentable = false;

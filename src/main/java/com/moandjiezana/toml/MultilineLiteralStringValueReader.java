@@ -2,17 +2,17 @@ package com.moandjiezana.toml;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-class MultilineStringConverter implements ValueConverter {
-
-  static final MultilineStringConverter MULTILINE_STRING_PARSER = new MultilineStringConverter();
-
+class MultilineLiteralStringValueReader implements ValueReader {
+  
+  static final MultilineLiteralStringValueReader MULTILINE_LITERAL_STRING_VALUE_READER = new MultilineLiteralStringValueReader(); 
+  
   @Override
-  public boolean canConvert(String s) {
-    return s.startsWith("\"\"\"");
+  public boolean canRead(String s) {
+    return s.startsWith("'''");
   }
 
   @Override
-  public Object convert(String s, AtomicInteger index, Context context) {
+  public Object read(String s, AtomicInteger index, Context context) {
     AtomicInteger line = context.line;
     int startLine = line.get();
     int originalStartIndex = index.get();
@@ -26,10 +26,12 @@ class MultilineStringConverter implements ValueConverter {
     
     for (int i = startIndex; i < s.length(); i = index.incrementAndGet()) {
       char c = s.charAt(i);
-      
+
       if (c == '\n') {
         line.incrementAndGet();
-      } else if (c == '"' && s.length() > i + 2 && s.charAt(i + 1) == '"' && s.charAt(i + 2) == '"') {
+      }
+      
+      if (c == '\'' && s.length() > i + 2 && s.charAt(i + 1) == '\'' && s.charAt(i + 2) == '\'') {
         endIndex = i;
         index.addAndGet(2);
         break;
@@ -42,15 +44,8 @@ class MultilineStringConverter implements ValueConverter {
       return errors;
     }
 
-    s = s.substring(startIndex, endIndex);
-    s = s.replaceAll("\\\\\\s+", "");
-    s = StringConverter.STRING_PARSER.replaceUnicodeCharacters(s);
-    s = StringConverter.STRING_PARSER.replaceSpecialCharacters(s);
-
-    return s;
+    return s.substring(startIndex, endIndex);
   }
 
-  private MultilineStringConverter() {
-  }
-
+  private MultilineLiteralStringValueReader() {}
 }

@@ -9,7 +9,7 @@ public class BooleanTest {
 
   @Test
   public void should_get_boolean() throws Exception {
-    Toml toml = new Toml().parse("bool_false = false\nbool_true = true");
+    Toml toml = new Toml().read("bool_false = false\nbool_true = true");
 
     assertFalse(toml.getBoolean("bool_false"));
     assertTrue(toml.getBoolean("bool_true"));
@@ -17,11 +17,11 @@ public class BooleanTest {
 
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_invalid_boolean_true() {
-    new Toml().parse("answer = true abc");
+    new Toml().read("answer = true abc");
   }
 
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_invalid_boolean_false() {
-    new Toml().parse("answer = false abc");
+    new Toml().read("answer = false abc");
   }
 }

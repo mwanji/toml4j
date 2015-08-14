@@ -1,22 +1,22 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.ValueConverters.CONVERTERS;
+import static com.moandjiezana.toml.ValueReaders.VALUE_READERS;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-class ArrayConverter implements ValueConverter {
+class ArrayValueReader implements ValueReader {
 
-  static final ArrayConverter ARRAY_PARSER = new ArrayConverter();
+  static final ArrayValueReader ARRAY_VALUE_READER = new ArrayValueReader();
 
   @Override
-  public boolean canConvert(String s) {
+  public boolean canRead(String s) {
     return s.startsWith("[");
   }
 
   @Override
-  public Object convert(String s, AtomicInteger index, Context context) {
+  public Object read(String s, AtomicInteger index, Context context) {
     AtomicInteger line = context.line;
     int startLine = line.get();
     int startIndex = index.get();
@@ -37,7 +37,7 @@ class ArrayConverter implements ValueConverter {
       } else if (inComment || Character.isWhitespace(c) || c == ',') {
         continue;
       } else if (c == '[') {
-        Object converted = convert(s, index, context);
+        Object converted = read(s, index, context);
         if (converted instanceof Results.Errors) {
           errors.add((Results.Errors) converted);
         } else if (!isHomogenousArray(converted, arrayItems)) {
@@ -50,7 +50,7 @@ class ArrayConverter implements ValueConverter {
         terminated = true;
         break;
       } else {
-        Object converted = CONVERTERS.convert(s, index, context);
+        Object converted = VALUE_READERS.convert(s, index, context);
         if (converted instanceof Results.Errors) {
           errors.add((Results.Errors) converted);
         } else if (!isHomogenousArray(converted, arrayItems)) {
@@ -76,5 +76,5 @@ class ArrayConverter implements ValueConverter {
     return values.isEmpty() || values.get(0).getClass().isAssignableFrom(o.getClass()) || o.getClass().isAssignableFrom(values.get(0).getClass());
   }
   
-  private ArrayConverter() {}
+  private ArrayValueReader() {}
 }

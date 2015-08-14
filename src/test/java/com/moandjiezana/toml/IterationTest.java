@@ -29,7 +29,7 @@ public class IterationTest {
 
   @Test
   public void should_iterate_over_primitive() throws Exception {
-    Toml toml = new Toml().parse(file("long"));
+    Toml toml = new Toml().read(file("long"));
     Map.Entry<String, Object> entry = toml.entrySet().iterator().next();
     
     assertEquals("long", entry.getKey());
@@ -39,7 +39,7 @@ public class IterationTest {
   @Test
   @SuppressWarnings("unchecked")
   public void should_iterate_over_list() throws Exception {
-    Toml toml = new Toml().parse(file("list"));
+    Toml toml = new Toml().read(file("list"));
     Map.Entry<String, Object> entry = toml.entrySet().iterator().next();
     
     assertEquals("list", entry.getKey());
@@ -49,7 +49,7 @@ public class IterationTest {
   @Test
   @SuppressWarnings("unchecked")
   public void should_iterate_over_empty_list() throws Exception {
-    Toml toml = new Toml().parse("list = []");
+    Toml toml = new Toml().read("list = []");
     Map.Entry<String, Object> entry = toml.entrySet().iterator().next();
     
     assertEquals("list", entry.getKey());
@@ -58,7 +58,7 @@ public class IterationTest {
   
   @Test
   public void should_iterate_over_table() throws Exception {
-    Toml toml = new Toml().parse(file("table"));
+    Toml toml = new Toml().read(file("table"));
     Map.Entry<String, Object> entry = toml.entrySet().iterator().next();
     
     assertEquals("table", entry.getKey());
@@ -68,7 +68,7 @@ public class IterationTest {
   @Test
   @SuppressWarnings("unchecked")
   public void should_iterate_over_table_array() throws Exception {
-    Toml toml = new Toml().parse(file("table_array"));
+    Toml toml = new Toml().read(file("table_array"));
     
     Map.Entry<String, Object> entry = toml.entrySet().iterator().next();
     List<Toml> tableArray = (List<Toml>) entry.getValue();
@@ -80,7 +80,7 @@ public class IterationTest {
   @Test
   @SuppressWarnings("unchecked")
   public void should_iterate_over_multiple_entries() throws Exception {
-    Toml toml = new Toml().parse(file("multiple"));
+    Toml toml = new Toml().read(file("multiple"));
 
     Map<String, Object> entries = new HashMap<String, Object>();
     for (Map.Entry<String, Object> entry : toml.entrySet()) {
@@ -96,7 +96,7 @@ public class IterationTest {
   
   @Test
   public void should_not_support_setValue_method() throws Exception {
-    Map.Entry<String, Object> entry = new Toml().parse("a = 1").entrySet().iterator().next();
+    Map.Entry<String, Object> entry = new Toml().read("a = 1").entrySet().iterator().next();
     
     expectedException.expect(UnsupportedOperationException.class);
     entry.setValue(2L);
@@ -104,7 +104,7 @@ public class IterationTest {
   
   @Test
   public void should_not_iterate_over_empty_toml() throws Exception {
-    Toml toml = new Toml().parse("");
+    Toml toml = new Toml().read("");
     
     assertThat(toml.entrySet(), empty());
   }

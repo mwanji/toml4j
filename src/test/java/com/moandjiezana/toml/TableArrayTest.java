@@ -16,7 +16,7 @@ public class TableArrayTest {
 
   @Test
   public void should_parse_table_array() throws Exception {
-    Toml toml = new Toml().parse(file("products_table_array"));
+    Toml toml = new Toml().read(file("products_table_array"));
 
     List<Toml> products = toml.getTables("products");
 
@@ -35,7 +35,7 @@ public class TableArrayTest {
   
   @Test
   public void should_parse_table_array_out_of_order() throws Exception {
-    Toml toml = new Toml().parse(file("should_parse_table_array_out_of_order"));
+    Toml toml = new Toml().read(file("should_parse_table_array_out_of_order"));
     
     List<Toml> tables = toml.getTables("product");
     List<Toml> employees = toml.getTables("employee");
@@ -49,7 +49,7 @@ public class TableArrayTest {
 
   @Test
   public void should_parse_nested_table_arrays() throws Exception {
-    Toml toml = new Toml().parse(file("fruit_table_array"));
+    Toml toml = new Toml().read(file("fruit_table_array"));
 
     List<Toml> fruits = toml.getTables("fruit");
 
@@ -69,14 +69,14 @@ public class TableArrayTest {
 
   @Test
   public void should_create_array_ancestors_as_tables() throws Exception {
-    Toml toml = new Toml().parse("[[a.b.c]]\n id=3");
+    Toml toml = new Toml().read("[[a.b.c]]\n id=3");
 
     assertEquals(3, toml.getTable("a").getTable("b").getTables("c").get(0).getLong("id").intValue());
   }
 
   @Test
   public void should_navigate_array_with_compound_key() throws Exception {
-    Toml toml = new Toml().parse(file("fruit_table_array"));
+    Toml toml = new Toml().read(file("fruit_table_array"));
 
     List<Toml> appleVarieties = toml.getTables("fruit[0].variety");
     Toml appleVariety = toml.getTable("fruit[0].variety[1]");
@@ -90,7 +90,7 @@ public class TableArrayTest {
 
   @Test
   public void should_return_null_for_missing_table_array() throws Exception {
-    Toml toml = new Toml().parse("[a]");
+    Toml toml = new Toml().read("[a]");
     
     assertNull(toml.getTables("b"));
   }
@@ -105,14 +105,14 @@ public class TableArrayTest {
 
   @Test
   public void should_return_null_for_index_out_of_bounds() throws Exception {
-    Toml toml = new Toml().parse("[[a]]\n  c = 1");
+    Toml toml = new Toml().read("[[a]]\n  c = 1");
     
     assertNull(toml.getTable("a[1]"));
   }
   
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_empty_table_array_name() {
-    new Toml().parse("[[]]");
+    new Toml().read("[[]]");
   }
 
   private File file(String fileName) {

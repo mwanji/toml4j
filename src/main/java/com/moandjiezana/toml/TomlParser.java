@@ -46,7 +46,7 @@ class TomlParser {
         value = null;
         line.incrementAndGet();
       } else if (!inComment && identifier != null && identifier.isKey() && value == null && !Character.isWhitespace(c)) {
-        value = ValueConverters.CONVERTERS.convert(tomlString, index, new Context(identifier, line, results.errors));
+        value = ValueReaders.VALUE_READERS.convert(tomlString, index, new Context(identifier, line, results.errors));
         
         if (value instanceof Results.Errors) {
           results.errors.add((Results.Errors) value);

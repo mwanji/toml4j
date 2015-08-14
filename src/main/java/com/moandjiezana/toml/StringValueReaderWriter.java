@@ -6,9 +6,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class StringConverter implements ValueConverter, ValueWriter {
+class StringValueReaderWriter implements ValueReader, ValueWriter {
   
-  static final StringConverter STRING_PARSER = new StringConverter();
+  static final StringValueReaderWriter STRING_VALUE_READER_WRITER = new StringValueReaderWriter();
   private static final Pattern UNICODE_REGEX = Pattern.compile("\\\\[uU](.{4})");
 
   static private final String[] specialCharacterEscapes = new String[93];
@@ -24,12 +24,12 @@ class StringConverter implements ValueConverter, ValueWriter {
   }
 
   @Override
-  public boolean canConvert(String s) {
+  public boolean canRead(String s) {
     return s.startsWith("\"");
   }
 
   @Override
-  public Object convert(String s, AtomicInteger index, Context context) {
+  public Object read(String s, AtomicInteger index, Context context) {
     int startIndex = index.incrementAndGet();
     int endIndex = -1;
 
@@ -119,7 +119,7 @@ class StringConverter implements ValueConverter, ValueWriter {
     }
   }
 
-  private StringConverter() {}
+  private StringValueReaderWriter() {}
 
   @Override
   public String toString() {
