@@ -2,6 +2,7 @@ package com.moandjiezana.toml;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -62,14 +63,14 @@ public class Toml {
   /**
    * Populates the current Toml instance with values from file.
    *
-   * @param file The File to be read
+   * @param file The File to be read. Expected to be encoded as UTF-8.
    * @return this instance
    * @throws IllegalStateException If file contains invalid TOML
    */
   public Toml read(File file) {
     try {
-      return read(new FileReader(file));
-    } catch (FileNotFoundException e) {
+      return read(new InputStreamReader(new FileInputStream(file), "UTF8"));
+    } catch (Exception e) {
       throw new RuntimeException(e);
     }
   }
