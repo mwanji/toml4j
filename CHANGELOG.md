@@ -6,11 +6,13 @@
 
 * __BREAKING:__ Toml#getList(String), Toml#getTable(String) and Toml#getTables(String) return null when key is not found
 * Removed trailing newline from error messages (thanks to __[Zero3](https://github.com/Zero3)__)
+* __BREAKING:__ Toml#parse methods renamed to read
+* Toml#read(File) forces encoding to UTF-8 (thanks to __[Bruno Medeiros](https://github.com/bruno-medeiros)__)
 
 ### Added
 
 * Support for writing objects to TOML (thanks to __[dilecti](https://github.com/dilecti)__)
-* Support for underscores in numbers (the feature branch had accidentally not been merged! :( )
+* Support for underscores in numbers (the feature branch had accidentally not been merged into 0.4.0! :( )
 * Set<Map.Entry> Toml#entrySet() cf. Reflection section in README (thanks __[Zero3](https://github.com/Zero3)__ and __[d3xter](https://github.com/d3xter)__)
 * Overloaded getters that take a default value (thanks to __[udiabon](https://github.com/udiabon)__)
 
