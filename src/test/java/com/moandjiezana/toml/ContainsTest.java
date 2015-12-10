@@ -29,15 +29,15 @@ public class ContainsTest {
   }
   
   @Test
-  public void should_contain_key() throws Exception {
+  public void should_contain_primitive() throws Exception {
     Toml toml = new Toml().read("a = 1  \n  [b]  \n  b1 = 1  \n  [[c]]  \n c1 = 1");
     
-    assertTrue(toml.containsKey("a"));
-    assertTrue(toml.containsKey("b.b1"));
-    assertTrue(toml.containsKey("c[0].c1"));
-    assertFalse(toml.containsKey("b"));
-    assertFalse(toml.containsKey("c"));
-    assertFalse(toml.containsKey("d"));
+    assertTrue(toml.containsPrimitive("a"));
+    assertTrue(toml.containsPrimitive("b.b1"));
+    assertTrue(toml.containsPrimitive("c[0].c1"));
+    assertFalse(toml.containsPrimitive("b"));
+    assertFalse(toml.containsPrimitive("c"));
+    assertFalse(toml.containsPrimitive("d"));
   }
   
   @Test
@@ -72,7 +72,7 @@ public class ContainsTest {
     Toml toml = new Toml().read("a = \"1\"");
     
     assertFalse(toml.contains("b.b1"));
-    assertFalse(toml.containsKey("b.b1"));
+    assertFalse(toml.containsPrimitive("b.b1"));
     assertFalse(toml.containsTable("b.b1"));
     assertFalse(toml.containsTableArray("b.b1"));
   }

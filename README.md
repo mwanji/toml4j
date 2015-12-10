@@ -2,7 +2,7 @@
 
 toml4j is a [TOML 0.4.0](https://github.com/toml-lang/toml/blob/master/versions/en/toml-v0.4.0.md) parser for Java.
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.moandjiezana.toml/toml4j.svg)](https://search.maven.org/#search|gav|1|g%3A%22com.moandjiezana.toml%22%20AND%20a%3A%22toml4j%22) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Build Status](https://travis-ci.org/mwanji/toml4j.svg?branch=wip)](https://travis-ci.org/mwanji/toml4j) [![Coverage Status](https://coveralls.io/repos/mwanji/toml4j/badge.svg?branch=wip)](https://coveralls.io/r/mwanji/toml4j?branch=wip) [![Dependency Status](https://www.versioneye.com/user/projects/558bc2bc653232001e000001/badge.svg?style=flat)](https://www.versioneye.com/user/projects/558bc2bc653232001e000001)
+[![Maven Central](https://img.shields.io/maven-central/v/com.moandjiezana.toml/toml4j.svg)](https://search.maven.org/#search|gav|1|g%3A%22com.moandjiezana.toml%22%20AND%20a%3A%22toml4j%22) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Build Status](https://travis-ci.org/mwanji/toml4j.svg)](https://travis-ci.org/mwanji/toml4j) [![Coverage Status](https://coveralls.io/repos/mwanji/toml4j/badge.svg)](https://coveralls.io/r/mwanji/toml4j) [![Dependency Status](https://www.versioneye.com/user/projects/558bc2bc653232001e000001/badge.svg?style=flat)](https://www.versioneye.com/user/projects/558bc2bc653232001e000001)
 
 For the bleeding-edge version integrating the latest specs, see the [work-in-progress branch](https://github.com/mwanji/toml4j/tree/wip).
 
@@ -221,7 +221,7 @@ Toml toml = new Toml().parse("a = 1");
 Map<String, Object> map = toml.to(Map.class);
 ```
 
-`Toml#contains(String)` verifies that the instance contains a key of any type (primitive, table or array of tables) of the given  name. `Toml#containsKey(String)`, `Toml#containsTable(String)` and `Toml#containsTableArray(String)` return true only if a key exists and is a primitive, table or array of tables, respectively. Compound keys can be used to check existence at any depth.
+`Toml#contains(String)` verifies that the instance contains a key of any type (primitive, table or array of tables) of the given  name. `Toml#containsPrimitive(String)`, `Toml#containsTable(String)` and `Toml#containsTableArray(String)` return true only if a key exists and is a primitive, table or array of tables, respectively. Compound keys can be used to check existence at any depth.
 
 
 ```java

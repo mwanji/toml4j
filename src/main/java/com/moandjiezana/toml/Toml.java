@@ -246,7 +246,7 @@ public class Toml {
    * @param key a key name, can be compound (eg. a.b.c)
    * @return true if key is present and is a primitive
    */
-  public boolean containsKey(String key) {
+  public boolean containsPrimitive(String key) {
     Object object = get(key);
     
     return object != null && !(object instanceof Map) && !(object instanceof List);
