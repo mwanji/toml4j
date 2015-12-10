@@ -298,7 +298,7 @@ Date precision is limited to milliseconds.
 
 ## Contributing
 
-Please see CONTRIBUTING.md.
+Please see the [contribution guidelines](CONTRIBUTING.md).
 
 ## License
 
