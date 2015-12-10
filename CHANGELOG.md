@@ -1,6 +1,6 @@
 # toml4j Changelog
 
-## UNRELEASED
+## 0.5.0 / 2015-12-10
 
 ### Changed
 
@@ -11,7 +11,7 @@
 
 ### Added
 
-* Support for writing objects to TOML (thanks to __[dilecti](https://github.com/dilecti)__)
+* Support for writing objects to TOML with TomlWriter (thanks to __[dilecti](https://github.com/dilecti)__)
 * Support for underscores in numbers (the feature branch had accidentally not been merged into 0.4.0! :( )
 * Set<Map.Entry> Toml#entrySet() cf. Reflection section in README (thanks __[Zero3](https://github.com/Zero3)__ and __[d3xter](https://github.com/d3xter)__)
 * Overloaded getters that take a default value (thanks to __[udiabon](https://github.com/udiabon)__)
