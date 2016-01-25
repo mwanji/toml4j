@@ -10,17 +10,24 @@ abstract class Container {
   abstract boolean accepts(String key);
   abstract void put(String key, Object value);
   abstract Object get(String key);
+  abstract boolean isImplicit();
 
   static class Table extends Container {
     private final Map<String, Object> values = new HashMap<String, Object>();
     final String name;
+    final boolean implicit;
 
     Table() {
-      this.name = null;
+      this(null, false);
     }
     
     public Table(String name) {
-      this.name = name;
+      this(name, false);
+    }
+
+    public Table(String tableName, boolean implicit) {
+      this.name = tableName;
+      this.implicit = implicit;
     }
 
     @Override
@@ -36,6 +43,10 @@ abstract class Container {
     @Override
     Object get(String key) {
       return values.get(key);
+    }
+    
+    boolean isImplicit() {
+      return implicit;
     }
 
     /**
@@ -83,6 +94,10 @@ abstract class Container {
     @Override
     Object get(String key) {
       throw new UnsupportedOperationException();
+    }
+    
+    boolean isImplicit() {
+      return false;
     }
 
     List<Map<String, Object>> getValues() {
