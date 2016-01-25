@@ -18,7 +18,7 @@ Add the following dependency to your POM (or equivalent for other dependency man
 </dependency>
 ```
 
-Requires Java 1.6.
+Requires Java 1.6 or above.
 
 ## Quick start
 
