@@ -14,7 +14,7 @@ Add the following dependency to your POM (or equivalent for other dependency man
 <dependency>
   <groupId>com.moandjiezana.toml</groupId>
   <artifactId>toml4j</artifactId>
-  <version>0.4.0</version>
+  <version>0.5.1</version>
 </dependency>
 ```
 
@@ -23,7 +23,7 @@ Requires Java 1.6.
 ## Quick start
 
 ```java
-Toml toml = new Toml().parse(getTomlFile());
+Toml toml = new Toml().read(getTomlFile());
 String someValue = toml.getString("someKey");
 Date someDate = toml.getDate("someTable.someDate");
 MyClass myClass = toml.to(MyClass.class);
@@ -31,10 +31,10 @@ MyClass myClass = toml.to(MyClass.class);
 
 ## Usage
 
-A `com.moandjiezana.toml.Toml` instance is populated by calling one of `parse(File)`, `parse(InputStream)`, `parse(Reader)` or `parse(String)`.
+A `com.moandjiezana.toml.Toml` instance is populated by calling one of `read(File)`, `read(InputStream)`, `read(Reader)` or `read(String)`.
 
 ```java
-Toml toml = new Toml().parse("a=1");
+Toml toml = new Toml().read("a=1");
 ```
 
 An exception is thrown if the source is not valid TOML.
@@ -70,7 +70,7 @@ class User {
 ```
 
 ```java
-User user = new Toml().parse(tomlFile).to(User.class);
+User user = new Toml().read(tomlFile).to(User.class);
 
 assert user.name.equals("Mwanji Ezana");
 assert user.address.street.equals("123 A Street");
@@ -146,7 +146,7 @@ title = "TOML Example"
 ```
 
 ```java
-Toml toml = new Toml().parse(getTomlFile());
+Toml toml = new Toml().read(getTomlFile());
 
 String title = toml.getString("title");
 String subTitle = toml.getString("\"sub title\"");
@@ -191,8 +191,8 @@ a = 1
 ```
 
 ```java
-Toml defaults = new Toml().parse(getDefaultsFile());
-Toml toml = new Toml(defaults).parse(getTomlFile());
+Toml defaults = new Toml().read(getDefaultsFile());
+Toml toml = new Toml(defaults).read(getTomlFile());
 
 Long a = toml.getLong("a"); // returns 1, not 2
 Long b = toml.getLong("b"); // returns 3, taken from defaults provided to constructor
@@ -217,7 +217,7 @@ for (Map.Entry<String, Object> entry : myToml.entrySet()) {
 You can also convert a Toml instance to a `Map<String, Object>`:
 
 ```java
-Toml toml = new Toml().parse("a = 1");
+Toml toml = new Toml().read("a = 1");
 Map<String, Object> map = toml.to(Map.class);
 ```
 
@@ -225,7 +225,7 @@ Map<String, Object> map = toml.to(Map.class);
 
 
 ```java
-Toml toml = new Toml().parse("a = 1");
+Toml toml = new Toml().read("a = 1");
 
 toml.contains("a"); // true
 toml.conatinsKey("a"); // true

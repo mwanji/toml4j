@@ -205,9 +205,6 @@ class Results {
 
   void startTables(Identifier id, AtomicInteger line) {
     String tableName = id.getBareName();
-    if (!tables.add(tableName)) {
-      errors.duplicateTable(tableName, line.get());
-    }
     
     while (stack.size() > 1) {
       stack.pop();
@@ -219,12 +216,16 @@ class Results {
       Container currentContainer = stack.peek();
       if (currentContainer.get(tablePart) instanceof Container) {
         Container nextTable = (Container) currentContainer.get(tablePart);
+        if (i == tableParts.length - 1 && !nextTable.isImplicit()) {
+          errors.duplicateTable(tableName, line.get());
+          return;
+        }
         stack.push(nextTable);
         if (stack.peek() instanceof Container.TableArray) {
           stack.push(((Container.TableArray) stack.peek()).getCurrent());
         }
       } else if (currentContainer.accepts(tablePart)) {
-        startTable(tablePart, line);
+        startTable(tablePart, i < tableParts.length - 1, line);
       } else {
         errors.tableDuplicatesKey(tablePart, line);
         break;
@@ -244,6 +245,14 @@ class Results {
 
   private Container startTable(String tableName, AtomicInteger line) {
     Container newTable = new Container.Table(tableName);
+    addValue(tableName, newTable, line);
+    stack.push(newTable);
+
+    return newTable;
+  }
+
+  private Container startTable(String tableName, boolean implicit, AtomicInteger line) {
+    Container newTable = new Container.Table(tableName, implicit);
     addValue(tableName, newTable, line);
     stack.push(newTable);
 

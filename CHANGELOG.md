@@ -1,5 +1,11 @@
 # toml4j Changelog
 
+## 0.5.1 / 2016-01-24
+
+### Fixed
+
+* [Handling of tables with same name in different table array items](https://github.com/mwanji/toml4j/issues/26) (thanks to __[stanofujdiar](https://github.com/stanofujdiar)__)
+
 ## 0.5.0 / 2015-12-10
 
 ### Changed

@@ -110,11 +110,16 @@ public class TableArrayTest {
     assertNull(toml.getTable("a[1]"));
   }
   
+  @Test
+  public void should_handle_repeated_tables() {
+    new Toml().read("[[a]]\n [a.b]\n [[a]]\n [a.b]");
+  }
+  
   @Test(expected = IllegalStateException.class)
   public void should_fail_on_empty_table_array_name() {
     new Toml().read("[[]]");
   }
-
+  
   private File file(String fileName) {
     return new File(getClass().getResource(fileName + ".toml").getFile());
   }
