@@ -14,7 +14,7 @@ Add the following dependency to your POM (or equivalent for other dependency man
 <dependency>
   <groupId>com.moandjiezana.toml</groupId>
   <artifactId>toml4j</artifactId>
-  <version>0.5.0</version>
+  <version>0.5.1</version>
 </dependency>
 ```
 
