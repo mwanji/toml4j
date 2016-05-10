@@ -41,6 +41,14 @@ An exception is thrown if the source is not valid TOML.
 
 The data can then be accessed either by converting the Toml instance to your own class or by accessing tables and keys by name.
 
+### Maps
+
+`Toml#toMap()` is a quick way to turn a Toml instance into a `Map<String, Object>`.
+
+```java
+Map<String, Object> map = new Toml().read("a=1").toMap();
+```
+
 ### Custom classes
 
 `Toml#to(Class<T>)` maps a Toml instance to the given class.
@@ -214,13 +222,6 @@ for (Map.Entry<String, Object> entry : myToml.entrySet()) {
 }
 ```
 
-You can also convert a Toml instance to a `Map<String, Object>`:
-
-```java
-Toml toml = new Toml().read("a = 1");
-Map<String, Object> map = toml.to(Map.class);
-```
-
 `Toml#contains(String)` verifies that the instance contains a key of any type (primitive, table or array of tables) of the given  name. `Toml#containsPrimitive(String)`, `Toml#containsTable(String)` and `Toml#containsTableArray(String)` return true only if a key exists and is a primitive, table or array of tables, respectively. Compound keys can be used to check existence at any depth.
 
 
@@ -245,7 +246,15 @@ class AClass {
 
 TomlWriter tomlWriter = new TomlWriter();
 AClass obj = new AClass();
+
+Map<String, Object> map = new HashMap<String, Object>();
+int[] intArray = { 2, 3 };
+map.put("anInt", 1);
+map.put("anArray", intArray);
+
 String tomlString = tomlWriter.write(obj);
+tomlString = tomlWriter.write(map);
+
 tomlWriter.write(obj, new File("path/to/file"));
 tomlWriter.write(obj, new ByteArrayOutputStream());
 tomlWriter.write(obj, new OutputStreamWriter(anOutputStream));

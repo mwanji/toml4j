@@ -267,6 +267,11 @@ public class TomlWriterTest {
 
     assertEquals("[b.c]\nanInt = 1\n", new TomlWriter().write(new A()));
   }
+  
+  @Test
+  public void should_write_map() throws Exception {
+    assertEquals("a = 1\n", new TomlWriter().write(new Toml().read("a = 1").toMap()));
+  }
 
   class Base {
     protected int anInt = 2;

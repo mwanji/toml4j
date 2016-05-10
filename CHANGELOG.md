@@ -1,5 +1,11 @@
 # toml4j Changelog
 
+## 0.6.0 / 2016-05-09
+
+## Added
+
+* Toml#toMap() convenience method (thanks to __[andytill](https://github.com/andytill)__ and __[Gyscos](https://github.com/Gyscos)) 
+
 ## 0.5.1 / 2016-01-24
 
 ### Fixed
