@@ -9,6 +9,7 @@
 ## Fixed
 
 * Transient fields are not written to TOML files (thanks to __[lare96](https://github.com/lare96)__)
+* Support positive timezone offset in datetime (thanks to __[aloyse](https://github.com/aloyse)__)
 
 ## 0.5.1 / 2016-01-24
 

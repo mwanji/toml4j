@@ -27,7 +27,18 @@ public class DateTest {
     Toml toml = new Toml().read("a_date = 1979-05-27T00:32:00-07:00");
 
     Calendar calendar = Calendar.getInstance(UTC);
-    calendar.set(1979, Calendar.MAY, 27, 7, 32, 00);
+    calendar.set(1979, Calendar.MAY, 27, 7, 32, 0);
+    calendar.set(Calendar.MILLISECOND, 0);
+
+    assertEquals(calendar.getTime(), toml.getDate("a_date"));
+  }
+
+  @Test
+  public void should_get_date_with_positive_offset() throws Exception {
+    Toml toml = new Toml().read("a_date = 1979-05-27T07:32:00+07:00");
+
+    Calendar calendar = Calendar.getInstance(UTC);
+    calendar.set(1979, Calendar.MAY, 27, 0, 32, 0);
     calendar.set(Calendar.MILLISECOND, 0);
 
     assertEquals(calendar.getTime(), toml.getDate("a_date"));
