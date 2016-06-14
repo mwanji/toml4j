@@ -455,6 +455,11 @@ public class TomlWriterTest {
   private static class SimpleTestClass {
     int a = 1;
   }
+  
+  private static class TransientClass {
+    int a = 2;
+    transient int b = 3;
+  }
 
   @Test
   public void should_write_to_writer() throws IOException {
@@ -478,6 +483,13 @@ public class TomlWriterTest {
     new TomlWriter().write(new SimpleTestClass(), output);
 
     assertEquals("a = 1\n", readFile(output));
+  }
+  
+  @Test
+  public void should_skip_transient_fields() throws Exception {
+    String toml = new TomlWriter().write(new TransientClass());
+    
+    assertEquals("a = 2\n", toml);
   }
   
   @Test(expected = IllegalArgumentException.class)

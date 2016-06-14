@@ -1,10 +1,14 @@
 # toml4j Changelog
 
-## 0.6.0 / 2016-05-09
+## 0.6.0 / 2016-06-14
 
 ## Added
 
 * Toml#toMap() convenience method (thanks to __[andytill](https://github.com/andytill)__ and __[Gyscos](https://github.com/Gyscos)) 
+
+## Fixed
+
+* Transient fields are not written to TOML files (thanks to __[lare96](https://github.com/lare96)__)
 
 ## 0.5.1 / 2016-01-24
 

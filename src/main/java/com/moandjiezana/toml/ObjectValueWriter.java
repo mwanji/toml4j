@@ -50,7 +50,7 @@ class ObjectValueWriter implements ValueWriter {
     Iterator<Field> iterator = fields.iterator();
     while (iterator.hasNext()) {
       Field field = iterator.next();
-      if ((Modifier.isFinal(field.getModifiers()) && Modifier.isStatic(field.getModifiers())) || field.isSynthetic()) {
+      if ((Modifier.isFinal(field.getModifiers()) && Modifier.isStatic(field.getModifiers())) || field.isSynthetic() || Modifier.isTransient(field.getModifiers())) {
         iterator.remove();
       }
     }
