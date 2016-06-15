@@ -302,6 +302,16 @@ public class Toml {
    * @return A new instance of targetClass.
    */
   public <T> T to(Class<T> targetClass) {
+    JsonElement json = DEFAULT_GSON.toJsonTree(toMap());
+    
+    if (targetClass == JsonElement.class) {
+      return targetClass.cast(json);
+    }
+    
+    return DEFAULT_GSON.fromJson(json, targetClass);
+  }
+
+  public Map<String, Object> toMap() {
     HashMap<String, Object> valuesCopy = new HashMap<String, Object>(values);
     
     if (defaults != null) {
@@ -311,14 +321,8 @@ public class Toml {
         }
       }
     }
-    
-    JsonElement json = DEFAULT_GSON.toJsonTree(valuesCopy);
-    
-    if (targetClass == JsonElement.class) {
-      return targetClass.cast(json);
-    }
-    
-    return DEFAULT_GSON.fromJson(json, targetClass);
+
+    return valuesCopy;
   }
   
   /**

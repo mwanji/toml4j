@@ -40,7 +40,7 @@ class DateValueReaderWriter implements ValueReader, ValueWriter {
     
     for (int i = index.get(); i < original.length(); i = index.incrementAndGet()) {
       char c = original.charAt(i);
-      if (Character.isDigit(c) || c == '-' || c == ':' || c == '.' || c == 'T' || c == 'Z') {
+      if (Character.isDigit(c) || c == '-' || c == '+' || c == ':' || c == '.' || c == 'T' || c == 'Z') {
         sb.append(c);
       } else {
         index.decrementAndGet();
