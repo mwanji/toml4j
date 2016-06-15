@@ -248,7 +248,7 @@ public class BurntSushiValidTest {
   private void run(String testName) {
     InputStream inputTomlStream = getClass().getResourceAsStream("burntsushi/valid/" + testName + ".toml");
     // InputStream inputToml = getClass().getResourceAsStream("burntsushi/valid/" + testName + ".toml");
-    String inputToml = convertStreamToString(inputTomlStream);
+    String inputToml = convertStreamToString(inputTomlStream).replaceAll("\r\n", "\n");
     Reader expectedJsonReader = new InputStreamReader(getClass().getResourceAsStream("burntsushi/valid/" + testName + ".json"));
     JsonElement expectedJson = GSON.fromJson(expectedJsonReader, JsonElement.class);
 

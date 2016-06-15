@@ -134,7 +134,7 @@ public class BurntSushiValidEncoderTest {
 
   private void runEncoder(String testName, TomlWriter tomlWriter) {
     InputStream inputTomlStream = getClass().getResourceAsStream("burntsushi/valid/" + testName + ".toml");
-    String expectedToml = convertStreamToString(inputTomlStream);
+    String expectedToml = convertStreamToString(inputTomlStream).replaceAll("\r\n", "\n");
 
     Reader inputJsonReader = new InputStreamReader(getClass().getResourceAsStream("burntsushi/valid/" + testName + ".json"));
     JsonElement jsonInput = GSON.fromJson(inputJsonReader, JsonElement.class);
