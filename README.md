@@ -236,7 +236,7 @@ toml.containsTableArray("a"); // false
 
 ### Converting Objects To TOML
 
-You can write any arbitrary object to a TOML `String`, `File`, `Writer`, or `OutputStream` with a `TomlWriter`. Each TomlWriter instance is customisable, immutable and threadsafe, so it can be reused and passed around. Constants are ignored.
+You can write any arbitrary object to a TOML `String`, `File`, `Writer`, or `OutputStream` with a `TomlWriter`. Each TomlWriter instance is customisable, immutable and threadsafe, so it can be reused and passed around. Constants and transient fields are ignored.
 
 ```java
 class AClass {
@@ -277,11 +277,11 @@ class BClass {
 BClass obj = new BClass();
 obj.aMap.put("item", 1);
 
-TomlWriter tomlWriter = new TomlWriter.Builder().
-  indentValuesBy(2).
-  indentTablesBy(4).
-  padArrayDelimitersBy(3).
-  build();
+TomlWriter tomlWriter = new TomlWriter.Builder()
+  .indentValuesBy(2)
+  .indentTablesBy(4)
+  .padArrayDelimitersBy(3)
+  .build();
     
 String tomlString = tomlWriter.write(obj);
 
