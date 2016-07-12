@@ -13,17 +13,17 @@ import java.io.StringReader;
 
 import org.junit.Test;
 
-public class TomlParseTest {
+public class TomlReadTest {
 
   @Test
-  public void should_parse_input_stream() throws Exception {
+  public void should_read_input_stream() throws Exception {
     Toml toml = new Toml().read(getClass().getResourceAsStream("should_load_from_file.toml"));
 
     assertEquals("value", toml.getString("key"));
   }
 
   @Test
-  public void should_parse_reader() throws Exception {
+  public void should_read_reader() throws Exception {
     Toml toml = new Toml().read(new StringReader("key=1"));
 
     assertEquals(1, toml.getLong("key").intValue());
