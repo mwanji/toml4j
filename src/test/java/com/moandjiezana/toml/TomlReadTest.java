@@ -59,4 +59,24 @@ public class TomlReadTest {
       assertThat(e.getCause(), instanceOf(IOException.class));
     }
   }
+
+  @Test
+  public void should_read_toml_without_defaults() {
+    Toml toml1 = new Toml().read("a = 1");
+    Toml toml2 = new Toml().read(toml1);
+
+    assertEquals(toml1.getLong("a"), toml2.getLong("a"));
+  }
+
+  @Test
+  public void should_read_toml_and_merge_with_defaults() {
+    Toml toml1 = new Toml().read("a = 1\nc = 3\nd = 5");
+    Toml toml2 = new Toml().read("b = 2\nc = 4");
+    Toml mergedToml = new Toml(toml1).read(toml2);
+
+    assertEquals(toml1.getLong("a"), mergedToml.getLong("a"));
+    assertEquals(toml2.getLong("b"), mergedToml.getLong("b"));
+    assertEquals(toml2.getLong("c"), mergedToml.getLong("c"));
+    assertEquals(toml1.getLong("d"), mergedToml.getLong("d"));
+  }
 }

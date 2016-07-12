@@ -31,7 +31,7 @@ MyClass myClass = toml.to(MyClass.class);
 
 ## Usage
 
-A `com.moandjiezana.toml.Toml` instance is populated by calling one of `read(File)`, `read(InputStream)`, `read(Reader)` or `read(String)`.
+A `com.moandjiezana.toml.Toml` instance is populated by calling one of `read(File)`, `read(InputStream)`, `read(Reader)`, `read(String)` or `read(Toml)`.
 
 ```java
 Toml toml = new Toml().read("a=1");
@@ -175,6 +175,15 @@ String network3Operator2Location = toml.getString("networks[2].operators[1].loca
 ### Defaults
 
 The constructor can be given a set of default values that will be used as fallbacks. For tables and table arrays, a shallow merge is performed.
+
+`Toml#read(Toml)` is used to merge two Toml instances:
+
+```java
+Toml toml1 = new Toml().read("a=1");
+Toml toml2 = new Toml().read(getTomlFile());
+
+Toml mergedToml = new Toml(toml1).read(toml2);
+```
 
 You can also call an overloaded version of the getters that take a default value. Note that the default value provided in the constructor take precedence over the one provided by the getter.
 

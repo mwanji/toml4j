@@ -54,7 +54,7 @@ public class Toml {
   }
 
   /**
-   * @param defaults fallback values used when the requested key or table is not present.
+   * @param defaults fallback values used when the requested key or table is not present in the TOML source that has been read.
    */
   public Toml(Toml defaults) {
     this(defaults, new HashMap<String, Object>());
@@ -112,6 +112,18 @@ public class Toml {
         bufferedReader.close();
       } catch (IOException e) {}
     }
+    return this;
+  }
+
+  /**
+   * Populates the current Toml instance with values from otherToml.
+   *
+   * @param otherToml 
+   * @return this instance
+   */
+  public Toml read(Toml otherToml) {
+    this.values = otherToml.values;
+    
     return this;
   }
 

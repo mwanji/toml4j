@@ -1,5 +1,11 @@
 # toml4j Changelog
 
+## 0.7.0 / 2016-07-12
+
+## Added
+
+* Toml#read(Toml) merges two Toml instances (thanks to __[gustavkarlsson](https://github.com/gustavkarlsson)__)
+
 ## 0.6.0 / 2016-06-14
 
 ## Added
