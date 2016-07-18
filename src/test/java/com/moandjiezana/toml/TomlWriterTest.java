@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -168,7 +169,7 @@ public class TomlWriterTest {
   }
 
   @Test
-  public void should_write_array_of_tables() {
+  public void should_write_array_of_tables_from_object() {
     class Table {
       int anInt;
 
@@ -177,15 +178,43 @@ public class TomlWriterTest {
       }
     }
     class Config {
-      Table[] table;
+      Table[] table = new Table[]{new Table(1), new Table(2)};
+      List<Table> table2 = Arrays.asList(new Table(3), new Table(4));
     }
     Config config = new Config();
-    config.table = new Table[]{new Table(1), new Table(2)};
 
     String output = new TomlWriter().write(config);
     String expected = "[[table]]\n" +
         "anInt = 1\n\n" +
         "[[table]]\n" +
+        "anInt = 2\n" +
+        "[[table2]]\n" +
+        "anInt = 3\n\n" +
+        "[[table2]]\n" +
+        "anInt = 4\n";
+    assertEquals(expected, output);
+  }
+  
+  @Test
+  public void should_write_array_of_tables_from_map() throws Exception {
+    List<Map<String, Object>> maps = new ArrayList<Map<String,Object>>();
+    
+    HashMap<String, Object> item1 = new HashMap<String, Object>();
+    item1.put("anInt", 1L);
+    HashMap<String, Object> item2 = new HashMap<String, Object>();
+    item2.put("anInt", 2L);
+
+    maps.add(item1);
+    maps.add(item2);
+    
+    Map<String, Object> input = new HashMap<String, Object>();
+    input.put("maps", maps);
+    
+    String output = new TomlWriter().write(input);
+    
+    String expected = "[[maps]]\n" +
+        "anInt = 1\n\n" +
+        "[[maps]]\n" +
         "anInt = 2\n";
     assertEquals(expected, output);
   }
