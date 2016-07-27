@@ -139,7 +139,7 @@ class Identifier {
         break;
       }
       
-      if (c == '"') {
+      if (Keys.isQuote(c)) {
         if (!quoteAllowed) {
           valid = false;
         } else if (quoted && trimmed.charAt(i - 1) != '\\') {

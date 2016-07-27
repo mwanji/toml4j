@@ -63,6 +63,34 @@ public class TableTest {
   public void should_return_null_for_missing_table() throws Exception {
     assertNull(new Toml().getTable("a"));
   }
+
+  @Test
+  public void should_accept_table_name_with_basic_string() {
+    Toml toml = new Toml().read("[\"a\"]\nb = 'b'");
+
+    assertEquals("b", toml.getString("\"a\".b"));
+  }
+
+  @Test
+  public void should_accept_table_name_part_with_basic_string() {
+    Toml toml = new Toml().read("[target.\"cfg(unix)\".dependencies]\nb = 'b'");
+
+    assertEquals("b", toml.getString("target.\"cfg(unix)\".dependencies.b"));
+  }
+
+  @Test
+  public void should_accept_table_name_with_literal_string() {
+    Toml toml = new Toml().read("['a']\nb = 'b'");
+
+    assertEquals("b", toml.getString("'a'.b"));
+  }
+
+  @Test
+  public void should_accept_table_name_part_with_literal_string() {
+    Toml toml = new Toml().read("[target.'cfg(unix)'.dependencies]\nb = 'b'");
+
+    assertEquals("b", toml.getString("target.'cfg(unix)'.dependencies.b"));
+  }
   
   @Test
   public void should_return_null_when_navigating_to_missing_value() throws Exception {

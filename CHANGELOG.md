@@ -1,5 +1,9 @@
 # toml4j Changelog
 
+## 0.7.1 / 2016-07-27
+
+* [Support literal strings in table names](https://github.com/mwanji/toml4j/issues/36) (thanks to __[bruno-medeiros](https://github.com/bruno-medeiros)__)
+
 ## 0.7.0 / 2016-07-12
 
 ## Added

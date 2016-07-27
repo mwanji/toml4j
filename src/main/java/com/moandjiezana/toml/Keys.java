@@ -42,7 +42,7 @@ class Keys {
         current = new StringBuilder();
         continue;
       }
-      if (c == '"' && (i == 0 || key.charAt(i - 1) != '\\')) {
+      if (isQuote(c) && (i == 0 || key.charAt(i - 1) != '\\')) {
         quoted = !quoted;
         indexable = false;
       }
@@ -59,6 +59,10 @@ class Keys {
     splitKey.add(0, new Key(current.toString(), index, !splitKey.isEmpty() ? splitKey.get(0) : null));
     
     return splitKey.toArray(new Key[0]);
+  }
+  
+  static boolean isQuote(char c) {
+    return c == '"' || c == '\'';
   }
 
   private Keys() {}

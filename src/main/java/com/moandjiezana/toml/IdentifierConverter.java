@@ -16,9 +16,9 @@ class IdentifierConverter {
     
     for (int i = index.get(); i < s.length(); i = index.incrementAndGet()) {
       char c = s.charAt(i);
-      if (c == '"' && (i == 0 || s.charAt(i - 1) != '\\')) {
+      if (Keys.isQuote(c) && (i == 0 || s.charAt(i - 1) != '\\')) {
         quoted = !quoted;
-        name.append('"');
+        name.append(c);
       } else if (c == '\n') {
         index.decrementAndGet();
         break;
