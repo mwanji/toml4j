@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.moandjiezana.toml</groupId>
   <artifactId>toml4j</artifactId>
-  <version>0.7.1-SNAPSHOT</version>
+  <version>0.7.1</version>
   <name>toml4j</name>
   <description>A parser for TOML</description>
   <url>http://moandjiezana.com/toml/toml4j</url>
@@ -17,7 +17,7 @@
     <connection>scm:git:git@github.com:mwanji/toml4j.git</connection>
     <developerConnection>scm:git:git@github.com:mwanji/toml4j.git</developerConnection>
     <url>https://github.com/mwanji/toml4j</url>
-    <tag>HEAD</tag>
+    <tag>toml4j-0.7.1</tag>
   </scm>
   <issueManagement>
     <system>Github Issues</system>
