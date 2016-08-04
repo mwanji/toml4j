@@ -163,7 +163,7 @@ class Identifier {
         }
       } else if (Character.isWhitespace(c)) {
         char prev = trimmed.charAt(i - 1);
-        if (!Character.isWhitespace(prev) && prev != '.' && prev != '"') {
+        if (!Character.isWhitespace(prev) && prev != '.') {
           charAllowed = false;
           dotAllowed = true;
           quoteAllowed = true;
