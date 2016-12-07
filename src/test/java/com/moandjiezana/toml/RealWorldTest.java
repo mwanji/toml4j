@@ -9,6 +9,9 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -21,7 +24,9 @@ public class RealWorldTest {
   @SuppressWarnings("unchecked")
   @Test
   public void should_parse_example() throws Exception {
-    Toml toml = new Toml().read(new File(getClass().getResource("example.toml").getFile()));
+    File file = new File(getClass().getResource("example.toml").getFile());
+    Toml toml = new Toml().read(new InputStreamReader(new FileInputStream(file), Charset.forName("UTF8")));
+
 
     // printMap(root);
 
