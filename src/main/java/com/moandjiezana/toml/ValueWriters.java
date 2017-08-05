@@ -1,8 +1,8 @@
 package com.moandjiezana.toml;
 
 import static com.moandjiezana.toml.BooleanValueReaderWriter.BOOLEAN_VALUE_READER_WRITER;
-import static com.moandjiezana.toml.DateValueReaderWriter.DATE_VALUE_READER_WRITER;
 import static com.moandjiezana.toml.DateValueReaderWriter.DATE_PARSER_JDK_6;
+import static com.moandjiezana.toml.DateValueReaderWriter.DATE_VALUE_READER_WRITER;
 import static com.moandjiezana.toml.MapValueWriter.MAP_VALUE_WRITER;
 import static com.moandjiezana.toml.NumberValueReaderWriter.NUMBER_VALUE_READER_WRITER;
 import static com.moandjiezana.toml.ObjectValueWriter.OBJECT_VALUE_WRITER;
@@ -27,7 +27,8 @@ class ValueWriters {
   private ValueWriters() {}
   
   private static DateValueReaderWriter getPlatformSpecificDateConverter() {
-    return Runtime.class.getPackage().getSpecificationVersion().startsWith("1.6") ? DATE_PARSER_JDK_6 : DATE_VALUE_READER_WRITER;
+    String specificationVersion = Runtime.class.getPackage().getSpecificationVersion();
+    return specificationVersion != null && specificationVersion.startsWith("1.6") ? DATE_PARSER_JDK_6 : DATE_VALUE_READER_WRITER;
   }
 
   private static final ValueWriter[] VALUE_WRITERS = {
