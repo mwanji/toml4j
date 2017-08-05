@@ -2,6 +2,10 @@
 
 ## 0.7.2 / 2017-08-05
 
+## Updated
+
+* [Update Gson to 2.8.1 and various Maven plugins to latest versions](https://github.com/mwanji/toml4j/pull/45) (thanks to __[DanilaFe](https://github.com/DanilaFe)__)
+
 ## Fixed
 
 * [tomlWriter.write NullPointerException in JDK9](https://github.com/mwanji/toml4j/issues/46) (thanks to __[iwangxiaodong](https://github.com/iwangxiaodong)__)
