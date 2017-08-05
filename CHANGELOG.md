@@ -9,6 +9,7 @@
 ## Fixed
 
 * [tomlWriter.write NullPointerException in JDK9](https://github.com/mwanji/toml4j/issues/46) (thanks to __[iwangxiaodong](https://github.com/iwangxiaodong)__)
+* Change build to be able to release a new version entirely from the command line
 
 ## 0.7.1 / 2016-07-27
 
