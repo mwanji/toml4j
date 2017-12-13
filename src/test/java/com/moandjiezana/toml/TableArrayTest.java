@@ -2,15 +2,13 @@ package com.moandjiezana.toml;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-
-import java.io.File;
-import java.util.List;
+import static org.junit.Assert.*;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.io.File;
+import java.util.List;
 
 public class TableArrayTest {
 
@@ -119,7 +117,7 @@ public class TableArrayTest {
   public void should_fail_on_empty_table_array_name() {
     new Toml().read("[[]]");
   }
-  
+
   private File file(String fileName) {
     return new File(getClass().getResource(fileName + ".toml").getFile());
   }

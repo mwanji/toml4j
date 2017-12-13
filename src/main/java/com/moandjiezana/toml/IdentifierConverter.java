@@ -27,12 +27,13 @@ class IdentifierConverter {
       } else if (c == '=' && isKey) {
         terminated = true;
         break;
-      } else if (c == ']' && !isKey) {
+      } else if (c == ']' && !isKey && !terminated) {
         if (!isTableArray || s.length() > index.get() + 1 && s.charAt(index.get() + 1) == ']') {
           terminated = true;
           name.append(']');
           if (isTableArray) {
             name.append(']');
+            index.incrementAndGet();
           }
         }
       } else if (terminated && c == '#') {
