@@ -1,5 +1,11 @@
 # toml4j Changelog
 
+## 0.7.3 / 2017-12-13
+
+## Fixed
+
+* [A table array in comments caused a parse error](https://github.com/mwanji/toml4j/issues/48) (thanks to __[bchenYext](https://github.com/bchenYext)__)
+
 ## 0.7.2 / 2017-08-05
 
 ## Updated
