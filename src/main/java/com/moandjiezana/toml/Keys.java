@@ -4,6 +4,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 class Keys {
+  static enum Quote {
+    NONE(' '),
+    SINGLE('\''),
+    DOUBLE('"');
+    
+    private final char quote;
+    
+    private Quote(char quote) {
+      this.quote = quote;
+    }
+    static Quote quoteFromChar(char c) {
+      if (c == '\'') {
+        return Quote.SINGLE;
+      } else if (c == '"') {
+        return Quote.DOUBLE;
+      } else {
+        return Quote.NONE;
+      }
+    }
+    char getChar() {
+      return this.quote;
+    }
+  }
   
   static class Key {
     final String name;
@@ -24,7 +47,7 @@ class Keys {
   static Keys.Key[] split(String key) {
     List<Key> splitKey = new ArrayList<Key>();
     StringBuilder current = new StringBuilder();
-    boolean quoted = false;
+    Quote quote = Quote.NONE;
     boolean indexable = true;
     boolean inIndex = false;
     int index = -1;
@@ -43,10 +66,14 @@ class Keys {
         continue;
       }
       if (isQuote(c) && (i == 0 || key.charAt(i - 1) != '\\')) {
-        quoted = !quoted;
+        if (quote != Quote.NONE && quote.getChar() == c) {
+          quote = Quote.NONE;
+        } else {
+          quote = Quote.quoteFromChar(c);
+        }
         indexable = false;
       }
-      if (c != '.' || quoted) {
+      if (c != '.' || quote != Quote.NONE) {
         current.insert(0, c);
       } else {
         splitKey.add(0, new Key(current.toString(), index, !splitKey.isEmpty() ? splitKey.get(0) : null));
