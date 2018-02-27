@@ -131,4 +131,37 @@ public class TableTest {
   public void should_fail_when_illegal_characters_after_table() throws Exception {
     new Toml().read("[error]   if you didn't catch this, your parser is broken");
   }
+  @Test
+  public void should_accept_table_name_part_with_basic_string_nested_single_quotes() {
+    Toml toml = new Toml().read("[target.\"cfg(os='android')\".dependencies]\nb = 'b'");
+
+    assertEquals("b", toml.getString("target.\"cfg(os='android')\".dependencies.b"));
+  }
+
+  @Test
+  public void should_accept_table_name_part_with_whitespace_and_basic_string_nested_single_quotes() {
+    Toml toml = new Toml().read("[ target . \"cfg (os = 'android')\" . dependencies ]\nb = 'b'");
+
+    assertEquals("b", toml.getString("target.\"cfg (os = 'android')\".dependencies.b"));
+  }
+  @Test
+  public void should_accept_table_name_part_with_whitespace_and_basic_string_nested_escaped_quotes() {
+    Toml toml = new Toml().read("[ target . \"cfg (os = \\\"android\\\")\" . dependencies ]\nb = 'b'");
+
+    assertEquals("b", toml.getString("target.\"cfg (os = \\\"android\\\")\".dependencies.b"));
+  }
+
+  @Test
+  public void should_accept_table_name_part_with_literal_string_nested_double_quotes() {
+    Toml toml = new Toml().read("[target.'cfg(os=\"android\")'.dependencies]\nb = 'b'");
+
+    assertEquals("b", toml.getString("target.'cfg(os=\"android\")'.dependencies.b"));
+  }
+
+  @Test
+  public void should_accept_table_name_part_with_whitespace_and_literal_string_nested_double_quotes() {
+    Toml toml = new Toml().read("[target . 'cfg(os = \"android\")' . dependencies]\nb = 'b'");
+
+    assertEquals("b", toml.getString("target.'cfg(os=\"android\")'.dependencies.b"));
+  }
 }
