@@ -1,10 +1,11 @@
 package com.moandjiezana.toml;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,9 +17,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
 /**
  * <p>Provides access to the keys and tables in a TOML data source.</p>
@@ -41,7 +39,7 @@ import com.google.gson.JsonElement;
  */
 public class Toml {
   
-  private static final Gson DEFAULT_GSON = new Gson();
+  private static ObjectMapper objectMapper;
 
   private Map<String, Object> values = new HashMap<String, Object>();
   private final Toml defaults;
@@ -50,14 +48,28 @@ public class Toml {
    * Creates Toml instance with no defaults.
    */
   public Toml() {
-    this(null);
+    this(new ObjectMapper(), null);
+  }
+
+  /**
+   * Creates Toml instance with provided Gson mapper and no defaults.
+   */
+  public Toml(ObjectMapper mapper) {
+    this(mapper, null);
   }
 
   /**
    * @param defaults fallback values used when the requested key or table is not present in the TOML source that has been read.
    */
   public Toml(Toml defaults) {
-    this(defaults, new HashMap<String, Object>());
+    this(new ObjectMapper(), defaults, new HashMap<String, Object>());
+  }
+
+  /**
+   * @param defaults fallback values used when the requested key or table is not present in the TOML source that has been read.
+   */
+  public Toml(ObjectMapper objectMapper, Toml defaults) {
+    this(objectMapper, defaults, new HashMap<String, Object>());
   }
 
   /**
@@ -222,7 +234,7 @@ public class Toml {
   public Toml getTable(String key) {
     Map<String, Object> map = (Map<String, Object>) get(key);
     
-    return map != null ? new Toml(null, map) : null;
+    return map != null ? new Toml(objectMapper, null, map) : null;
   }
 
   /**
@@ -240,7 +252,7 @@ public class Toml {
     ArrayList<Toml> tables = new ArrayList<Toml>();
 
     for (Map<String, Object> table : tableArray) {
-      tables.add(new Toml(null, table));
+      tables.add(new Toml(objectMapper,null, table));
     }
 
     return tables;
@@ -313,14 +325,11 @@ public class Toml {
    * @param <T> type of targetClass.
    * @return A new instance of targetClass.
    */
-  public <T> T to(Class<T> targetClass) {
-    JsonElement json = DEFAULT_GSON.toJsonTree(toMap());
-    
-    if (targetClass == JsonElement.class) {
-      return targetClass.cast(json);
-    }
-    
-    return DEFAULT_GSON.fromJson(json, targetClass);
+  public <T> T to(Class<T> targetClass) throws IOException {
+    TreeNode json = objectMapper.valueToTree(toMap());
+
+    JsonParser parser = objectMapper.treeAsTokens(json);
+    return objectMapper.readValue(parser, targetClass);
   }
 
   public Map<String, Object> toMap() {
@@ -422,7 +431,8 @@ public class Toml {
     return current;
   }
   
-  private Toml(Toml defaults, Map<String, Object> values) {
+  private Toml(ObjectMapper objectMappert, Toml defaults, Map<String, Object> values) {
+    this.objectMapper = objectMappert;
     this.values = values;
     this.defaults = defaults;
   }
