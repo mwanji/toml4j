@@ -7,6 +7,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.lang.annotation.ElementType;
 import java.math.BigDecimal;
@@ -99,7 +101,10 @@ public class TomlToClassTest {
 
   @Test
   public void should_ignore_keys_not_in_class() throws Exception {
-    TomlPrimitives tomlPrimitives = new Toml().read("a=1\nstring=\"s\"").to(TomlPrimitives.class);
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+    TomlPrimitives tomlPrimitives = new Toml(objectMapper).read("a=1\nstring=\"s\"").to(TomlPrimitives.class);
 
     assertEquals("s", tomlPrimitives.string);
   }
