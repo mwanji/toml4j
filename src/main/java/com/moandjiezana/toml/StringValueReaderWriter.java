@@ -1,27 +1,13 @@
 package com.moandjiezana.toml;
 
-import java.net.URI;
-import java.net.URL;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class StringValueReaderWriter implements ValueReader, ValueWriter {
+class StringValueReader implements ValueReader {
   
-  static final StringValueReaderWriter STRING_VALUE_READER_WRITER = new StringValueReaderWriter();
+  static final StringValueReader STRING_VALUE_READER = new StringValueReader();
   private static final Pattern UNICODE_REGEX = Pattern.compile("\\\\[uU](.{4})");
-
-  static private final String[] specialCharacterEscapes = new String[93];
-
-  static {
-    specialCharacterEscapes['\b'] = "\\b";
-    specialCharacterEscapes['\t'] = "\\t";
-    specialCharacterEscapes['\n'] = "\\n";
-    specialCharacterEscapes['\f'] = "\\f";
-    specialCharacterEscapes['\r'] = "\\r";
-    specialCharacterEscapes['"'] = "\\\"";
-    specialCharacterEscapes['\\'] = "\\\\";
-  }
 
   @Override
   public boolean canRead(String s) {
@@ -91,35 +77,7 @@ class StringValueReaderWriter implements ValueReader, ValueWriter {
       .replace("\\f", "\f");
   }
 
-  @Override
-  public boolean canWrite(Object value) {
-    return value instanceof String || value instanceof Character || value instanceof URL || value instanceof URI || value instanceof Enum;
-  }
-
-  @Override
-  public void write(Object value, WriterContext context) {
-    context.write('"');
-    escapeUnicode(value.toString(), context);
-    context.write('"');
-  }
-
-  @Override
-  public boolean isPrimitiveType() {
-    return true;
-  }
-
-  private void escapeUnicode(String in, WriterContext context) {
-    for (int i = 0; i < in.length(); i++) {
-      int codePoint = in.codePointAt(i);
-      if (codePoint < specialCharacterEscapes.length && specialCharacterEscapes[codePoint] != null) {
-        context.write(specialCharacterEscapes[codePoint]);
-      } else {
-        context.write(in.charAt(i));
-      }
-    }
-  }
-
-  private StringValueReaderWriter() {}
+  private StringValueReader() {}
 
   @Override
   public String toString() {

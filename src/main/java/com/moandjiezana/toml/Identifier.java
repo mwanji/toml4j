@@ -82,7 +82,7 @@ class Identifier {
       }
     }
     
-    return StringValueReaderWriter.STRING_VALUE_READER_WRITER.replaceUnicodeCharacters(sb.toString());
+    return StringValueReader.STRING_VALUE_READER.replaceUnicodeCharacters(sb.toString());
   }
   
   private static boolean isValidKey(String name, Context context) {

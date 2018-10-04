@@ -44,8 +44,8 @@ class MultilineStringValueReader implements ValueReader {
 
     s = s.substring(startIndex, endIndex);
     s = s.replaceAll("\\\\\\s+", "");
-    s = StringValueReaderWriter.STRING_VALUE_READER_WRITER.replaceUnicodeCharacters(s);
-    s = StringValueReaderWriter.STRING_VALUE_READER_WRITER.replaceSpecialCharacters(s);
+    s = StringValueReader.STRING_VALUE_READER.replaceUnicodeCharacters(s);
+    s = StringValueReader.STRING_VALUE_READER.replaceSpecialCharacters(s);
 
     return s;
   }
