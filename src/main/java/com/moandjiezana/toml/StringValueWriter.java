@@ -37,13 +37,13 @@ public class StringValueWriter implements ValueWriter {
   private void writeMultiLineString(String valueString, WriterContext context) {
     context.write("\"\"\"\n");
     context.write(valueString);
-	context.write("\"\"\"");
+    context.write("\"\"\"");
   }
 
   private void writeBasicString(String valueString, WriterContext context) {
     context.write('"');
 	escapeUnicode(valueString, context);
-	context.write('"');
+    context.write('"');
   }
 
   @Override

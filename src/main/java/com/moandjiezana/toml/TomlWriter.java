@@ -76,8 +76,8 @@ public class TomlWriter {
     }
     
     public TomlWriter.Builder handleMultiLineStrings() {
-        this.handleMultiLineStrings = true;
-        return this;
+      this.handleMultiLineStrings = true;
+      return this;
     }
     
     public TomlWriter build() {
