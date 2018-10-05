@@ -42,7 +42,7 @@ public class StringValueWriter implements ValueWriter {
 
   private void writeBasicString(String valueString, WriterContext context) {
     context.write('"');
-	escapeUnicode(valueString, context);
+    escapeUnicode(valueString, context);
     context.write('"');
   }
 
