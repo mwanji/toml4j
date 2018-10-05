@@ -26,12 +26,12 @@ public class StringValueWriter implements ValueWriter {
 
   @Override
   public void write(Object value, WriterContext context) {
-	String valueString = value.toString();
-	if (context.getStringPolicy().isHandleMultiLineStrings() && containsSpecialCharacter(valueString)) {
-	  writeMultiLineString(valueString, context);
-	} else {
+    String valueString = value.toString();
+    if (context.getStringPolicy().isHandleMultiLineStrings() && containsSpecialCharacter(valueString)) {
+      writeMultiLineString(valueString, context);
+    } else {
       writeBasicString(valueString, context);
-	}
+    }
   }
 
   private void writeMultiLineString(String valueString, WriterContext context) {
