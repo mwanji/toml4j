@@ -8,7 +8,7 @@ import static com.moandjiezana.toml.LiteralStringValueReader.LITERAL_STRING_VALU
 import static com.moandjiezana.toml.MultilineLiteralStringValueReader.MULTILINE_LITERAL_STRING_VALUE_READER;
 import static com.moandjiezana.toml.MultilineStringValueReader.MULTILINE_STRING_VALUE_READER;
 import static com.moandjiezana.toml.NumberValueReaderWriter.NUMBER_VALUE_READER_WRITER;
-import static com.moandjiezana.toml.StringValueReaderWriter.STRING_VALUE_READER_WRITER;
+import static com.moandjiezana.toml.StringValueReader.STRING_VALUE_READER;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -32,6 +32,6 @@ class ValueReaders {
   private ValueReaders() {}
   
   private static final ValueReader[] READERS = { 
-    MULTILINE_STRING_VALUE_READER, MULTILINE_LITERAL_STRING_VALUE_READER, LITERAL_STRING_VALUE_READER, STRING_VALUE_READER_WRITER, DATE_VALUE_READER_WRITER, NUMBER_VALUE_READER_WRITER, BOOLEAN_VALUE_READER_WRITER, ARRAY_VALUE_READER, INLINE_TABLE_VALUE_READER
+    MULTILINE_STRING_VALUE_READER, MULTILINE_LITERAL_STRING_VALUE_READER, LITERAL_STRING_VALUE_READER, STRING_VALUE_READER, DATE_VALUE_READER_WRITER, NUMBER_VALUE_READER_WRITER, BOOLEAN_VALUE_READER_WRITER, ARRAY_VALUE_READER, INLINE_TABLE_VALUE_READER
   };
 }
