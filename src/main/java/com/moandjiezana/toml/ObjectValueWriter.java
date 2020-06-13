@@ -1,15 +1,11 @@
 package com.moandjiezana.toml;
 
-import static com.moandjiezana.toml.MapValueWriter.MAP_VALUE_WRITER;
-
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
+import static com.moandjiezana.toml.MapValueWriter.MAP_VALUE_WRITER;
 
 class ObjectValueWriter implements ValueWriter {
   static final ValueWriter OBJECT_VALUE_WRITER = new ObjectValueWriter();
@@ -23,11 +19,20 @@ class ObjectValueWriter implements ValueWriter {
   public void write(Object value, WriterContext context) {
     Map<String, Object> to = new LinkedHashMap<String, Object>();
     Set<Field> fields = getFields(value.getClass());
+    final ArrayList<String[]> comments = new ArrayList<String[]>();
     for (Field field : fields) {
       to.put(field.getName(), getFieldValue(field, value));
+      if(field.isAnnotationPresent(TomlComment.class)){
+        for(Annotation a : field.getAnnotations()){
+          if (a instanceof TomlComment) {
+            TomlComment comment = (TomlComment) a;
+            comments.add(comment.value());
+            break;
+          }
+        }
+      }else comments.add(null);
     }
-
-    MAP_VALUE_WRITER.write(to, context);
+    ((MapValueWriter)MAP_VALUE_WRITER).write(to, context, comments);
   }
 
   @Override
@@ -50,7 +55,7 @@ class ObjectValueWriter implements ValueWriter {
     Iterator<Field> iterator = fields.iterator();
     while (iterator.hasNext()) {
       Field field = iterator.next();
-      if ((Modifier.isFinal(field.getModifiers()) && Modifier.isStatic(field.getModifiers())) || field.isSynthetic() || Modifier.isTransient(field.getModifiers())) {
+      if ((Modifier.isFinal(field.getModifiers()) && Modifier.isStatic(field.getModifiers())) || field.isSynthetic() || Modifier.isTransient(field.getModifiers()) || field.isAnnotationPresent(TomlIgnore.class)) {
         iterator.remove();
       }
     }
@@ -65,7 +70,6 @@ class ObjectValueWriter implements ValueWriter {
     } catch (IllegalAccessException ignored) {
     }
     field.setAccessible(isAccessible);
-
     return value;
   }
 
