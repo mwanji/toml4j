@@ -1,18 +1,23 @@
 # toml4j Changelog
 
+## [Unreleased]
+
+### Added
+* @TomlIgnore and @TomlComment annotations for Toml Objects
+
 ## 0.7.3 / 2017-12-13
 
-## Fixed
+### Fixed
 
 * [A table array in comments caused a parse error](https://github.com/mwanji/toml4j/issues/48) (thanks to __[bchenYext](https://github.com/bchenYext)__)
 
 ## 0.7.2 / 2017-08-05
 
-## Updated
+### Updated
 
 * [Update Gson to 2.8.1 and various Maven plugins to latest versions](https://github.com/mwanji/toml4j/pull/45) (thanks to __[DanilaFe](https://github.com/DanilaFe)__)
 
-## Fixed
+### Fixed
 
 * [tomlWriter.write NullPointerException in JDK9](https://github.com/mwanji/toml4j/issues/46) (thanks to __[iwangxiaodong](https://github.com/iwangxiaodong)__)
 * Change build to be able to release a new version entirely from the command line
@@ -23,17 +28,17 @@
 
 ## 0.7.0 / 2016-07-12
 
-## Added
+### Added
 
 * Toml#read(Toml) merges two Toml instances (thanks to __[gustavkarlsson](https://github.com/gustavkarlsson)__)
 
 ## 0.6.0 / 2016-06-14
 
-## Added
+### Added
 
 * Toml#toMap() convenience method (thanks to __[andytill](https://github.com/andytill)__ and __[Gyscos](https://github.com/Gyscos)) 
 
-## Fixed
+### Fixed
 
 * Transient fields are not written to TOML files (thanks to __[lare96](https://github.com/lare96)__)
 * Support positive timezone offset in datetime (thanks to __[aloyse](https://github.com/aloyse)__)
