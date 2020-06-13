@@ -6,6 +6,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 
 import static com.moandjiezana.toml.MapValueWriter.MAP_VALUE_WRITER;
+import static com.moandjiezana.toml.ValueWriters.WRITERS;
 
 class ObjectValueWriter implements ValueWriter {
   static final ValueWriter OBJECT_VALUE_WRITER = new ObjectValueWriter();
@@ -17,22 +18,39 @@ class ObjectValueWriter implements ValueWriter {
 
   @Override
   public void write(Object value, WriterContext context) {
-    Map<String, Object> to = new LinkedHashMap<String, Object>();
-    Set<Field> fields = getFields(value.getClass());
+    write(value, context, null);
+  }
+
+  public void write(Object value, WriterContext context, String[] objectComment) {
+    final Map<String, Object> to = new LinkedHashMap<String, Object>();
+    final Set<Field> fields = getFields(value.getClass());
+
     final ArrayList<String[]> comments = new ArrayList<String[]>();
+    final ArrayList<String[]> objComments = new ArrayList<String[]>();
+
     for (Field field : fields) {
-      to.put(field.getName(), getFieldValue(field, value));
-      if(field.isAnnotationPresent(TomlComment.class)){
-        for(Annotation a : field.getAnnotations()){
+      final Object fieldValue = getFieldValue(field, value);
+      to.put(field.getName(), fieldValue);
+      final ValueWriter valueWriter = WRITERS.findWriterFor(fieldValue);
+      if (field.isAnnotationPresent(TomlComment.class)) {
+        for (Annotation a : field.getAnnotations()) {
           if (a instanceof TomlComment) {
             TomlComment comment = (TomlComment) a;
-            comments.add(comment.value());
+            if (valueWriter == OBJECT_VALUE_WRITER)
+              objComments.add(comment.value());
+            else
+              comments.add(comment.value());
             break;
           }
         }
-      }else comments.add(null);
+      } else {
+        if (valueWriter == OBJECT_VALUE_WRITER)
+          objComments.add(null);
+        else
+          comments.add(null);
+      }
     }
-    ((MapValueWriter)MAP_VALUE_WRITER).write(to, context, comments);
+    ((MapValueWriter) MAP_VALUE_WRITER).write(to, context, comments, objComments, objectComment);
   }
 
   @Override

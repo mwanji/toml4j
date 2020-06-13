@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.moandjiezana.toml.CommentUtil.addComments;
 import static com.moandjiezana.toml.PrimitiveArrayValueWriter.PRIMITIVE_ARRAY_VALUE_WRITER;
 import static com.moandjiezana.toml.TableArrayValueWriter.TABLE_ARRAY_VALUE_WRITER;
 import static com.moandjiezana.toml.ValueWriters.WRITERS;
@@ -50,14 +51,13 @@ class MapValueWriter implements ValueWriter {
 
   @Override
   public void write(Object value, WriterContext context) {
-    write(value, context, null);
+    write(value, context, null, null, null);
   }
 
-  public void write(Object value, WriterContext context, ArrayList<String[]> comments) {
+  public void write(Object value, WriterContext context, final ArrayList<String[]> valueComments, final ArrayList<String[]> objComments, final String[] objectComment) {
     Map<?, ?> from = (Map<?, ?>) value;
-
     if (hasPrimitiveValues(from, context)) {
-      context.writeKey();
+      context.writeKey(objectComment);
     }
 
     int comment = 0;
@@ -69,12 +69,11 @@ class MapValueWriter implements ValueWriter {
       if (fromValue == null) {
         continue;
       }
-      final boolean hasComment = (comments != null) && !comments.isEmpty() && comments.get(comment) != null;
+      final boolean hasComment = (valueComments != null) && !valueComments.isEmpty() && valueComments.size() > comment && valueComments.get(comment) != null;
       ValueWriter valueWriter = WRITERS.findWriterFor(fromValue);
       if (hasComment) {
-        if ((valueWriter == MAP_VALUE_WRITER || valueWriter == ObjectValueWriter.OBJECT_VALUE_WRITER))
-          context.write("\n");
-        addComments(comments.get(comment), context);
+        if (valueWriter != ObjectValueWriter.OBJECT_VALUE_WRITER)
+          addComments(valueComments.get(comment), context);
       }
       if (valueWriter.isPrimitiveType()) {
         context.indent();
@@ -89,6 +88,7 @@ class MapValueWriter implements ValueWriter {
       }
       comment++;
     }
+    comment = 0;
 
     // Now render (sub)tables and arrays of tables
     for (Object key : from.keySet()) {
@@ -98,29 +98,14 @@ class MapValueWriter implements ValueWriter {
       }
 
       ValueWriter valueWriter = WRITERS.findWriterFor(fromValue);
-      if (valueWriter == this || valueWriter == ObjectValueWriter.OBJECT_VALUE_WRITER || valueWriter == TABLE_ARRAY_VALUE_WRITER) {
+      if (valueWriter == this || valueWriter == TABLE_ARRAY_VALUE_WRITER) {
         valueWriter.write(fromValue, context.pushTable(quoteKey(key)));
+      } else if (valueWriter == ObjectValueWriter.OBJECT_VALUE_WRITER) {
+        final boolean hasComment = (objComments != null) && !objComments.isEmpty() && objComments.size() > comment && objComments.get(comment) != null;
+        ((ObjectValueWriter) valueWriter).write(fromValue, context.pushTable(quoteKey(key)), hasComment ? objComments.get(comment) : null);
+        comment++;
       }
     }
-  }
-
-  private void addComments(final String[] comments, WriterContext context) {
-    if (comments == null) return;
-    for (String comment : comments) {
-      if (comment == null) continue;
-      if (comment.contains("\n")) {
-        final String[] split = comment.split("\n");
-        for (String s : split) {
-          if (s == null) continue;
-          context.indent();
-          context.write("# " + s + "\n");
-        }
-      } else {
-        context.indent();
-        context.write("# " + comment + "\n");
-      }
-    }
-
   }
 
   @Override

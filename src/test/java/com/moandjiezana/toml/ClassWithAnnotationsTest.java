@@ -4,9 +4,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 
 import static org.junit.Assert.*;
 
@@ -36,16 +34,31 @@ public class ClassWithAnnotationsTest {
     assertEquals("[Test]", toml.subclass.logPrefix);
     assertArrayEquals(new String[]{"test", "test2"}, toml.subclass.blacklistedWords);
     assertEquals(Integer.MAX_VALUE / 2, toml.subclass.third.maxLength);
-
-    // Print the whole file content to log
-    final BufferedReader r = new BufferedReader(new FileReader(file));
-    System.out.println("--Beginning of file--");
-    while (true) {
-      final String line = r.readLine();
-      if (line == null) break;
-      System.out.println(line);
-    }
-    System.out.println("--End of file--");
+    assertEquals(57392729L, toml.randimzier.seed);
+    final String expectedOutput = "# This toggles debug features\n" +
+            "enableDebugMode = false\n" +
+            "# Delay between messages\n" +
+            "# Can not be negative\n" +
+            "delay = 12\n" +
+            "\n" +
+            "# Subclass containing more configuration options\n" +
+            "[subclass]\n" +
+            "  # An list of words which should not be visible in log\n" +
+            "blacklistedWords = [   \"test\", \"test2\"   ]\n" +
+            "  # The prefix to be shown when sending log messages\n" +
+            "  # Defaults to \"[Test]\"\n" +
+            "  logPrefix = \"[Test]\"\n" +
+            "\n" +
+            "    # Even more options\n" +
+            "    [subclass.third]\n" +
+            "      # Max length of messages\n" +
+            "      maxLength = 1073741823\n" +
+            "\n" +
+            "# Config for the randomizer\n" +
+            "[randimzier]\n" +
+            "  # The seed of the randomizer\n" +
+            "  seed = 57392729\n";
+    assertEquals(expectedOutput, w.write(toml));
   }
 
   private static class FirstAnnotated {
@@ -57,6 +70,9 @@ public class ClassWithAnnotationsTest {
     private int delay = 12;
     @TomlComment("Subclass containing more configuration options")
     private SecondAnnotated subclass = new SecondAnnotated();
+    @TomlComment("Config for the randomizer")
+    private FourthAnnotated randimzier = new FourthAnnotated();
+
 
     private static class SecondAnnotated {
       @TomlComment("An list of words which should not be visible in log")
@@ -71,5 +87,10 @@ public class ClassWithAnnotationsTest {
         private int maxLength = Integer.MAX_VALUE / 2;
       }
     }
+  }
+
+  private static class FourthAnnotated {
+    @TomlComment("The seed of the randomizer")
+    private long seed = 57392729L;
   }
 }
