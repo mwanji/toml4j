@@ -31,7 +31,8 @@ class WriterContext {
     if (!empty) {
       subContext.empty = false;
     }
-    
+    empty = false;
+
     return subContext;
   }
 
@@ -41,6 +42,7 @@ class WriterContext {
       subContext.empty = false;
     }
     subContext.setIsArrayOfTable(true);
+    empty = false;
 
     return subContext;
   }
