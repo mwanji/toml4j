@@ -10,12 +10,30 @@ For the bleeding-edge version integrating the latest specs, see the [work-in-pro
 
 Add the following dependency to your POM (or equivalent for other dependency managers):
 
+Gradle:
+```gradle
+repositories {
+  maven { url 'https://jitpack.io' }
+}
+dependencies {
+  implementation 'com.github.ErdbeerbaerLP:toml4j:writer-SNAPSHOT'
+}
+```
+Maven:
 ```xml
-<dependency>
-  <groupId>com.moandjiezana.toml</groupId>
-  <artifactId>toml4j</artifactId>
-  <version>0.7.2</version>
-</dependency>
+<repositories>
+  <repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+   </repository>
+</repositories>
+<dependencies>
+  <dependency>
+    <groupId>com.github.ErdbeerbaerLP</groupId>
+    <artifactId>toml4j</artifactId>
+    <version>writer-SNAPSHOT</version>
+  </dependency>
+</dependencies>
 ```
 
 Requires Java 1.6 or above.
