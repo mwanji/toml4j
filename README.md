@@ -16,7 +16,7 @@ repositories {
   maven { url 'https://jitpack.io' }
 }
 dependencies {
-  implementation 'com.github.ErdbeerbaerLP:toml4j:writer-SNAPSHOT'
+  implementation 'com.github.ErdbeerbaerLP:toml4j:wip-SNAPSHOT'
 }
 ```
 Maven:
@@ -31,7 +31,7 @@ Maven:
   <dependency>
     <groupId>com.github.ErdbeerbaerLP</groupId>
     <artifactId>toml4j</artifactId>
-    <version>writer-SNAPSHOT</version>
+    <version>wip-SNAPSHOT</version>
   </dependency>
 </dependencies>
 ```
