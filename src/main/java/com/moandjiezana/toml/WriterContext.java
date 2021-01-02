@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
 
+import static com.moandjiezana.toml.CommentUtil.addComments;
+
 class WriterContext {
   private String arrayKey = null;
   private boolean isArrayOfTable = false;
@@ -68,7 +70,7 @@ class WriterContext {
     try {
       output.write(c);
       empty = false;
-      
+
       return this;
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -76,6 +78,10 @@ class WriterContext {
   }
 
   void writeKey() {
+    writeKey(null);
+  }
+
+  void writeKey(String[] comment) {
     if (key.isEmpty()) {
       return;
     }
@@ -83,9 +89,11 @@ class WriterContext {
     if (!empty) {
       write('\n');
     }
-
+    if (comment != null) {
+      write(currentTableIndent);
+      addComments(comment, this, false);
+    }
     write(currentTableIndent);
-
     if (isArrayOfTable) {
       write("[[").write(key).write("]]\n");
     } else {
