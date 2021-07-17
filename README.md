@@ -18,6 +18,18 @@ Add the following dependency to your POM (or equivalent for other dependency man
 </dependency>
 ```
 
+If you use gradle, you can use the following code :
+```gradle
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  ...
+  implementation 'com.moandjiezana.toml:toml4j:0.7.2'
+}
+```
+
 Requires Java 1.6 or above.
 
 ## Quick start
