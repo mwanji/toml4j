@@ -1,6 +1,7 @@
 package com.moandjiezana.toml;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -24,6 +25,41 @@ public class NumberTest {
     Toml toml = new Toml().read("a = +1001\nb = 1001");
 
     assertEquals(toml.getLong("b"), toml.getLong("a"));
+  }
+
+  @Test
+  public void should_get_integer() throws Exception {
+    Toml toml = new Toml().read("b = 1001");
+
+    assertEquals(1001, toml.getInteger("b").intValue());
+  }
+
+  @Test
+  public void should_get_negative_integer() throws Exception {
+    Toml toml = new Toml().read("b = -1001");
+
+    assertEquals(-1001, toml.getInteger("b").intValue());
+  }
+
+  @Test
+  public void should_get_null_integer() throws Exception {
+    Toml toml = new Toml().read("b = -1001");
+
+    assertNull(toml.getInteger("J"));
+  }
+
+  @Test
+  public void should_get_default_integer() throws Exception {
+    Toml toml = new Toml().read("b = -1001");
+
+    assertEquals(74, toml.getInteger("J", 74).intValue());
+  }
+
+  @Test
+  public void should_get_integer_with_plus_sign() throws Exception {
+    Toml toml = new Toml().read("a = +1001\nb = 1001");
+
+    assertEquals(toml.getInteger("b"), toml.getInteger("a"));
   }
 
   @Test
@@ -60,12 +96,19 @@ public class NumberTest {
   }
   
   @Test
-  public void should_get_integer_with_underscores() throws Exception {
+  public void should_get_number_with_underscores() throws Exception {
     Toml toml = new Toml().read("val = 100_000_000");
     
-    assertEquals(100000000L, toml.getLong("val").intValue());
+    assertEquals(100000000L, toml.getLong("val").longValue());
   }
   
+  @Test
+  public void should_get_integer_with_underscores() throws Exception {
+      Toml toml = new Toml().read("val = 100_000_000");
+
+      assertEquals(100000000, toml.getInteger("val").intValue());
+  }
+
   @Test
   public void should_get_float_with_underscores() throws Exception {
     Toml toml = new Toml().read("val = 100_000.123_456");

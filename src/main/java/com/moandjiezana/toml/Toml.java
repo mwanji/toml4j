@@ -163,6 +163,16 @@ public class Toml {
     return val == null ? defaultValue : val;
   }
 
+  public Integer getInteger(String key) {
+      Long val = getLong(key);
+      return val == null ? null : val.intValue();
+  }
+
+  public Integer getInteger(String key, Integer defaultValue) {
+      Integer val = getInteger(key);
+      return val == null ? defaultValue : val;
+  }
+
   /**
    * @param key a TOML key
    * @param <T> type of list items
