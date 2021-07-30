@@ -14,9 +14,10 @@ class WriterContext {
   private final Writer output;
   private final IndentationPolicy indentationPolicy;
   private final DatePolicy datePolicy;
+  private final StringPolicy stringPolicy;
 
-  WriterContext(IndentationPolicy indentationPolicy, DatePolicy datePolicy, Writer output) {
-    this("", "", output, indentationPolicy, datePolicy);
+  WriterContext(IndentationPolicy indentationPolicy, DatePolicy datePolicy, StringPolicy stringPolicy, Writer output) {
+    this("", "", output, indentationPolicy, datePolicy, stringPolicy);
   }
 
   WriterContext pushTable(String newKey) {
@@ -27,7 +28,7 @@ class WriterContext {
 
     String fullKey = key.isEmpty() ? newKey : key + "." + newKey;
 
-    WriterContext subContext = new WriterContext(fullKey, newIndent, output, indentationPolicy, datePolicy);
+    WriterContext subContext = new WriterContext(fullKey, newIndent, output, indentationPolicy, datePolicy, stringPolicy);
     if (!empty) {
       subContext.empty = false;
     }
@@ -36,7 +37,7 @@ class WriterContext {
   }
 
   WriterContext pushTableFromArray() {
-    WriterContext subContext = new WriterContext(key, currentTableIndent, output, indentationPolicy, datePolicy);
+    WriterContext subContext = new WriterContext(key, currentTableIndent, output, indentationPolicy, datePolicy, stringPolicy);
     if (!empty) {
       subContext.empty = false;
     }
@@ -108,6 +109,10 @@ class WriterContext {
   DatePolicy getDatePolicy() {
     return datePolicy;
   }
+  
+  StringPolicy getStringPolicy() {
+    return stringPolicy;
+  }
 
   WriterContext setIsArrayOfTable(boolean isArrayOfTable) {
     this.isArrayOfTable = isArrayOfTable;
@@ -134,12 +139,13 @@ class WriterContext {
     return new String(chars);
   }
 
-  private WriterContext(String key, String tableIndent, Writer output, IndentationPolicy indentationPolicy, DatePolicy datePolicy) {
+  private WriterContext(String key, String tableIndent, Writer output, IndentationPolicy indentationPolicy, DatePolicy datePolicy, StringPolicy stringPolicy) {
     this.key = key;
     this.output = output;
     this.indentationPolicy = indentationPolicy;
     this.currentTableIndent = tableIndent;
     this.datePolicy = datePolicy;
     this.currentFieldIndent = tableIndent + fillStringWithSpaces(this.indentationPolicy.getKeyValueIndent());
+    this.stringPolicy = stringPolicy;
   }
 }

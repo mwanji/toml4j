@@ -2,10 +2,8 @@ package com.moandjiezana.toml;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class Results {
@@ -128,7 +126,6 @@ class Results {
   }
   
   final Errors errors = new Errors();
-  private final Set<String> tables = new HashSet<String>();
   private final Deque<Container> stack = new ArrayDeque<Container>();
 
   Results() {
