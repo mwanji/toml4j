@@ -1,5 +1,7 @@
 package com.moandjiezana.toml;
 
+import com.moandjiezana.toml.Keys.Quote;
+
 class Identifier {
   
   static final Identifier INVALID = new Identifier("", null);
@@ -69,15 +71,19 @@ class Identifier {
   }
   
   private static String extractName(String raw) {
-    boolean quoted = false;
+    Quote quote = Quote.NONE;
     StringBuilder sb = new StringBuilder();
     
     for (int i = 0; i < raw.length(); i++) {
       char c = raw.charAt(i);
       if (c == '"' && (i == 0 || raw.charAt(i - 1) != '\\')) {
-        quoted = !quoted;
+        if (quote != Quote.NONE && quote.getChar() == c) {
+          quote = Quote.NONE;
+        } else {
+          quote = Quote.quoteFromChar(c);
+        }  
         sb.append('"');
-      } else if (quoted || !Character.isWhitespace(c)) {
+      } else if (quote != Quote.NONE || !Character.isWhitespace(c)) {
         sb.append(c);
       }
     }
@@ -91,17 +97,21 @@ class Identifier {
       return false;
     }
     
-    boolean quoted = false;
+    Quote quote = Quote.NONE;
     for (int i = 0; i < name.length(); i++) {
       char c = name.charAt(i);
       
       if (c == '"' && (i == 0 || name.charAt(i - 1) != '\\')) {
-        if (!quoted && i > 0 && name.charAt(i - 1) != '.') {
+        if (quote == Quote.NONE && i > 0 && name.charAt(i - 1) != '.') {
           context.errors.invalidKey(name, context.line.get());
           return false;
         }
-        quoted = !quoted;
-      } else if (!quoted && (ALLOWED_CHARS.indexOf(c) == -1)) {
+        if (quote != Quote.NONE && quote.getChar() == c) {
+          quote = Quote.NONE;
+        } else {
+          quote = Quote.quoteFromChar(c);
+        } 
+      } else if (quote == Quote.NONE && (ALLOWED_CHARS.indexOf(c) == -1)) {
         context.errors.invalidKey(name, context.line.get());
         return false;
       }
@@ -127,7 +137,7 @@ class Identifier {
       return false;
     }
     
-    boolean quoted = false;
+    Quote quote = Quote.NONE;
     boolean dotAllowed = false;
     boolean quoteAllowed = true;
     boolean charAllowed = true;
@@ -142,15 +152,15 @@ class Identifier {
       if (Keys.isQuote(c)) {
         if (!quoteAllowed) {
           valid = false;
-        } else if (quoted && trimmed.charAt(i - 1) != '\\') {
+        } else if (quote != Quote.NONE && quote.getChar() == c && trimmed.charAt(i - 1) != '\\') {
           charAllowed = false;
           dotAllowed = true;
           quoteAllowed = false;
-        } else if (!quoted) {
-          quoted = true;
+        } else if (quote == Quote.NONE) {
+          quote = Quote.quoteFromChar(c);
           quoteAllowed = true;
         }
-      } else if (quoted) {
+      } else if (quote != Quote.NONE && quote.getChar() != c) {
         continue;
       } else if (c == '.') {
         if (dotAllowed) {
