@@ -34,7 +34,7 @@ public class ClassWithAnnotationsTest {
     assertEquals("[Test]", toml.subclass.logPrefix);
     assertArrayEquals(new String[]{"test", "test2"}, toml.subclass.blacklistedWords);
     assertEquals(Integer.MAX_VALUE / 2, toml.subclass.third.maxLength);
-    assertEquals(57392729L, toml.randimzier.seed);
+    assertEquals(57392729L, toml.randomizer.seed);
     final String expectedOutput = "# This toggles debug features\n" +
             "enableDebugMode = false\n" +
             "# Delay between messages\n" +
@@ -55,7 +55,7 @@ public class ClassWithAnnotationsTest {
             "      maxLength = 1073741823\n" +
             "\n" +
             "# Config for the randomizer\n" +
-            "[randimzier]\n" +
+            "[randomizer]\n" +
             "  # The seed of the randomizer\n" +
             "  seed = 57392729\n";
     assertEquals(expectedOutput, w.write(toml));
@@ -65,32 +65,32 @@ public class ClassWithAnnotationsTest {
     @TomlIgnore
     private String ignoredField;
     @TomlComment("This toggles debug features")
-    private boolean enableDebugMode = false;
+    private final boolean enableDebugMode = false;
     @TomlComment({"Delay between messages", "Can not be negative"})
-    private int delay = 12;
+    private final int delay = 12;
     @TomlComment("Subclass containing more configuration options")
-    private SecondAnnotated subclass = new SecondAnnotated();
+    private final SecondAnnotated subclass = new SecondAnnotated();
     @TomlComment("Config for the randomizer")
-    private FourthAnnotated randimzier = new FourthAnnotated();
+    private final FourthAnnotated randomizer = new FourthAnnotated();
 
 
     private static class SecondAnnotated {
       @TomlComment("An list of words which should not be visible in log")
-      private String[] blacklistedWords = new String[]{"test", "test2"};
+      private final String[] blacklistedWords = new String[]{"test", "test2"};
       @TomlComment("The prefix to be shown when sending log messages\nDefaults to \"[Test]\"")
-      private String logPrefix = "[Test]";
+      private final String logPrefix = "[Test]";
       @TomlComment("Even more options")
-      private ThirdAnnotated third = new ThirdAnnotated();
+      private final ThirdAnnotated third = new ThirdAnnotated();
 
       private static class ThirdAnnotated {
         @TomlComment("Max length of messages")
-        private int maxLength = Integer.MAX_VALUE / 2;
+        private final int maxLength = Integer.MAX_VALUE / 2;
       }
     }
   }
 
   private static class FourthAnnotated {
     @TomlComment("The seed of the randomizer")
-    private long seed = 57392729L;
+    private final long seed = 57392729L;
   }
 }
