@@ -40,6 +40,7 @@ class ObjectValueWriter implements ValueWriter {
   }
 
   private static Object getFieldValue(Field field, Object o) {
+    if (field.isAnnotationPresent(TomlIgnore.class)) return null;
     //noinspection deprecation
     boolean isAccessible = field.isAccessible();
 
