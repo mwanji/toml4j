@@ -2,20 +2,20 @@ package com.moandjiezana.toml;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -69,7 +69,22 @@ public class Toml {
    */
   public Toml read(File file) {
     try {
-      return read(new InputStreamReader(new FileInputStream(file), "UTF8"));
+      return read(file.toPath());
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Populates the current Toml instance with values from file.
+   *
+   * @param path The Path file to be read. Expected to be encoded as UTF-8.
+   * @return this instance
+   * @throws IllegalStateException If file contains invalid TOML
+   */
+  public Toml read(Path path) {
+    try {
+      return read(Files.newBufferedReader(path));
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -94,23 +109,14 @@ public class Toml {
    * @throws IllegalStateException If file contains invalid TOML
    */
   public Toml read(Reader reader) {
-    BufferedReader bufferedReader = null;
-    try {
-      bufferedReader = new BufferedReader(reader);
-
-      StringBuilder w = new StringBuilder();
-      String line = bufferedReader.readLine();
-      while (line != null) {
-        w.append(line).append('\n');
-        line = bufferedReader.readLine();
-      }
-      read(w.toString());
+    try (BufferedReader bufferedReader = new BufferedReader(reader)) {
+      read(
+              bufferedReader
+                      .lines()
+                      .collect(Collectors.joining("\n"))
+      );
     } catch (IOException e) {
       throw new RuntimeException(e);
-    } finally {
-      try {
-        bufferedReader.close();
-      } catch (IOException e) {}
     }
     return this;
   }
@@ -163,6 +169,42 @@ public class Toml {
     return val == null ? defaultValue : val;
   }
 
+  public LocalDateTime getLocalDateTime(String key) {
+    return (LocalDateTime) get(key);
+  }
+
+  public LocalDateTime getLocalDateTime(String key, LocalDateTime defaultValue) {
+    LocalDateTime val = (LocalDateTime) get(key);
+    return val == null ? defaultValue : val;
+  }
+
+  public LocalDate getLocalDate(String key) {
+    return (LocalDate) get(key);
+  }
+
+  public LocalDate getLocalDate(String key, LocalDate defaultValue) {
+    LocalDate val = (LocalDate) get(key);
+    return val == null ? defaultValue : val;
+  }
+
+  public LocalTime getLocalTime(String key) {
+    return (LocalTime) get(key);
+  }
+
+  public LocalTime getLocalTime(String key, LocalTime defaultValue) {
+    LocalTime val = (LocalTime) get(key);
+    return val == null ? defaultValue : val;
+  }
+
+  public OffsetDateTime getOffsetDateTime(String key) {
+    return (OffsetDateTime) get(key);
+  }
+
+  public OffsetDateTime getOffsetDateTime(String key, OffsetDateTime defaultValue) {
+    OffsetDateTime val = (OffsetDateTime) get(key);
+    return val == null ? defaultValue : val;
+  }
+
   /**
    * @param key a TOML key
    * @param <T> type of list items
@@ -193,15 +235,6 @@ public class Toml {
 
   public Boolean getBoolean(String key, Boolean defaultValue) {
     Boolean val = getBoolean(key);
-    return val == null ? defaultValue : val;
-  }
-
-  public Date getDate(String key) {
-    return (Date) get(key);
-  }
-
-  public Date getDate(String key, Date defaultValue) {
-    Date val = getDate(key);
     return val == null ? defaultValue : val;
   }
 

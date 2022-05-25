@@ -1,6 +1,7 @@
 package com.moandjiezana.toml;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -30,21 +31,21 @@ public class NumberTest {
   public void should_get_double() throws Exception {
     Toml toml = new Toml().read("double = 5.25");
 
-    assertEquals(5.25D, toml.getDouble("double").doubleValue(), 0.0);
+    assertEquals(5.25D, toml.getDouble("double"), 0.0);
   }
 
   @Test
   public void should_get_negative_double() throws Exception {
     Toml toml = new Toml().read("double = -5.25");
 
-    assertEquals(-5.25D, toml.getDouble("double").doubleValue(), 0.0);
+    assertEquals(-5.25D, toml.getDouble("double"), 0.0);
   }
   
   @Test
   public void should_get_double_with_a_plus_sign() throws Exception {
     Toml toml = new Toml().read("double = +5.25");
 
-    assertEquals(5.25D, toml.getDouble("double").doubleValue(), 0.0);
+    assertEquals(5.25D, toml.getDouble("double"), 0.0);
   }
   
   @Test
@@ -78,6 +79,42 @@ public class NumberTest {
     Toml toml = new Toml().read("val = 1_5e1_00");
     
     assertEquals(15e100, toml.getDouble("val").doubleValue(), 0.0);
+  }
+
+  @Test
+  public void should_get_nan() throws Exception {
+    Toml toml = new Toml().read("val = nan");
+    assertTrue(Double.isNaN(toml.getDouble("val")));
+  }
+
+  @Test
+  public void should_get_mnan() throws Exception {
+    Toml toml = new Toml().read("val = -nan");
+    assertTrue(Double.isNaN(toml.getDouble("val")));
+  }
+
+  @Test
+  public void should_get_pnan() throws Exception {
+    Toml toml = new Toml().read("val = +nan");
+    assertTrue(Double.isNaN(toml.getDouble("val")));
+  }
+
+  @Test
+  public void should_get_inf() throws Exception {
+    Toml toml = new Toml().read("val = inf");
+    assertTrue(Double.isInfinite(toml.getDouble("val")));
+  }
+
+  @Test
+  public void should_get_minf() throws Exception {
+    Toml toml = new Toml().read("val = -inf");
+    assertTrue(Double.isInfinite(toml.getDouble("val")));
+  }
+
+  @Test
+  public void should_get_pinf() throws Exception {
+    Toml toml = new Toml().read("val = +inf");
+    assertTrue(Double.isInfinite(toml.getDouble("val")));
   }
   
   @Test
