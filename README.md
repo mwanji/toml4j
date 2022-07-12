@@ -258,7 +258,7 @@ class AClass {
 TomlWriter tomlWriter = new TomlWriter();
 AClass obj = new AClass();
 
-Map<String, Object> map = new HashMap<String, Object>();
+Map<String, Object> map = new LinkedHashMap<String, Object>();
 int[] intArray = { 2, 3 };
 map.put("anInt", 1);
 map.put("anArray", intArray);
@@ -282,7 +282,7 @@ You can customise formatting with a TomlWriter.Builder:
 
  ```java
 class BClass {
-  Map<String, ?> aMap = new HashMap<String, Object>();
+  Map<String, ?> aMap = new LinkedHashMap<String, Object>();
 }
 
 BClass obj = new BClass();

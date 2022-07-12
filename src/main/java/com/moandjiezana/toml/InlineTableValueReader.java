@@ -2,7 +2,7 @@ package com.moandjiezana.toml;
 
 import static com.moandjiezana.toml.ValueReaders.VALUE_READERS;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class InlineTableValueReader implements ValueReader {
@@ -23,7 +23,7 @@ class InlineTableValueReader implements ValueReader {
     boolean inValue = false;
     boolean terminated = false;
     StringBuilder currentKey = new StringBuilder();
-    HashMap<String, Object> results = new HashMap<String, Object>();
+    LinkedHashMap<String, Object> results = new LinkedHashMap<String, Object>();
     Results.Errors errors = new Results.Errors();
     
     for (int i = sharedIndex.incrementAndGet(); sharedIndex.get() < s.length(); i = sharedIndex.incrementAndGet()) {
