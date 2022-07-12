@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -198,16 +197,16 @@ public class TomlWriterTest {
   @Test
   public void should_write_array_of_tables_from_map() throws Exception {
     List<Map<String, Object>> maps = new ArrayList<Map<String,Object>>();
-    
-    HashMap<String, Object> item1 = new HashMap<String, Object>();
+
+    LinkedHashMap<String, Object> item1 = new LinkedHashMap<String, Object>();
     item1.put("anInt", 1L);
-    HashMap<String, Object> item2 = new HashMap<String, Object>();
+    LinkedHashMap<String, Object> item2 = new LinkedHashMap<String, Object>();
     item2.put("anInt", 2L);
 
     maps.add(item1);
     maps.add(item2);
     
-    Map<String, Object> input = new HashMap<String, Object>();
+    Map<String, Object> input = new LinkedHashMap<String, Object>();
     input.put("maps", maps);
     
     String output = new TomlWriter().write(input);
@@ -270,7 +269,7 @@ public class TomlWriterTest {
   @Test
   public void should_reject_nested_heterogeneous_array() {
     class BadArray {
-      Map<String, Object> aMap = new HashMap<String, Object>();
+      Map<String, Object> aMap = new LinkedHashMap<String, Object>();
     }
     
     BadArray badArray = new BadArray();
@@ -430,7 +429,7 @@ public class TomlWriterTest {
     calendar.set(2015, Calendar.JULY, 1, 11, 5, 30);
     calendar.set(Calendar.MILLISECOND, 0);
     
-    Map<String, Date> o = new HashMap<String, Date>();
+    Map<String, Date> o = new LinkedHashMap<String, Date>();
     
     o.put("sast", calendar.getTime());
     
@@ -447,7 +446,7 @@ public class TomlWriterTest {
     calendar.set(2015, Calendar.JULY, 1, 11, 5, 30);
     calendar.set(Calendar.MILLISECOND, 345);
     
-    Map<String, Date> o = new HashMap<String, Date>();
+    Map<String, Date> o = new LinkedHashMap<String, Date>();
     
     o.put("date", calendar.getTime());
     

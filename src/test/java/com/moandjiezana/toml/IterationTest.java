@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -82,7 +83,7 @@ public class IterationTest {
   public void should_iterate_over_multiple_entries() throws Exception {
     Toml toml = new Toml().read(file("multiple"));
 
-    Map<String, Object> entries = new HashMap<String, Object>();
+    Map<String, Object> entries = new LinkedHashMap<String, Object>();
     for (Map.Entry<String, Object> entry : toml.entrySet()) {
       entries.put(entry.getKey(), entry.getValue());
     }

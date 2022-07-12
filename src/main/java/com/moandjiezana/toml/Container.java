@@ -1,7 +1,7 @@
 package com.moandjiezana.toml;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +13,7 @@ abstract class Container {
   abstract boolean isImplicit();
 
   static class Table extends Container {
-    private final Map<String, Object> values = new HashMap<String, Object>();
+    private final Map<String, Object> values = new LinkedHashMap<String, Object>();
     final String name;
     final boolean implicit;
 
