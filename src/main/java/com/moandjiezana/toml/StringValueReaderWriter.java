@@ -3,13 +3,10 @@ package com.moandjiezana.toml;
 import java.net.URI;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 class StringValueReaderWriter implements ValueReader, ValueWriter {
-  
+
   static final StringValueReaderWriter STRING_VALUE_READER_WRITER = new StringValueReaderWriter();
-  private static final Pattern UNICODE_REGEX = Pattern.compile("\\\\[uU](.{4})");
 
   static private final String[] specialCharacterEscapes = new String[93];
 
@@ -43,14 +40,15 @@ class StringValueReaderWriter implements ValueReader, ValueWriter {
 
     if (endIndex == -1) {
       Results.Errors errors = new Results.Errors();
-      errors.unterminated(context.identifier.getName(), s.substring(startIndex - 1), context.line.get());
+      errors.unterminated(context.identifier.getName(), s.substring(startIndex - 1),
+          context.line.get());
       return errors;
     }
-    
+
     String raw = s.substring(startIndex, endIndex);
     s = replaceUnicodeCharacters(raw);
     s = replaceSpecialCharacters(s);
-    
+
     if (s == null) {
       Results.Errors errors = new Results.Errors();
       errors.invalidValue(context.identifier.getName(), raw, context.line.get());
@@ -61,12 +59,49 @@ class StringValueReaderWriter implements ValueReader, ValueWriter {
   }
 
   String replaceUnicodeCharacters(String value) {
-    Matcher unicodeMatcher = UNICODE_REGEX.matcher(value);
-
-    while (unicodeMatcher.find()) {
-      value = value.replace(unicodeMatcher.group(), new String(Character.toChars(Integer.parseInt(unicodeMatcher.group(1), 16))));
+    if (value.length() < 6) {
+      return value;
     }
-    return value;
+
+    StringBuilder builder = new StringBuilder();
+    int i;
+    for (i = 0; i < value.length() - 1; ) {
+      i += replaceUnicode(value, i, builder);
+    }
+
+    replaceUnicode(value, i, builder);
+
+    return builder.toString();
+  }
+
+  int replaceUnicode(String value, int index, StringBuilder builder) {
+    if (index >= value.length()) {
+      return 0;
+    }
+
+    boolean eof = index >= value.length() - 2;
+
+    char ch = value.charAt(index);
+    if (!eof && ch == '\\' && (value.charAt(index + 1) == 'u' || value.charAt(index + 1) == 'U')) {
+      if (index + 5 >= value.length()) {
+        builder.append(ch);
+        return 1;
+      }
+
+      String unicode = value.substring(index + 2, index + 6);
+      builder.append(Character.toChars(Integer.parseInt(unicode, 16)));
+
+      return 6;
+    } else {
+      if (ch == '\\' && value.charAt(index + 1) == '\\') {
+        builder.append(ch);
+        builder.append(ch);
+        return 2;
+      } else {
+        builder.append(ch);
+        return 1;
+      }
+    }
   }
 
   String replaceSpecialCharacters(String s) {
@@ -76,24 +111,26 @@ class StringValueReaderWriter implements ValueReader, ValueWriter {
 
       if (ch == '\\' && next == '\\') {
         i++;
-      } else if (ch == '\\' && !(next == 'b' || next == 'f' || next == 'n' || next == 't' || next == 'r' || next == '"' || next == '\\')) {
+      } else if (ch == '\\' && !(next == 'b' || next == 'f' || next == 'n' || next == 't'
+          || next == 'r' || next == '"' || next == '\\')) {
         return null;
       }
     }
 
     return s.replace("\\n", "\n")
-      .replace("\\\"", "\"")
-      .replace("\\t", "\t")
-      .replace("\\r", "\r")
-      .replace("\\\\", "\\")
-      .replace("\\/", "/")
-      .replace("\\b", "\b")
-      .replace("\\f", "\f");
+        .replace("\\\"", "\"")
+        .replace("\\t", "\t")
+        .replace("\\r", "\r")
+        .replace("\\\\", "\\")
+        .replace("\\/", "/")
+        .replace("\\b", "\b")
+        .replace("\\f", "\f");
   }
 
   @Override
   public boolean canWrite(Object value) {
-    return value instanceof String || value instanceof Character || value instanceof URL || value instanceof URI || value instanceof Enum;
+    return value instanceof String || value instanceof Character || value instanceof URL
+        || value instanceof URI || value instanceof Enum;
   }
 
   @Override
@@ -111,7 +148,8 @@ class StringValueReaderWriter implements ValueReader, ValueWriter {
   private void escapeUnicode(String in, WriterContext context) {
     for (int i = 0; i < in.length(); i++) {
       int codePoint = in.codePointAt(i);
-      if (codePoint < specialCharacterEscapes.length && specialCharacterEscapes[codePoint] != null) {
+      if (codePoint < specialCharacterEscapes.length
+          && specialCharacterEscapes[codePoint] != null) {
         context.write(specialCharacterEscapes[codePoint]);
       } else {
         context.write(in.charAt(i));
@@ -119,7 +157,8 @@ class StringValueReaderWriter implements ValueReader, ValueWriter {
     }
   }
 
-  private StringValueReaderWriter() {}
+  private StringValueReaderWriter() {
+  }
 
   @Override
   public String toString() {
