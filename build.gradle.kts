@@ -14,7 +14,7 @@ repositories{
 }
 
 dependencies{
-    implementation("com.google.code.gson:gson:2.8.1")
+    implementation("com.google.code.gson:gson:2.8.9")
 
     testImplementation("junit:junit:4.12")
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.9.3")
