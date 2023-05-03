@@ -1,6 +1,5 @@
 package de.thelooter.toml;
 
-import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -14,6 +13,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -25,23 +25,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import de.thelooter.toml.Toml;
-import de.thelooter.toml.TomlWriter;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SuppressWarnings("unused")
 public class TomlWriterTest {
 
-  @Rule
-  public TemporaryFolder testDirectory = new TemporaryFolder();
+  @TempDir
+  public File testDirectory;
   
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-
   @Test
   public void should_write_primitive_types() {
     class TestClass {
@@ -260,13 +259,15 @@ public class TomlWriterTest {
       Object[] array = new Object[2];
     }
     BadArray badArray = new BadArray();
-    badArray.array[0] = new Integer(1);
+    badArray.array[0] = Integer.valueOf(1);
     badArray.array[1] = "oops";
 
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers.startsWith("array"));
-    
-    new TomlWriter().write(badArray);
+    IllegalStateException illegalStateException = assertThrows(IllegalStateException.class, () -> {
+      new TomlWriter().write(badArray);
+    });
+
+    assertThat(illegalStateException.getMessage(), startsWith("array"));
+
   }
 
   @Test
@@ -278,10 +279,11 @@ public class TomlWriterTest {
     BadArray badArray = new BadArray();
     badArray.aMap.put("array", new Object[] { Integer.valueOf(1), "oops" });
 
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage("aMap.array");
+    IllegalStateException illegalStateException = assertThrows(IllegalStateException.class, () -> {
+      new TomlWriter().write(badArray);
+    });
 
-    new TomlWriter().write(badArray);
+    MatcherAssert.assertThat(illegalStateException.getMessage(), startsWith("aMap.array"));
   }
 
   @Test
@@ -510,7 +512,7 @@ public class TomlWriterTest {
 
   @Test
   public void should_write_to_file() throws IOException {
-    File output = testDirectory.newFile();
+    File output = new File(testDirectory, "test.toml");
     new TomlWriter().write(new SimpleTestClass(), output);
 
     assertEquals("a = 1\n", readFile(output));
@@ -523,39 +525,40 @@ public class TomlWriterTest {
     assertEquals("a = 2\n", toml);
   }
   
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void should_refuse_to_write_string_fragment() {
-    new TomlWriter().write("fragment");
+    assertThrows(IllegalArgumentException.class, () -> new TomlWriter().write("fragment"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void should_refuse_to_write_boolean_fragment() {
-    new TomlWriter().write(true);
+    assertThrows(IllegalArgumentException.class,() -> new TomlWriter().write(true));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void should_refuse_to_write_number_fragment() {
-    new TomlWriter().write(42);
+    assertThrows(IllegalArgumentException.class,() -> new TomlWriter().write(true));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void should_refuse_to_write_date_fragment() {
-    new TomlWriter().write(new Date());
+    assertThrows(IllegalArgumentException.class, () -> new TomlWriter().write(new Date()));
+
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void should_refuse_to_write_array_fragment() {
-    new TomlWriter().write(new int[2]);
+    assertThrows(IllegalArgumentException.class, () -> new TomlWriter().write(new int[2]));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void should_refuse_to_write_table_array_fragment() {
-    new TomlWriter().write(new SimpleTestClass[2]);
+    assertThrows(IllegalArgumentException.class, () -> new TomlWriter().write(new SimpleTestClass[2]));
   }
 
-  @Test(expected=IllegalArgumentException.class)
-  public void should_not_write_list() throws Exception {
-    new TomlWriter().write(Arrays.asList("a"));
+  @Test
+  public void should_not_write_list() {
+    assertThrows(IllegalArgumentException.class, () ->new TomlWriter().write(Arrays.asList("a")));
   }
 
   private String readFile(File input) throws IOException {

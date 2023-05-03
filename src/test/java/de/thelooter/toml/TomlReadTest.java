@@ -1,9 +1,9 @@
 package de.thelooter.toml;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,8 +11,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import de.thelooter.toml.Toml;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TomlReadTest {
 

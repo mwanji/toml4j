@@ -16,8 +16,7 @@ repositories{
 dependencies{
     implementation("com.google.code.gson:gson:2.8.9")
 
-    testImplementation("junit:junit:4.12")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.9.3")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
     testImplementation("org.hamcrest:hamcrest-library:1.3")
 }
 

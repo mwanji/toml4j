@@ -1,12 +1,9 @@
 package de.thelooter.toml;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.util.Arrays;
@@ -14,8 +11,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 
-import de.thelooter.toml.Toml;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class RealWorldTest {
 

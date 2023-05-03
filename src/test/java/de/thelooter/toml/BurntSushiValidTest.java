@@ -1,10 +1,7 @@
 package de.thelooter.toml;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.*;
 import java.lang.reflect.Type;
-import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,8 +10,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -24,6 +21,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BurntSushiValidTest {
 
@@ -108,7 +107,7 @@ public class BurntSushiValidTest {
     run("key-equals-nospace");
   }
   
-  @Test @Ignore
+  @Test @Disabled
   public void key_space() throws Exception {
     run("key-space");
   }
@@ -118,7 +117,7 @@ public class BurntSushiValidTest {
     run("key-space-modified");
   }
   
-  @Test @Ignore
+  @Test @Disabled
   public void key_special_chars() throws Exception {
     run("key-special-chars");
   }
@@ -128,7 +127,7 @@ public class BurntSushiValidTest {
     run("key-special-chars-modified");
   }
   
-  @Test @Ignore
+  @Test @Disabled
   public void keys_with_dots() throws Exception {
     run("keys-with-dots");
   }
@@ -148,7 +147,7 @@ public class BurntSushiValidTest {
     run("long-integer");
   }
   
-  @Test @Ignore
+  @Test @Disabled
   public void multiline_string() throws Exception {
     run("multiline-string");
   }
@@ -173,7 +172,7 @@ public class BurntSushiValidTest {
     run("string-empty");
   }
   
-  @Test @Ignore
+  @Test @Disabled
   public void string_escapes() throws Exception {
     run("string-escapes-modified");
   }
@@ -223,12 +222,12 @@ public class BurntSushiValidTest {
     run("table-sub-empty");
   }
 
-  @Test @Ignore
+  @Test @Disabled
   public void table_whitespace() throws Exception {
     run("table-whitespace");
   }
 
-  @Test @Ignore
+  @Test @Disabled
   public void table_with_pound() throws Exception {
     run("table-with-pound");
   }

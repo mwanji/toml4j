@@ -2,9 +2,10 @@ package de.thelooter.toml;
 
 import java.util.Map;
 
-import de.thelooter.toml.Toml;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Toml_ToMapTest {
     
@@ -12,7 +13,7 @@ public class Toml_ToMapTest {
     public void should_convert_simple_values() {
         Map<String, Object> toml = new Toml().read("a = 1").toMap();
         
-        Assert.assertEquals(Long.valueOf(1), toml.get("a"));
+        assertEquals(Long.valueOf(1), toml.get("a"));
     }
     
     @Test
@@ -20,7 +21,7 @@ public class Toml_ToMapTest {
     public void should_covert_table() throws Exception {
       Map<String, Object> toml = new Toml().read("c = 2\n  [a]\n  b = 1").toMap();
       
-      Assert.assertEquals(Long.valueOf(1), ((Map<String, Object>) toml.get("a")).get("b"));
-      Assert.assertEquals(Long.valueOf(2), toml.get("c"));
+      assertEquals(Long.valueOf(1), ((Map<String, Object>) toml.get("a")).get("b"));
+      assertEquals(Long.valueOf(2), toml.get("c"));
     }
 }

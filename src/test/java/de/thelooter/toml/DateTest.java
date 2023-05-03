@@ -1,12 +1,13 @@
 package de.thelooter.toml;
 
-import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import de.thelooter.toml.Toml;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DateTest {
   
@@ -67,8 +68,8 @@ public class DateTest {
     assertEquals(calendar.getTime(), toml.getDate("a_date"));
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_non_existant_date() throws Exception {
-    new Toml().read("d = 2012-13-01T15:00:00Z");
+  @Test
+  public void should_fail_on_non_existant_date() {
+    assertThrows(IllegalStateException.class,() -> new Toml().read("d = 2012-13-01T15:00:00Z"));
   }
 }

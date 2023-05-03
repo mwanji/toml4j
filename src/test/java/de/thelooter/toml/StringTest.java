@@ -1,12 +1,11 @@
 package de.thelooter.toml;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 
 import de.thelooter.toml.testutils.Utils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StringTest {
 
@@ -79,52 +78,49 @@ public class StringTest {
     assertEquals("more or less ±", toml.getString("unicode_key_uppercase"));
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_reserved_special_character_in_strings() throws Exception {
-    new Toml().read("key=\"\\m\"");
+  @Test
+  public void should_fail_on_reserved_special_character_in_strings() {
+    assertThrows(IllegalStateException.class, () -> new Toml().read("key=\"\\m\""));
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_escaped_slash() throws Exception {
-    new Toml().read("key=\"\\/\"");
+  @Test
+  public void should_fail_on_escaped_slash() {
+    assertThrows(IllegalStateException.class, () -> new Toml().read("key=\"\\/\""));
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_text_after_literal_string() {
-    new Toml().read("a = ' ' jdkf");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("a = ' ' jdkf"));
   }
   
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_unterminated_literal_string() throws Exception {
-    new Toml().read("a = 'some text");
+  @Test
+  public void should_fail_on_unterminated_literal_string() {
+    assertThrows(IllegalStateException.class, () -> new Toml().read("a = 'some text"));
   }
   
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_multiline_literal_string_with_malformed_comment() throws Exception {
-    new Toml().read("a = '''some\n text\n''\nb = '''1'''");
+  @Test
+  public void should_fail_on_multiline_literal_string_with_malformed_comment() {
+    assertThrows(IllegalStateException.class, () -> new Toml().read("a = '''some\n text\n''\nb = '''1'''"));
   }
   
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_unterminated_multiline_literal_string() throws Exception {
-    new Toml().read("a = '''some\n text\n''");
+  @Test
+  public void should_fail_on_unterminated_multiline_literal_string() {
+    assertThrows(IllegalStateException.class, () -> new Toml().read("a = '''some\n text\n''"));
   }
   
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_unterminated_multiline_literal_string_on_single_line() throws Exception {
-    new Toml().read("a = '''some text''");
+  @Test
+  public void should_fail_on_unterminated_multiline_literal_string_on_single_line() {
+    assertThrows(IllegalStateException.class, () -> new Toml().read("a = '''some text''"));
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_text_outside_multiline_string() {
-    new Toml().read("a = \"\"\" \"\"\" jdkf");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("a = \"\"\" \"\"\" jdkf"));
   }
   
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_unterminated_multiline_string() throws Exception {
-    new Toml().read("a = \"\"\"some text\"\"");
+  @Test
+  public void should_fail_on_unterminated_multiline_string() {
+    assertThrows(IllegalStateException.class, () -> new Toml().read("a = \"\"\"some text\"\""));
   }
 
-  private File file(String file) {
-    return Utils.file(getClass(), file);
-  }
 }

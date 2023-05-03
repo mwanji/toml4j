@@ -1,33 +1,27 @@
 package de.thelooter.toml;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.thelooter.toml.testutils.Utils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 public class IterationTest {
   
-  @Rule
-  public final ExpectedException expectedException = ExpectedException.none();
 
   @Test
-  public void should_iterate_over_primitive() throws Exception {
+  public void should_iterate_over_primitive() {
     Toml toml = new Toml().read(new File("src/test/resources/IteratorTest/long.toml"));
     Map.Entry<String, Object> entry = toml.entrySet().iterator().next();
     
@@ -37,7 +31,7 @@ public class IterationTest {
   
   @Test
   @SuppressWarnings("unchecked")
-  public void should_iterate_over_list() throws Exception {
+  public void should_iterate_over_list() {
     Toml toml = new Toml().read(new File("src/test/resources/IteratorTest/list.toml"));
     Map.Entry<String, Object> entry = toml.entrySet().iterator().next();
     
@@ -47,7 +41,7 @@ public class IterationTest {
   
   @Test
   @SuppressWarnings("unchecked")
-  public void should_iterate_over_empty_list() throws Exception {
+  public void should_iterate_over_empty_list() {
     Toml toml = new Toml().read("list = []");
     Map.Entry<String, Object> entry = toml.entrySet().iterator().next();
     
@@ -56,7 +50,7 @@ public class IterationTest {
   }
   
   @Test
-  public void should_iterate_over_table() throws Exception {
+  public void should_iterate_over_table() {
     Toml toml = new Toml().read(new File("src/test/resources/IteratorTest/table.toml"));
     Map.Entry<String, Object> entry = toml.entrySet().iterator().next();
     
@@ -66,7 +60,7 @@ public class IterationTest {
   
   @Test
   @SuppressWarnings("unchecked")
-  public void should_iterate_over_table_array() throws Exception {
+  public void should_iterate_over_table_array() {
     Toml toml = new Toml().read(new File("src/test/resources/IteratorTest/table_array.toml"));
     
     Map.Entry<String, Object> entry = toml.entrySet().iterator().next();
@@ -78,7 +72,7 @@ public class IterationTest {
   
   @Test
   @SuppressWarnings("unchecked")
-  public void should_iterate_over_multiple_entries() throws Exception {
+  public void should_iterate_over_multiple_entries() {
     Toml toml = new Toml().read(new File("src/test/resources/IteratorTest/multiple.toml"));
 
     Map<String, Object> entries = new HashMap<String, Object>();
@@ -94,21 +88,17 @@ public class IterationTest {
   }
   
   @Test
-  public void should_not_support_setValue_method() throws Exception {
+  public void should_not_support_setValue_method() {
     Map.Entry<String, Object> entry = new Toml().read("a = 1").entrySet().iterator().next();
     
-    expectedException.expect(UnsupportedOperationException.class);
-    entry.setValue(2L);
+    assertThrows(UnsupportedOperationException.class, () -> entry.setValue(2L));
   }
   
   @Test
-  public void should_not_iterate_over_empty_toml() throws Exception {
+  public void should_not_iterate_over_empty_toml() {
     Toml toml = new Toml().read("");
     
     assertThat(toml.entrySet(), empty());
   }
   
-  private File file(String name) {
-    return Utils.file(getClass(), "/IteratorTest/" + name);
-  }
 }
