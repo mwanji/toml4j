@@ -1,37 +1,28 @@
 package de.thelooter.toml;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 
-import de.thelooter.toml.Toml;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 public class InlineTableTest {
 
   private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
   
-  @Rule
-  public ExpectedException e = ExpectedException.none();
-
   @Test
-  public void should_read_empty_inline_table() throws Exception {
+  public void should_read_empty_inline_table() {
     Toml toml = new Toml().read("key = {}");
-    
     assertTrue(toml.getTable("key").isEmpty());
   }
   
   @Test
-  public void should_read_inline_table_with_strings() throws Exception {
+  public void should_read_inline_table_with_strings() {
     Toml toml = new Toml().read("name = { first = \"Tom\", last = \"Preston-Werner\"}");
     
     assertEquals("Tom", toml.getTable("name").getString("first"));
@@ -39,7 +30,7 @@ public class InlineTableTest {
   }
   
   @Test
-  public void should_read_inline_table_with_integers() throws Exception {
+  public void should_read_inline_table_with_integers() {
     Toml toml = new Toml().read("point = { x = 1, y = 2 }");
     
     assertEquals(1, toml.getTable("point").getLong("x").longValue());
@@ -47,7 +38,7 @@ public class InlineTableTest {
   }
   
   @Test
-  public void should_read_inline_table_with_floats() throws Exception {
+  public void should_read_inline_table_with_floats() {
     Toml toml = new Toml().read("point = { x = 1.5, y = 2.3 }");
     
     assertEquals(1.5, toml.getTable("point").getDouble("x").doubleValue(), 0);
@@ -164,74 +155,84 @@ public class InlineTableTest {
     assertEquals(3, toml.getLong("b[1].t.k").intValue());
   }
   
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_invalid_key() throws Exception {
-    new Toml().read("tbl = { a. = 1 }");
+  @Test
+  public void should_fail_on_invalid_key() {
+    assertThrows(IllegalStateException.class, () -> new Toml().read("tbl = { a. = 1 }"));
+  }
+
+  @Test
+  public void should_fail_when_unterminated() {
+    assertThrows(IllegalStateException.class, () -> new Toml().read("tbl = { a = 1 "));
   }
   
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_when_unterminated() throws Exception {
-    new Toml().read("tbl = { a = 1 ");
-  }
-  
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_invalid_value() throws Exception {
-    new Toml().read("tbl = { a = abc }");
+  @Test
+  public void should_fail_on_invalid_value() {
+    assertThrows(IllegalStateException.class, () -> new Toml().read("tbl = { a = abc }"));
   }
   
   @Test
   public void should_fail_when_key_duplicated_inside_inline_table() throws Exception {
-    e.expect(IllegalStateException.class);
-    e.expectMessage("Duplicate key on line 1: a");
-    
-    new Toml().read("tbl = { a = 1, a = 2 }");
+
+    IllegalStateException illegalStateException = assertThrows(IllegalStateException.class, () -> {
+      new Toml().read("tbl = { a = 1, a = 2 }");
+    });
+    assertEquals("Duplicate key on line 1: a", illegalStateException.getMessage());
+
   }
   
   @Test
   public void should_fail_when_duplicated_by_other_key() throws Exception {
-    e.expect(IllegalStateException.class);
-    e.expectMessage("Table already exists for key defined on line 2: tbl");
-    
-    new Toml().read("tbl = { a = 1 }\n tbl = 1");
+
+    IllegalStateException illegalStateException = assertThrows(IllegalStateException.class, () -> {
+      new Toml().read("tbl = { a = 1 }\n tbl = 1");
+    });
+
+    assertEquals("Table already exists for key defined on line 2: tbl", illegalStateException.getMessage());
   }
   
   @Test
   public void should_fail_when_duplicated_by_other_inline_table() throws Exception {
-    e.expect(IllegalStateException.class);
-    e.expectMessage("Duplicate table definition on line 2: [tbl]");
-    
-    new Toml().read("tbl = { a = 1 }\n tbl = {}");
+    IllegalStateException illegalStateException = assertThrows(IllegalStateException.class, () -> {
+      new Toml().read("tbl = { a = 1 }\n tbl = {}");
+    });
+
+    assertEquals("Duplicate table definition on line 2: [tbl]", illegalStateException.getMessage());
+
   }
   
   @Test
   public void should_fail_when_duplicated_by_top_level_table() throws Exception {
-    e.expect(IllegalStateException.class);
-    e.expectMessage("Duplicate table definition on line 2: [tbl]");
-    
-    new Toml().read("tbl = {}\n [tbl]");
+    IllegalStateException illegalStateException = assertThrows(IllegalStateException.class, () -> {
+      new Toml().read("tbl = {}\n [tbl]");
+    });
+
+    assertEquals("Duplicate table definition on line 2: [tbl]", illegalStateException.getMessage());
   }
   
   @Test
   public void should_fail_when_duplicates_second_level_table() throws Exception {
-    e.expect(IllegalStateException.class);
-    e.expectMessage("Duplicate table definition on line 3: [a.b]");
-    
-    new Toml().read("[a.b]\n  [a]\n b = {}");
+    IllegalStateException illegalStateException = assertThrows(IllegalStateException.class, () -> {
+      new Toml().read("[a.b]\n  [a]\n b = {}");
+    });
+
+    assertEquals("Duplicate table definition on line 3: [a.b]", illegalStateException.getMessage());
   }
   
   @Test
   public void should_fail_when_inline_table_duplicates_table() throws Exception {
-    e.expect(IllegalStateException.class);
-    e.expectMessage("Duplicate table definition on line 3: [a.b]");
-    
-    new Toml().read("[a.b]\n [a]\n b = {}");
+    IllegalStateException illegalStateException = assertThrows(IllegalStateException.class, () -> {
+      new Toml().read("[a.b]\n [a]\n b = {}");
+    });
+
+    assertEquals("Duplicate table definition on line 3: [a.b]", illegalStateException.getMessage());
   }
   
   @Test
   public void should_fail_when_second_level_table_duplicates_inline_table() throws Exception {
-    e.expect(IllegalStateException.class);
-    e.expectMessage("Duplicate table definition on line 3: [a.b]");
-    
-    new Toml().read("[a]\n b = {}\n  [a.b]");
+    IllegalStateException illegalStateException = assertThrows(IllegalStateException.class, () -> {
+      new Toml().read("[a]\n b = {}\n  [a.b]");
+    });
+
+    assertEquals("Duplicate table definition on line 3: [a.b]", illegalStateException.getMessage());
   }
 }

@@ -1,18 +1,18 @@
 package de.thelooter.toml;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
 import de.thelooter.toml.testutils.Utils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ArrayTest {
   

@@ -1,17 +1,15 @@
 package de.thelooter.toml;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.util.List;
 
-import de.thelooter.toml.Toml;
-import org.junit.Assert;
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
 
 public class TableArrayTest {
 
@@ -26,7 +24,7 @@ public class TableArrayTest {
     assertEquals("Hammer", products.get(0).getString("name"));
     assertEquals(738594937L, products.get(0).getLong("sku").longValue());
 
-    Assert.assertNull(products.get(1).getString("name"));
+    assertNull(products.get(1).getString("name"));
     assertNull(products.get(1).getLong("sku"));
 
     assertEquals("Nail", products.get(2).getString("name"));
@@ -116,13 +114,9 @@ public class TableArrayTest {
     new Toml().read("[[a]]\n [a.b]\n [[a]]\n [a.b]");
   }
   
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_empty_table_array_name() {
-    new Toml().read("[[]]");
-  }
-  
-  private File file(String fileName) {
-    return new File(getClass().getResource(fileName + ".toml").getFile());
+    assertThrows(IllegalStateException.class, () -> new Toml().read("[[]]"));
   }
 
 }

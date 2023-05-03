@@ -1,14 +1,12 @@
 package de.thelooter.toml;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Map;
 
-import de.thelooter.toml.Toml;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class QuotedKeysTest {
 
@@ -113,20 +111,20 @@ public class QuotedKeysTest {
     assertEquals("a", toml.getTables("\"±\"").get(0).getString("\"±\""));
     assertEquals(1, toml.getTable("\"±1\"").getLong("\"±\"").intValue());
   }
-  
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_malformed_quoted_key() throws Exception {
-    new Toml().read("k\"ey\" = 1");
+
+  @Test()
+  public void should_fail_on_malformed_quoted_key() {
+    assertThrows(IllegalStateException.class,() -> new Toml().read("k\"ey\" = 1"));
   }
   
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_malformed_quoted_table() throws Exception {
-    new Toml().read("[a\"bc\"]");
+  @Test()
+  public void should_fail_on_malformed_quoted_table() {
+    assertThrows(IllegalStateException.class, () -> new Toml().read("[a\"bc\"]"));
   }
   
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_malformed_quoted_nested_table() throws Exception {
-    new Toml().read("[a.a\"bc\"]");
+  @Test()
+  public void should_fail_on_malformed_quoted_nested_table() {
+    assertThrows(IllegalStateException.class,()->new Toml().read("[a.a\"bc\"]"));
   }
   
   private static class Quoted {

@@ -1,15 +1,15 @@
 package de.thelooter.toml;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
-import de.thelooter.toml.Toml;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ContainsTest {
 
   @Test
-  public void should_contain_top_level_of_any_type() throws Exception {
+  public void should_contain_top_level_of_any_type() {
     Toml toml = new Toml().read("a = 1  \n  [b]  \n  b1 = 1  \n  [[c]]  \n c1 = 1");
     
     assertTrue(toml.contains("a"));
@@ -19,7 +19,7 @@ public class ContainsTest {
   }
   
   @Test
-  public void should_contain_nested_of_any_type() throws Exception {
+  public void should_contain_nested_of_any_type() {
     Toml toml = new Toml().read("[a]  \n  a1 = 1  \n  [[b]]  \n b1 = 1  \n  [[b]]  \n b1 = 2  \n  b2 = 3");
     
     assertTrue(toml.contains("a.a1"));
@@ -30,7 +30,7 @@ public class ContainsTest {
   }
   
   @Test
-  public void should_contain_primitive() throws Exception {
+  public void should_contain_primitive() {
     Toml toml = new Toml().read("a = 1  \n  [b]  \n  b1 = 1  \n  [[c]]  \n c1 = 1");
     
     assertTrue(toml.containsPrimitive("a"));
@@ -42,7 +42,7 @@ public class ContainsTest {
   }
   
   @Test
-  public void should_contain_table() throws Exception {
+  public void should_contain_table() {
     Toml toml = new Toml().read("a = 1  \n  [b]  \n  b1 = 1  \n  [b.b2]  \n  [[c]]  \n c1 = 1  \n [c.c2]");
 
     assertTrue(toml.containsTable("b"));
@@ -56,7 +56,7 @@ public class ContainsTest {
   }
   
   @Test
-  public void should_contain_table_array() throws Exception {
+  public void should_contain_table_array() {
     Toml toml = new Toml().read("a = 1  \n  [b]  \n  b1 = 1  \n  [[c]]  \n c1 = 1  \n [c.c2] \n  [[c]]  \n  [[c.c3]] \n c4 = 4");
     
     assertTrue(toml.containsTableArray("c"));
@@ -69,7 +69,7 @@ public class ContainsTest {
   }
   
   @Test
-  public void should_not_contain_when_parent_table_is_missing() throws Exception {
+  public void should_not_contain_when_parent_table_is_missing() {
     Toml toml = new Toml().read("a = \"1\"");
     
     assertFalse(toml.contains("b.b1"));

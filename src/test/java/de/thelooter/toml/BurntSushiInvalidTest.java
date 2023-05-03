@@ -3,9 +3,10 @@ package de.thelooter.toml;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class BurntSushiInvalidTest {
   private InputStream inputToml;
@@ -200,7 +201,7 @@ public class BurntSushiInvalidTest {
     runInvalidTest("text-in-array");
   }
   
-  @After
+  @AfterEach
   public void after() throws IOException {
     inputToml.close();
   }
@@ -210,7 +211,7 @@ public class BurntSushiInvalidTest {
 
     try {
       new Toml().read(inputToml);
-      Assert.fail("Should have rejected invalid input!");
+      fail("Should have rejected invalid input!");
     } catch (IllegalStateException e) {
       // success
     }

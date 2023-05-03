@@ -1,9 +1,10 @@
 package de.thelooter.toml;
 
-import static org.junit.Assert.assertEquals;
 
-import de.thelooter.toml.Toml;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class NumberTest {
   @Test
@@ -88,124 +89,124 @@ public class NumberTest {
     assertEquals(12345L, toml.getLong("val").longValue());
   }
   
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_on_invalid_number() throws Exception {
-    new Toml().read("a = 200-");
+  @Test
+  public void should_fail_on_invalid_number() {
+    assertThrows(IllegalStateException.class, () -> new Toml().read("a = 200-"));
   }
   
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_when_illegal_characters_after_float() throws Exception {
-    new Toml().read("number = 3.14  pi");
+  @Test
+  public void should_fail_when_illegal_characters_after_float() {
+    assertThrows(IllegalStateException.class, () -> new Toml().read("number = 3.14  pi"));
   }
   
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_when_illegal_characters_after_integer() throws Exception {
-    new Toml().read("number = 314  pi");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("number = 314  pi"));
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_float_without_leading_0() {
-    new Toml().read("answer = .12345");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = .12345"));
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_negative_float_without_leading_0() {
-    new Toml().read("answer = -.12345");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = -.12345"));
   }
   
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_float_with_sign_after_dot() {
-    new Toml().read("answer = 1.-1");
-    new Toml().read("answer = 1.+1");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = 1.-1"));
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = 1.+1"));
   }
   
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_float_without_digits_after_dot() {
-    new Toml().read("answer = 1.");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = 1."));
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_negative_float_without_digits_after_dot() {
-    new Toml().read("answer = -1.");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = -1."));
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_exponent_without_digits_after_dot() {
-    new Toml().read("answer = 1.E1");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = 1.E1"));
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_negative_exponent_without_digits_after_dot() {
-    new Toml().read("answer = -1.E1");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = -1.E1"));
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_exponent_with_dot_in_exponent_part() {
-    new Toml().read("answer = -1E1.0");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = -1E1.0"));
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_exponent_without_numbers_after_E() {
-    new Toml().read("answer = -1E");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = -1E"));
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_exponent_with_two_E() {
-    new Toml().read("answer = -1E1E1");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = -1E1E1"));
   }
   
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_float_with_two_dots() {
-    new Toml().read("answer = 1.1.1");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = 1.1.1"));
   }
   
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_underscore_at_beginning() {
-    new Toml().read("answer = _1");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = _1"));
   }
   
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_underscore_at_end() {
-    new Toml().read("answer = 1_");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = 1_"));
   }
   
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_two_underscores_in_a_row() {
-    new Toml().read("answer = 1__1");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = 1__1"));
   }
-  
-  @Test(expected = IllegalStateException.class)
+
+  @Test
   public void should_fail_on_underscore_after_minus_sign() {
-    new Toml().read("answer = -_1");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = -_1"));
   }
   
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_underscore_after_plus_sign() {
-    new Toml().read("answer = +_1");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = +_1"));
   }
   
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_underscore_before_dot() {
-    new Toml().read("answer = 1_.1");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = 1_.1"));
   }
   
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_underscore_after_dot() {
-    new Toml().read("answer = 1._1");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = 1._1"));
   }
   
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_underscore_before_E() {
-    new Toml().read("answer = 1_E1");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = 1_E1"));
   }
   
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void should_fail_on_underscore_after_E() {
-    new Toml().read("answer = 1E_1");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = 1E_1"));
   }
-  
-  @Test(expected = IllegalStateException.class)
+
+  @Test
   public void should_fail_on_underscore_followed_by_whitespace() {
-    new Toml().read("answer = _ 1");
+    assertThrows(IllegalStateException.class, () -> new Toml().read("answer = _ 1"));
   }
 }

@@ -1,21 +1,20 @@
 package de.thelooter.toml;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import de.thelooter.toml.Toml;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 public class TomlDefaultsTest {
 
   private Toml defaultToml;
 
-  @Before
+  @BeforeEach
   public void before() {
     defaultToml = new Toml().read("a = \"a\"\n [group]\n a=\"a\"\n [[array]]\n b=1\n [[array]]\n b=2");
   }
@@ -35,28 +34,28 @@ public class TomlDefaultsTest {
   }
 
   @Test
-  public void should_return_null_when_no_defaults_for_key() throws Exception {
+  public void should_return_null_when_no_defaults_for_key() {
     Toml toml = new Toml(defaultToml).read("");
 
     assertNull(toml.getString("b"));
   }
 
   @Test
-  public void should_fall_back_to_default_with_multi_key() throws Exception {
+  public void should_fall_back_to_default_with_multi_key() {
     Toml toml = new Toml(defaultToml).read("");
 
     assertEquals("a", toml.getString("group.a"));
   }
 
   @Test
-  public void should_fall_back_to_table() throws Exception {
+  public void should_fall_back_to_table() {
     Toml toml = new Toml(defaultToml).read("");
 
     assertEquals("a", toml.getTable("group").getString("a"));
   }
 
   @Test
-  public void should_fall_back_to_table_array() throws Exception {
+  public void should_fall_back_to_table_array() {
     Toml toml = new Toml(defaultToml).read("");
 
     assertThat(toml.getTables("array"), hasSize(2));
@@ -64,7 +63,7 @@ public class TomlDefaultsTest {
   }
 
   @Test
-  public void should_perform_shallow_merge() throws Exception {
+  public void should_perform_shallow_merge() {
     Toml toml = new Toml(defaultToml).read("[group]\nb=1\n [[array]]\n b=0");
     Toml toml2 = new Toml(defaultToml).read("[[array]]\n b=1\n [[array]]\n b=2\n [[array]]\n b=3");
 

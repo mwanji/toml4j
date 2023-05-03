@@ -1,11 +1,9 @@
 package de.thelooter.toml;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.lang.annotation.ElementType;
@@ -16,7 +14,7 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.thelooter.toml.testutils.ExtraPrimitives;
 import de.thelooter.toml.testutils.FruitArray;
@@ -49,21 +47,25 @@ public class TomlToClassTest {
   public void should_convert_to_non_toml_primitives() throws Exception {
     ExtraPrimitives extraPrimitives = new Toml().read(new File("src/test/resources/de/thelooter/toml/should_convert_extra_primitives.toml")).to(ExtraPrimitives.class);
 
-    assertEquals("Did not convert table to map", "value", extraPrimitives.group.get("key"));
-    assertEquals("Did not convert double to BigDecimal", BigDecimal.valueOf(1.2), extraPrimitives.bigDecimal);
-    assertEquals("Did not convert integer to BigInteger", BigInteger.valueOf(5), extraPrimitives.bigInteger);
-    assertEquals("Did not convert integer to short", Short.parseShort("3"), extraPrimitives.aShort);
-    assertEquals("Did not convert integer to Integer", Integer.valueOf(7), extraPrimitives.anInteger);
-    assertEquals("Did not convert string to Character", Character.valueOf('u'), extraPrimitives.character);
-    assertEquals("Did not convert string to URL", new URL("http://www.example.com").toString(), extraPrimitives.url.toString());
-    assertEquals("Did not convert string to URI", new URI("http://www.test.com").toString(), extraPrimitives.uri.toString());
+    assertEquals("value", extraPrimitives.group.get("key"),() -> "Did not convert table to map");
+    assertEquals(BigDecimal.valueOf(1.2), extraPrimitives.bigDecimal, () -> "Did not convert double to BigDecimal");
+    assertEquals(BigInteger.valueOf(5), extraPrimitives.bigInteger, () -> "Did not convert integer to BigInteger");
+    assertEquals(Short.parseShort("3"), extraPrimitives.aShort,() -> "Did not convert integer to short");
+    assertEquals(Integer.valueOf(7), extraPrimitives.anInteger, () -> "Did not convert integer to Integer");
+    assertEquals(Character.valueOf('u'), extraPrimitives.character, () -> "Did not convert string to Character");
+    assertEquals(new URL("http://www.example.com").toString(), extraPrimitives.url.toString(),() -> {
+      return "Did not convert string to URL";
+    });
+    assertEquals(new URI("http://www.test.com").toString(), extraPrimitives.uri.toString(),() -> {
+      return "Did not convert string to URI";
+    });
     assertThat(extraPrimitives.set, contains("a", "b"));
     assertThat(extraPrimitives.strings, arrayContaining("c", "d"));
-    assertEquals("Did not convert string to enum", ElementType.CONSTRUCTOR, extraPrimitives.elementType);
+    assertEquals(ElementType.CONSTRUCTOR, extraPrimitives.elementType, () -> "Did not convert string to enum");
   }
 
   @Test
-  public void should_convert_tables() throws Exception {
+  public void should_convert_tables() {
     String fileName = "src/test/resources/de/thelooter/toml/should_convert_tables.toml";
     Toml toml = new Toml().read(new File(fileName));
 
@@ -74,7 +76,7 @@ public class TomlToClassTest {
   }
 
   @Test
-  public void should_convert_tables_with_defaults() throws Exception {
+  public void should_convert_tables_with_defaults() {
     Toml defaultToml = new Toml().read("[group2]\n string=\"defaultValue2\"\n number=2\n [group3]\n string=\"defaultValue3\"");
     Toml toml = new Toml(defaultToml).read(new File("src/test/resources/de/thelooter/toml/should_convert_tables.toml"));
 
@@ -87,7 +89,7 @@ public class TomlToClassTest {
   }
 
   @Test
-  public void should_use_defaults() throws Exception {
+  public void should_use_defaults()  {
     Toml defaults = new Toml().read(new File("src/test/resources/de/thelooter/toml/should_convert_tables.toml"));
     Toml toml = new Toml(defaults).read("");
 
@@ -98,14 +100,14 @@ public class TomlToClassTest {
   }
 
   @Test
-  public void should_ignore_keys_not_in_class() throws Exception {
+  public void should_ignore_keys_not_in_class() {
     TomlPrimitives tomlPrimitives = new Toml().read("a=1\nstring=\"s\"").to(TomlPrimitives.class);
 
     assertEquals("s", tomlPrimitives.string);
   }
 
   @Test
-  public void should_convert_table_array() throws Exception {
+  public void should_convert_table_array()  {
     TomlTableArrays toml = new Toml().read(new File("src/test/resources/de/thelooter/toml/should_convert_table_array_to_class.toml")).to(TomlTableArrays.class);
 
     assertEquals(2, toml.groupers.size());
@@ -117,7 +119,7 @@ public class TomlToClassTest {
   }
 
   @Test
-  public void should_convert_fruit_table_array() throws Exception {
+  public void should_convert_fruit_table_array() {
     FruitArray fruitArray = new Toml().read(new File("src/test/resources/de/thelooter/toml/fruit_table_array.toml")).to(FruitArray.class);
 
     assertEquals(2, fruitArray.fruit.size());
@@ -135,7 +137,4 @@ public class TomlToClassTest {
     assertEquals("plantain", banana.variety.get(0).get("name"));
   }
 
-  private File file(String fileName) {
-    return new File(getClass().getResource(fileName).getFile());
-  }
 }

@@ -1,16 +1,15 @@
 package de.thelooter.toml;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.TimeZone;
 
-import de.thelooter.toml.Toml;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DefaultValueTest {
   private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
@@ -28,69 +27,69 @@ public class DefaultValueTest {
   }
 
   @Test
-  public void should_get_string() throws Exception {
+  public void should_get_string() {
     Toml toml = new Toml().read("s = \"string value\"");
     assertEquals("string value", toml.getString("s", "default string value"));
   }
 
   @Test
-  public void should_get_string_default_value() throws Exception {
+  public void should_get_string_default_value() {
     Toml toml = new Toml().read("");
     assertEquals("default string value", toml.getString("s", "default string value"));
   }
 
   @Test
-  public void should_get_long() throws Exception {
+  public void should_get_long() {
     Toml toml = new Toml().read("n = 1001");
     assertEquals(Long.valueOf(1001), toml.getLong("n", 1002L));
   }
 
   @Test
-  public void should_get_long_default_value() throws Exception {
+  public void should_get_long_default_value() {
     Toml toml = new Toml().read("");
     assertEquals(Long.valueOf(1002), toml.getLong("n", 1002L));
   }
 
   @Test
-  public void should_get_double() throws Exception {
+  public void should_get_double() {
     Toml toml = new Toml().read("n = 0.5");
     assertEquals(Double.valueOf(0.5), toml.getDouble("n", Double.valueOf(0.6)));
   }
 
   @Test
-  public void should_get_double_default_value() throws Exception {
+  public void should_get_double_default_value() {
     Toml toml = new Toml().read("");
     assertEquals(Double.valueOf(0.6), toml.getDouble("n", Double.valueOf(0.6)));
   }
 
   @Test
-  public void should_get_boolean() throws Exception {
+  public void should_get_boolean() {
     Toml toml = new Toml().read("b = true");
     assertEquals(Boolean.TRUE, toml.getBoolean("b", Boolean.FALSE));
   }
 
   @Test
-  public void should_get_boolean_default_value() throws Exception {
+  public void should_get_boolean_default_value() {
     Toml toml = new Toml().read("");
     assertEquals(Boolean.FALSE, toml.getBoolean("b", Boolean.FALSE));
   }
 
   @Test
-  public void should_get_date() throws Exception {
+  public void should_get_date() {
     Toml toml = new Toml().read("d = 2011-11-10T13:12:00Z");
 
     assertEquals(_2011_11_10, toml.getDate("d", _2012_11_10));
   }
 
   @Test
-  public void should_get_date_default_value() throws Exception {
+  public void should_get_date_default_value() {
     Toml toml = new Toml().read("");
 
     assertEquals(_2012_11_10, toml.getDate("d", _2012_11_10));
   }
   
   @Test
-  public void should_get_array() throws Exception {
+  public void should_get_array() {
     Toml toml = new Toml().read("a = [1, 2, 3]\n  b = []");
     
     assertEquals(asList(1L, 2L, 3L), toml.getList("a", asList(3L, 2L, 1L)));
@@ -98,21 +97,21 @@ public class DefaultValueTest {
   }
   
   @Test
-  public void should_get_empty_array() throws Exception {
+  public void should_get_empty_array() {
     Toml toml = new Toml().read("a = []");
     
     assertEquals(Collections.emptyList(), toml.getList("a", asList(3L, 2L, 1L)));
   }
   
   @Test
-  public void should_get_array_default_value() throws Exception {
+  public void should_get_array_default_value() {
     Toml toml = new Toml();
     
     assertEquals(asList(3L, 2L, 1L), toml.getList("a", asList(3L, 2L, 1L)));
   }
   
   @Test
-  public void should_prefer_default_from_constructor() throws Exception {
+  public void should_prefer_default_from_constructor() {
     Toml defaults = new Toml().read("n = 1\n d = 1.1\n  b = true\n  date = 2011-11-10T13:12:00Z\n  s = 'a'\n  a = [1, 2, 3]");
     Toml toml = new Toml(defaults).read("");
     

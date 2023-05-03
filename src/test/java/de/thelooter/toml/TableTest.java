@@ -1,11 +1,8 @@
 package de.thelooter.toml;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
 
-import de.thelooter.toml.Toml;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TableTest {
   
@@ -123,13 +120,13 @@ public class TableTest {
     assertNull(toml.getString("group.key"));
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_when_table_defined_twice() throws Exception {
-    new Toml().read("[a]\nb=1\n[a]\nc=2");
+  @Test
+  public void should_fail_when_table_defined_twice() {
+    assertThrows(IllegalStateException.class, () -> new Toml().read("[a]\nb=1\n[a]\nc=2"));
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void should_fail_when_illegal_characters_after_table() throws Exception {
-    new Toml().read("[error]   if you didn't catch this, your parser is broken");
+  @Test
+  public void should_fail_when_illegal_characters_after_table() {
+    assertThrows(IllegalStateException.class, () -> new Toml().read("[error]   if you didn't catch this, your parser is broken"));
   }
 }
