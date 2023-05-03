@@ -12,7 +12,7 @@ Add the following dependency to your POM (or equivalent for other dependency man
 
 ```xml
 <dependency>
-  <groupId>com.moandjiezana.toml</groupId>
+  <groupId>de.thelooter</groupId>
   <artifactId>toml4j</artifactId>
   <version>0.7.2</version>
 </dependency>
@@ -26,11 +26,11 @@ repositories {
 
 dependencies {
   ...
-  implementation 'com.moandjiezana.toml:toml4j:0.7.2'
+  implementation 'de.thelooter':toml4j:0.7.2'
 }
 ```
 
-Requires Java 1.6 or above.
+Requires Java 1.8 or above.
 
 ## Quick start
 
@@ -43,7 +43,7 @@ MyClass myClass = toml.to(MyClass.class);
 
 ## Usage
 
-A `com.moandjiezana.toml.Toml` instance is populated by calling one of `read(File)`, `read(InputStream)`, `read(Reader)`, `read(String)` or `read(Toml)`.
+A `com.thelooter.toml.Toml` instance is populated by calling one of `read(File)`, `read(InputStream)`, `read(Reader)`, `read(String)` or `read(Toml)`.
 
 ```java
 Toml toml = new Toml().read("a=1");
@@ -103,17 +103,17 @@ Quoted keys cannot be mapped directly to a Java object, but they can be used as 
 
 TOML primitives can be mapped to a number of Java types:
 
-TOML | Java
----- | ----
-Integer | `int`, `long` (or wrapper), `java.math.BigInteger`
-Float | `float`, `double` (or wrapper), `java.math.BigDecimal`
-String | `String`, enum, `java.net.URI`, `java.net.URL`
-One-letter String | `char`, `Character`
-Multiline and Literal Strings | `String`
-Array | `List`, `Set`, array. The generic type can be anything that can be converted.
-Table | Custom class, `Map<String, Object>`
+| TOML                          | Java                                                                          |
+|-------------------------------|-------------------------------------------------------------------------------|
+| Integer                       | `int`, `long` (or wrapper), `java.math.BigInteger`                            |
+| Float                         | `float`, `double` (or wrapper), `java.math.BigDecimal`                        |
+| String                        | `String`, enum, `java.net.URI`, `java.net.URL`                                |
+| One-letter String             | `char`, `Character`                                                           |
+| Multiline and Literal Strings | `String`                                                                      |
+| Array                         | `List`, `Set`, array. The generic type can be anything that can be converted. |
+| Table                         | Custom class, `Map<String, Object>`                                           |
 
-Custom classes, Maps and collections thereof can be nested to any level. See [TomlToClassTest#should_convert_fruit_table_array()](src/test/java/com/moandjiezana/toml/TomlToClassTest.java) for an example.
+Custom classes, Maps and collections thereof can be nested to any level. See [TomlToClassTest#should_convert_fruit_table_array()](src/test/java/com/thelooter/toml/TomlToClassTest.java) for an example.
 
 ### Key names
 
