@@ -1,13 +1,14 @@
+import java.io.ByteArrayOutputStream
+
 plugins{
-    id("java")
+    id("java-library")
     id("maven-publish")
     id("jacoco")
+    id("signing")
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
-java{
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
+
 
 repositories{
     mavenCentral()
@@ -21,6 +22,14 @@ dependencies{
 }
 
 tasks{
+    java{
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+
+        withJavadocJar()
+        withSourcesJar()
+    }
+
     test{
         useJUnitPlatform()
     }
@@ -56,6 +65,21 @@ tasks{
     jar{
         dependsOn("javadoc")
     }
+
+}
+
+signing{
+    isRequired = !isFork() && isAction()
+    sign(publishing.publications)
+}
+
+nexusPublishing{
+    repositories{
+        sonatype{
+            username.set(findProperty("SONATYPE_USERNAME") as String?)
+            password.set(findProperty("SONATYPE_PASSWORD") as String?)
+        }
+    }
 }
 
 publishing{
@@ -70,13 +94,14 @@ publishing{
             pom{
                 name.set("toml4j")
                 description.set("Java library for parsing TOML")
+                url.set("https://github.com/thelooter/toml4j")
 
                 inceptionYear.set("2013")
 
                 licenses{
                     license{
-                        name.set("The Apache License, Version 2.0")
-                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                        name.set("MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
                     }
                 }
 
@@ -112,4 +137,33 @@ publishing{
             }
         }
     }
+
+    repositories{
+        maven{
+            name = "OSSRH"
+            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            credentials{
+                username = findProperty("SONATYPE_USERNAME") as String?
+                password = findProperty("SONATYPE_PASSWORD") as String?
+            }
+        }
+    }
+}
+
+fun isFork(): Boolean {
+    return run("git", "config", "--get", "remote.origin.url").contains("thelooter/toml4j")
+}
+
+fun isAction(): Boolean {
+    return System.getenv("CI") != null
+}
+
+
+fun run(vararg cmd: String): String {
+    val stdout = ByteArrayOutputStream()
+    exec {
+        commandLine(*cmd)
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
 }
