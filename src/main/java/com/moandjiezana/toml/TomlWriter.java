@@ -6,7 +6,6 @@ import static com.moandjiezana.toml.ValueWriters.WRITERS;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -41,6 +40,7 @@ public class TomlWriter {
     private int arrayDelimiterPadding = 0;
     private TimeZone timeZone = TimeZone.getTimeZone("UTC");
     private boolean showFractionalSeconds = false;
+    private boolean handleMultiLineStrings = false;
     
     public TomlWriter.Builder indentValuesBy(int spaces) {
       this.keyIndentation = spaces;
@@ -70,29 +70,36 @@ public class TomlWriter {
       return this;
     }
     
-    public TomlWriter build() {
-      return new TomlWriter(keyIndentation, tableIndentation, arrayDelimiterPadding, timeZone, showFractionalSeconds);
-    }
-
     public TomlWriter.Builder showFractionalSeconds() {
       this.showFractionalSeconds = true;
       return this;
+    }
+    
+    public TomlWriter.Builder handleMultiLineStrings() {
+      this.handleMultiLineStrings = true;
+      return this;
+    }
+    
+    public TomlWriter build() {
+      return new TomlWriter(keyIndentation, tableIndentation, arrayDelimiterPadding, timeZone, showFractionalSeconds, handleMultiLineStrings);
     }
   }
 
   private final IndentationPolicy indentationPolicy;
   private final DatePolicy datePolicy;
+  private final StringPolicy stringPolicy;
 
   /**
    * Creates a TomlWriter instance.
    */
   public TomlWriter() {
-    this(0, 0, 0, TimeZone.getTimeZone("UTC"), false);
+    this(0, 0, 0, TimeZone.getTimeZone("UTC"), false, false);
   }
   
-  private TomlWriter(int keyIndentation, int tableIndentation, int arrayDelimiterPadding, TimeZone timeZone, boolean showFractionalSeconds) {
+  private TomlWriter(int keyIndentation, int tableIndentation, int arrayDelimiterPadding, TimeZone timeZone, boolean showFractionalSeconds, boolean handleMultiLineStrings) {
     this.indentationPolicy = new IndentationPolicy(keyIndentation, tableIndentation, arrayDelimiterPadding);
     this.datePolicy = new DatePolicy(timeZone, showFractionalSeconds);
+    this.stringPolicy = new StringPolicy(handleMultiLineStrings);
   }
 
   /**
@@ -152,7 +159,7 @@ public class TomlWriter {
   public void write(Object from, Writer target) throws IOException {
     ValueWriter valueWriter = WRITERS.findWriterFor(from);
     if (valueWriter == MAP_VALUE_WRITER || valueWriter == OBJECT_VALUE_WRITER) {
-      WriterContext context = new WriterContext(indentationPolicy, datePolicy, target);
+      WriterContext context = new WriterContext(indentationPolicy, datePolicy, stringPolicy, target);
       valueWriter.write(from, context);
     } else {
       throw new IllegalArgumentException("An object of class " + from.getClass().getSimpleName() + " cannot produce valid TOML. Please pass in a Map or a custom type.");
