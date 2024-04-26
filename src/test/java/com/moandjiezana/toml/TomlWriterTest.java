@@ -187,7 +187,7 @@ public class TomlWriterTest {
     String expected = "[[table]]\n" +
         "anInt = 1\n\n" +
         "[[table]]\n" +
-        "anInt = 2\n" +
+        "anInt = 2\n\n" +
         "[[table2]]\n" +
         "anInt = 3\n\n" +
         "[[table2]]\n" +
@@ -296,10 +296,44 @@ public class TomlWriterTest {
 
     assertEquals("[b.c]\nanInt = 1\n", new TomlWriter().write(new A()));
   }
-  
+
   @Test
   public void should_write_map() throws Exception {
     assertEquals("a = 1\n", new TomlWriter().write(new Toml().read("a = 1").toMap()));
+  }
+
+  @Test
+  public void should_write_object_map() {
+    HashMap<String, Object> items = new HashMap();
+
+    HashMap<String, Object> item1 = new HashMap();
+    item1.put("id", "1");
+    item1.put("display", "Foo");
+
+    HashMap<String, Object> item2 = new HashMap();
+    item2.put("id", "2");
+    item2.put("display", "Bar");
+
+    HashMap<String, Object> item3 = new HashMap();
+    item3.put("id", "3");
+    item3.put("display", "Moo");
+
+    items.put("foo", item1);
+    items.put("bar", item2);
+    items.put("moo", item3);
+
+    String toml = new TomlWriter().write(items);
+    assertEquals("[bar]\n" +
+      "display = \"Bar\"\n" +
+      "id = \"2\"\n" +
+      "\n" +
+      "[foo]\n" +
+      "display = \"Foo\"\n" +
+      "id = \"1\"\n" +
+      "\n" +
+      "[moo]\n" +
+      "display = \"Moo\"\n" +
+      "id = \"3\"\n", toml);
   }
 
   class Base {
