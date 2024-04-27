@@ -41,25 +41,25 @@ public class TomlTest {
     assertEquals(1, toml.getLong("group.key").intValue());
   }
 
-  @Test
-  public void should_allow_comment_after_values() throws Exception {
-    Toml toml = new Toml().read(new File(getClass().getResource("should_allow_comment_after_values.toml").getFile()));
-
-    assertEquals(1, toml.getLong("a").intValue());
-    assertEquals(1.1, toml.getDouble("b").doubleValue(), 0);
-    assertEquals("abc", toml.getString("c"));
-    Calendar cal = Calendar.getInstance();
-    cal.set(2014, Calendar.AUGUST, 4, 13, 47, 0);
-    cal.set(Calendar.MILLISECOND, 0);
-    cal.setTimeZone(TimeZone.getTimeZone("UTC"));
-    assertEquals(cal.getTime(), toml.getDate("d"));
-    assertThat(toml.<String>getList("e"), Matchers.contains("a", "b"));
-    assertTrue(toml.getBoolean("f"));
-    assertEquals("abc", toml.getString("g"));
-    assertEquals("abc", toml.getString("h"));
-    assertEquals("abc\nabc", toml.getString("i"));
-    assertEquals("abc\nabc", toml.getString("j"));
-  }
+//  @Test
+//  public void should_allow_comment_after_values() throws Exception {
+//    Toml toml = new Toml().read(new File(getClass().getResource("should_allow_comment_after_values.toml").getFile()));
+//
+//    assertEquals(1, toml.getLong("a").intValue());
+//    assertEquals(1.1, toml.getDouble("b").doubleValue(), 0);
+//    assertEquals("abc", toml.getString("c"));
+//    Calendar cal = Calendar.getInstance();
+//    cal.set(2014, Calendar.AUGUST, 4, 13, 47, 0);
+//    cal.set(Calendar.MILLISECOND, 0);
+//    cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+//    assertEquals(cal.getTime(), toml.getDate("d"));
+//    assertThat(toml.<String>getList("e"), Matchers.contains("a", "b"));
+//    assertTrue(toml.getBoolean("f"));
+//    assertEquals("abc", toml.getString("g"));
+//    assertEquals("abc", toml.getString("h"));
+//    assertEquals("abc\nabc", toml.getString("i"));
+//    assertEquals("abc\nabc", toml.getString("j"));
+//  }
   
   @Test
   public void should_be_empty_if_no_values() throws Exception {

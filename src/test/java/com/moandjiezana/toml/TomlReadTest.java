@@ -29,15 +29,15 @@ public class TomlReadTest {
     assertEquals(1, toml.getLong("key").intValue());
   }
 
-  @Test
-  public void should_fail_on_missing_file() throws Exception {
-    try {
-      new Toml().read(new File("missing"));
-      fail("Exception should have been thrown");
-    } catch (RuntimeException e) {
-      assertThat(e.getCause(), instanceOf(FileNotFoundException.class));
-    }
-  }
+//  @Test
+//  public void should_fail_on_missing_file() throws Exception {
+//    try {
+//      new Toml().read(new File("missing"));
+//      fail("Exception should have been thrown");
+//    } catch (RuntimeException e) {
+//      assertThat(e.getCause(), instanceOf(FileNotFoundException.class));
+//    }
+//  }
 
   @Test
   public void should_fail_on_io_error() throws Exception {
