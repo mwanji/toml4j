@@ -314,13 +314,43 @@ public class Toml {
    * @return A new instance of targetClass.
    */
   public <T> T to(Class<T> targetClass) {
-    JsonElement json = DEFAULT_GSON.toJsonTree(toMap());
-    
+    return to(targetClass, DEFAULT_GSON);
+  }
+
+  /**
+   * <p>
+   *  Populates an instance of targetClass with the values of this Toml instance.
+   *  The target's field names must match keys or tables.
+   *  Keys not present in targetClass will be ignored.
+   * </p>
+   *
+   * <p>Tables are recursively converted to custom classes or to {@link Map Map&lt;String, Object&gt;}.</p>
+   *
+   * <p>In addition to straight-forward conversion of TOML primitives, the following are also available:</p>
+   *
+   * <ul>
+   *  <li>Integer -&gt; int, long (or wrapper), {@link java.math.BigInteger}</li>
+   *  <li>Float -&gt; float, double (or wrapper), {@link java.math.BigDecimal}</li>
+   *  <li>One-letter String -&gt; char, {@link Character}</li>
+   *  <li>String -&gt; {@link String}, enum, {@link java.net.URI}, {@link java.net.URL}</li>
+   *  <li>Multiline and Literal Strings -&gt; {@link String}</li>
+   *  <li>Array -&gt; {@link List}, {@link Set}, array. The generic type can be anything that can be converted.</li>
+   *  <li>Table -&gt; Custom class, {@link Map Map&lt;String, Object&gt;}</li>
+   * </ul>
+   *
+   * @param targetClass Class to deserialize TOML to.
+   * @param gson The {@link Gson} instance to use to serialize to the {@code targetClass}.
+   * @param <T> type of targetClass.
+   * @return A new instance of targetClass.
+   */
+  public <T> T to(Class<T> targetClass, Gson gson) {
+    JsonElement json = gson.toJsonTree(toMap());
+
     if (targetClass == JsonElement.class) {
       return targetClass.cast(json);
     }
-    
-    return DEFAULT_GSON.fromJson(json, targetClass);
+
+    return gson.fromJson(json, targetClass);
   }
 
   public Map<String, Object> toMap() {
